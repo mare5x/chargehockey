@@ -6,63 +6,98 @@ filter: Nearest,Nearest
 repeat: none
 add_green64
   rotate: false
-  xy: 260, 329
+  xy: 260, 395
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 back_arrow_green128
   rotate: false
-  xy: 2, 71
+  xy: 2, 137
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
+cancel_green64
+  rotate: false
+  xy: 2, 71
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+confirm_green64
+  rotate: false
+  xy: 132, 137
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 pause_green64
   rotate: false
-  xy: 2, 5
+  xy: 260, 329
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 play_green256
   rotate: false
-  xy: 2, 137
+  xy: 2, 203
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
 px_black
   rotate: false
-  xy: 326, 392
+  xy: 68, 134
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_darkbrown
+  rotate: false
+  xy: 198, 200
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_green
+  rotate: false
+  xy: 260, 326
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_grey
   rotate: false
-  xy: 2, 2
+  xy: 326, 392
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_white
   rotate: false
-  xy: 68, 68
+  xy: 392, 458
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_white_opaque
+  rotate: false
+  xy: 2, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 remove_green64
   rotate: false
-  xy: 132, 71
+  xy: 326, 395
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 undo_green64
   rotate: false
-  xy: 260, 263
+  xy: 2, 5
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

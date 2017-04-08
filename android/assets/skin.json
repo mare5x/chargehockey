@@ -1,6 +1,7 @@
 {
     "com.badlogic.gdx.graphics.Color": {
-    	"green": { "a": 1, "b": 0, "g": 1, "r": 0 },
+    	"green": { "a": 1, "r": 0.568, "g": 0.86, "b": 0.35 },
+    	"dark_brown": { "a": 1, "r": 0.26, "g": 0.14, "b": 0.13 },
     	"white": { "a": 1, "b": 1, "g": 1, "r": 1 },
     	"grey": { "a": 1, "b": 0.5, "g": 0.5, "r": 0.5 },
     	"red": { "a": 1, "b": 0, "g": 0, "r": 1 },
@@ -26,8 +27,26 @@
         "remove": {
             "down": "remove_green64",
             "up": "remove_green64"
+        },
+
+        "cancel": {
+            "down": "cancel_green64",
+            "up": "cancel_green64"
+        },
+
+        "confirm": {
+             "down": "confirm_green64",
+             "up": "confirm_green64"
         }
     },
+
+    "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+        "default": {
+            "font": "font",
+            "fontColor": "black",
+            "background": "px_grey"
+        }
+     },
 
     "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
         "default": {
@@ -55,9 +74,26 @@
         "default": {
             "font": "font",
             "fontColorSelected": "black",
-            "fontColorUnselected": "grey",
-            "selection": "px_grey",
-            "background": "px_white"
+            "fontColorUnselected": "dark_brown",
+            "selection": "px_white_opaque",
+            "background": "px_grey"
+        }
+    },
+
+    "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
+        "default": {
+            "titleFont": "font",
+            "titleFontColor": "red",
+            "background": "px_grey",
+        }
+    },
+
+    "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
+        "default": {
+            "font": "font",
+            "fontColor": "black",
+            "cursor": "px_white",
+            "selection": "px_white_opaque"
         }
     }
 }
