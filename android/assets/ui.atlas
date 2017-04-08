@@ -4,23 +4,65 @@ size: 512,512
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+add_green64
+  rotate: false
+  xy: 260, 329
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+back_arrow_green128
+  rotate: false
+  xy: 2, 71
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
 pause_green64
   rotate: false
-  xy: 2, 2
+  xy: 2, 5
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 play_green256
   rotate: false
-  xy: 2, 68
+  xy: 2, 137
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
+px_black
+  rotate: false
+  xy: 326, 392
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_grey
+  rotate: false
+  xy: 2, 2
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_white
+  rotate: false
+  xy: 68, 68
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+remove_green64
+  rotate: false
+  xy: 132, 71
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 undo_green64
   rotate: false
-  xy: 260, 260
+  xy: 260, 263
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

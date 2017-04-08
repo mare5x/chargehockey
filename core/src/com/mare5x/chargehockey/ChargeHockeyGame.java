@@ -8,9 +8,8 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.TextureAtlasLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -24,16 +23,18 @@ public class ChargeHockeyGame extends Game {
     public Skin skin;
     public TextureAtlas sprites;
 
-    protected AssetManager manager;
-    protected Screen menu_screen;
+    public AssetManager manager;
 
-    private Sprite tmp_sprite;
+    public Screen menu_screen;
 //    final protected Screen level_screen;
 //    final protected Screen editor_screen;
 //    final protected Screen game_screen;
 
 	@Override
 	public void create () {
+        Gdx.graphics.setContinuousRendering(false);
+        Gdx.graphics.requestRendering();
+
 		batch = new SpriteBatch();
 
         manager = new AssetManager();
@@ -43,14 +44,18 @@ public class ChargeHockeyGame extends Game {
 
         FreetypeFontLoader.FreeTypeFontLoaderParameter font_param = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         font_param.fontFileName = "OpenSans-Regular.ttf";
-        font_param.fontParameters.size = 16;  //(int)(Gdx.graphics.getDensity() * 16.0f);
+        font_param.fontParameters.size = (int)(Gdx.graphics.getDensity() * 24.0f);
+        font_param.fontParameters.borderWidth = 0.5f;  // make the font bold
         Gdx.app.log("font", String.format("font size: %d", font_param.fontParameters.size));
 
         manager.load("OpenSans-Regular.ttf", BitmapFont.class, font_param);
         manager.finishLoading();
 
+        BitmapFont font = manager.get("OpenSans-Regular.ttf", BitmapFont.class);
+        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
         ObjectMap<String, Object> font_map = new ObjectMap<String, Object>();
-        font_map.put("font", manager.get("OpenSans-Regular.ttf", BitmapFont.class));
+        font_map.put("font", font);
         manager.load("skin.json", Skin.class, new SkinLoader.SkinParameter("ui.atlas", font_map));
 
         manager.load("sprites.atlas", TextureAtlas.class, new TextureAtlasLoader.TextureAtlasParameter());
@@ -60,27 +65,17 @@ public class ChargeHockeyGame extends Game {
         skin = manager.get("skin.json", Skin.class);
 
         sprites = manager.get("sprites.atlas", TextureAtlas.class);
-        tmp_sprite = sprites.createSprite("neg_blue64");
-//        setScreen(menu_screen);
+
+        menu_screen = new MenuScreen(this);
+        setScreen(menu_screen);
 	}
 
     @Override
-    public void render() {
-        Gdx.gl20.glClearColor(1, 0, 0, 1);
-        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        batch.begin();
-        tmp_sprite.draw(batch);
-        skin.get("font", BitmapFont.class).draw(batch, "font", 100, 100);
-        batch.end();
-    }
-
-    @Override
 	public void dispose () {
+        menu_screen.dispose();
+
         skin.remove("font", BitmapFont.class);
         manager.dispose();
         batch.dispose();
-
-//        menu_screen.dispose();
 	}
 }
