@@ -12,28 +12,32 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
 class EditorScreen implements Screen {
-    final public ChargeHockeyGame game;
+    private final ChargeHockeyGame game;
 
-    final private List<String> list;
-    final InputDialog input_dialog;
+    private final List<String> list;
+    private final ScrollPane scroll_pane;
+    private final InputDialog input_dialog;
 
-    private Stage stage;
+    private final Stage stage;
 
     public EditorScreen(final ChargeHockeyGame game) {
         this.game = game;
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
+        stage.setDebugAll(true);
 
         input_dialog = new InputDialog("ADD LEVEL", game.skin);
 
         list = new List<String>(game.skin);
         init_list_items();
-        ScrollPane scroll_pane = new ScrollPane(list);
+        scroll_pane = new ScrollPane(list, game.skin);
+        scroll_pane.setVariableSizeKnobs(true);
 
         Button back_button = new Button(game.skin, "back");
         back_button.addListener(new ClickListener() {
@@ -80,25 +84,27 @@ class EditorScreen implements Screen {
 
         Table left_subtable = new Table();
 
-        left_subtable.add(back_button).pad(15).row();
-        left_subtable.add(add_button).pad(15).row();
-        left_subtable.add(remove_button).pad(15);
+        Value twidth = Value.percentWidth(0.8f, left_subtable);
+
+        left_subtable.add(back_button).padBottom(30).size(twidth, Value.percentWidth(0.4f, left_subtable)).expandX().top().row();
+        left_subtable.add(add_button).padBottom(30).size(twidth).expand().row();
+        left_subtable.add(remove_button).size(twidth).expand();
 
         Table table = new Table();
         table.setFillParent(true);
 
-        table.add(left_subtable).pad(15);
-        table.add(scroll_pane).pad(15).padRight(50).expand().fill();
+        table.pad(50 * game.DENSITY, 15 * game.DENSITY, 50 * game.DENSITY, 15 * game.DENSITY);
+
+        table.add(left_subtable).pad(15).width(Value.percentWidth(0.25f, table)).expandY().fillY();
+        table.add(scroll_pane).pad(15).expand().fill();
         table.row();
-        table.add(play_button).pad(15).colspan(2);
+        table.add(play_button).pad(15).colspan(2).size(Value.percentWidth(0.3f, table));
 
         stage.addActor(table);
-
-        stage.setDebugAll(true);
     }
 
     private void init_list_items() {
-        list.setItems("item1", "item2", "asdfasdfasdfsadfsdf");
+        list.setItems("item1", "item2", "asdfasd");
     }
 
     @Override
@@ -118,6 +124,7 @@ class EditorScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height);
+        Gdx.graphics.requestRendering();
     }
 
     @Override
@@ -141,23 +148,29 @@ class EditorScreen implements Screen {
     }
 
     private class InputDialog extends Dialog {
-        private TextField name_input;
+        private final TextField name_input;
 
         public InputDialog(String title, Skin skin) {
             super(title, skin);
 
             name_input = new TextField("LEVEL NAME", game.skin);
-            getContentTable().add(name_input).pad(15).expand().fill();
+            getContentTable().add(name_input).pad(15 * game.DENSITY).width(Value.percentWidth(0.8f, this)).expandX();
 
             Button cancel_button = new Button(game.skin, "cancel");
             cancel_button.pad(10);
             Button confirm_button = new Button(game.skin, "confirm");
             confirm_button.pad(10);
 
-            getButtonTable().pad(5);
-
             button(cancel_button, 0);
             button(confirm_button, 1);
+
+            getTitleTable().pad(10 * game.DENSITY);
+            getContentTable().pad(10 * game.DENSITY);
+            getButtonTable().pad(10 * game.DENSITY);
+
+            Value size = Value.percentHeight(3, name_input);
+            getButtonTable().getCell(cancel_button).size(size);
+            getButtonTable().getCell(confirm_button).size(size);
         }
 
         @Override
@@ -175,6 +188,7 @@ class EditorScreen implements Screen {
         protected void result(Object object) {
             if (object.equals(1)) {
                 list.getItems().add(name_input.getText());
+                list.invalidateHierarchy();  // reset the layout (add scroll bars to scroll pane)
             }
 
             name_input.getOnscreenKeyboard().show(false);

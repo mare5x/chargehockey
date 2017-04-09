@@ -3,31 +3,32 @@ package com.mare5x.chargehockey;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
 class MenuScreen implements Screen {
-    final public ChargeHockeyGame game;
+    private final ChargeHockeyGame game;
 
-    protected Screen editor_screen;
+    private Screen editor_screen;
+    private Screen play_screen;
 
     private Stage stage;
-    private OrthographicCamera camera;
 
     public MenuScreen(final ChargeHockeyGame game) {
         this.game = game;
 
         editor_screen = new EditorScreen(this.game);
+        play_screen = new PlayScreen(this.game);
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
-        camera = (OrthographicCamera) stage.getCamera();
+        stage.setDebugAll(true);
 
         Table table = new Table(game.skin);
         table.setFillParent(true);
@@ -37,6 +38,7 @@ class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("play_button", "clicked");
+                game.setScreen(play_screen);
             }
         });
 
@@ -59,13 +61,11 @@ class MenuScreen implements Screen {
             }
         });
 
-        table.add(play_button).expandX().pad(15).row();
-        table.add(edit_button).pad(15).row();
-        table.add(settings_button).pad(15);
+        table.add(play_button).expandX().pad(15).size(Value.percentWidth(0.6f, table)).row();
+        table.add(edit_button).pad(15).width(Value.percentWidth(0.6f, table)).fillX().row();
+        table.add(settings_button).pad(15).width(Value.percentWidth(0.6f, table)).fillX();
 
         stage.addActor(table);
-
-        stage.setDebugAll(true);
     }
 
     @Override
@@ -85,6 +85,7 @@ class MenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, false);
+        Gdx.graphics.requestRendering();
     }
 
     @Override
@@ -105,6 +106,7 @@ class MenuScreen implements Screen {
     @Override
     public void dispose() {
         editor_screen.dispose();
+        play_screen.dispose();
         stage.dispose();
     }
 }

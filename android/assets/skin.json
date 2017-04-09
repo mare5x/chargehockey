@@ -73,10 +73,9 @@
     "com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle": {
         "default": {
             "font": "font",
-            "fontColorSelected": "black",
-            "fontColorUnselected": "dark_brown",
-            "selection": "px_white_opaque",
-            "background": "px_grey"
+            "fontColorSelected": "dark_brown",
+            "fontColorUnselected": "white",
+            "selection": "px_white_opaque"
         }
     },
 
@@ -94,6 +93,13 @@
             "fontColor": "black",
             "cursor": "px_white",
             "selection": "px_white_opaque"
+        }
+    },
+
+    "com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle": {
+        "default": {
+            "hScrollKnob": "px_white",
+            "vScrollKnob": "px_white"
         }
     }
 }

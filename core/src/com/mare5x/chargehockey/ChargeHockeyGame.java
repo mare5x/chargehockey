@@ -19,6 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ObjectMap;
 
 public class ChargeHockeyGame extends Game {
+    public static float DENSITY;
+
 	public SpriteBatch batch;
     public Skin skin;
     public TextureAtlas sprites;
@@ -32,6 +34,8 @@ public class ChargeHockeyGame extends Game {
 
 	@Override
 	public void create () {
+        DENSITY = Gdx.graphics.getDensity();
+
         Gdx.graphics.setContinuousRendering(false);
         Gdx.graphics.requestRendering();
 
@@ -44,9 +48,9 @@ public class ChargeHockeyGame extends Game {
 
         FreetypeFontLoader.FreeTypeFontLoaderParameter font_param = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         font_param.fontFileName = "OpenSans-Regular.ttf";
-        font_param.fontParameters.size = (int)(Gdx.graphics.getDensity() * 24.0f);
+        font_param.fontParameters.size = (int)(DENSITY * 24.0f);
         font_param.fontParameters.borderWidth = 0.5f;  // make the font bold
-        Gdx.app.log("font", String.format("font size: %d", font_param.fontParameters.size));
+        Gdx.app.log("font", String.format("size: %d", font_param.fontParameters.size));
 
         manager.load("OpenSans-Regular.ttf", BitmapFont.class, font_param);
         manager.finishLoading();
