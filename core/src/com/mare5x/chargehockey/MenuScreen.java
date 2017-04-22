@@ -16,16 +16,16 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 class MenuScreen implements Screen {
     private final ChargeHockeyGame game;
 
-    private Screen editor_screen;
-    private Screen play_screen;
+    private Screen editor_menu_screen;
+    private Screen play_menu_screen;
 
     private Stage stage;
 
     public MenuScreen(final ChargeHockeyGame game) {
         this.game = game;
 
-        editor_screen = new EditorScreen(this.game);
-        play_screen = new PlayScreen(this.game);
+        editor_menu_screen = new EditorMenuScreen(this.game);
+        play_menu_screen = new PlayMenuScreen(this.game);
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
         stage.setDebugAll(true);
@@ -38,7 +38,7 @@ class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("play_button", "clicked");
-                game.setScreen(play_screen);
+                game.setScreen(play_menu_screen);
             }
         });
 
@@ -48,7 +48,7 @@ class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("edit_button", "clicked");
-                game.setScreen(editor_screen);
+                game.setScreen(editor_menu_screen);
             }
         });
 
@@ -105,8 +105,8 @@ class MenuScreen implements Screen {
 
     @Override
     public void dispose() {
-        editor_screen.dispose();
-        play_screen.dispose();
+        editor_menu_screen.dispose();
+        play_menu_screen.dispose();
         stage.dispose();
     }
 }

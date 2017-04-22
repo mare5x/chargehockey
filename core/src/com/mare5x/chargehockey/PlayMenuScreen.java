@@ -13,12 +13,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
-class PlayScreen implements Screen {
+class PlayMenuScreen implements Screen {
     private final ChargeHockeyGame game;
 
     private final Stage stage;
 
-    public PlayScreen(final ChargeHockeyGame game) {
+    public PlayMenuScreen(final ChargeHockeyGame game) {
         this.game = game;
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);

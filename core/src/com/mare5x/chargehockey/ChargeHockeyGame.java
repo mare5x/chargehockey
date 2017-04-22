@@ -20,6 +20,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 
 public class ChargeHockeyGame extends Game {
     public static float DENSITY;
+    public static final int WORLD_WIDTH = 64;
+    public static final int WORLD_HEIGHT = 64;
 
 	public SpriteBatch batch;
     public Skin skin;
