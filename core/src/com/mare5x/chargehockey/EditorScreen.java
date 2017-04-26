@@ -27,17 +27,19 @@ class EditorScreen implements Screen {
     private final Stage edit_stage, button_stage;
     private final OrthographicCamera camera;
 
-    private final Sprite sprite;
+    private Level level;
+
+    private Sprite sprite;
     private final TextureRegion bg;
 
-    public EditorScreen(final ChargeHockeyGame game) {
+    public EditorScreen(final ChargeHockeyGame game, final String level_name) {
         this.game = game;
 
         camera = new OrthographicCamera();
 
         float edit_aspect_ratio = Gdx.graphics.getWidth() / (Gdx.graphics.getHeight() * 0.8f);
-        edit_stage = new Stage(new FillViewport(edit_aspect_ratio * game.WORLD_HEIGHT, game.WORLD_HEIGHT, camera), game.batch);
-        camera.position.set(game.WORLD_WIDTH / 2, game.WORLD_HEIGHT / 2, 0);  // center camera
+        edit_stage = new Stage(new FillViewport(edit_aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
+        camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
         edit_stage.setDebugAll(true);
 
         button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
@@ -57,19 +59,38 @@ class EditorScreen implements Screen {
         Table button_table = new Table();
         button_table.setFillParent(true);
         button_table.setBackground(game.skin.getDrawable("px_black"));
-
         button_table.add(back_button).pad(15).size(Value.percentHeight(0.8f, button_table), Value.percentHeight(0.4f, button_table)).expandX().right();
 
         button_stage.addActor(button_table);
 
-        sprite = new Sprite(game.sprites.findRegion("pos_red64"));
-        sprite.setSize(4, 4);
-        sprite.setOriginCenter();
-        sprite.setPosition(32, 32);
-
         bg = game.skin.getRegion("px_black");
 
+        load_level(level_name);
+
         multiplexer = new InputMultiplexer(new GestureDetector(new EditGestureAdapter()), edit_stage, button_stage);
+    }
+
+    // Loads an existing level or creates a new one if it doesn't exist.
+    private void load_level(final String level_name) {
+        if (!level_exists(level_name))
+            create_level(level_name);
+    }
+
+    // Creates a new level
+    private void create_level(final String level_name) {
+        level = new Level(level_name, this.game);
+    }
+
+    private void save_level() {
+
+    }
+
+    private boolean level_exists(final String level_name) {
+        return false;
+    }
+
+    private GRID_ITEM get_selected_item() {
+        return GRID_ITEM.WALL;
     }
 
     @Override
@@ -88,8 +109,18 @@ class EditorScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-        game.batch.draw(bg, 0, 0, game.WORLD_WIDTH, game.WORLD_HEIGHT);  // background color
-        sprite.draw(game.batch);
+        game.batch.draw(bg, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);  // background color
+
+        for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
+            for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
+                GRID_ITEM item = level.get_grid_item(row, col);
+                if (item != GRID_ITEM.NULL) {
+                    sprite = level.get_item_sprite(item);
+                    sprite.setPosition(col, row);
+                    sprite.draw(game.batch);
+                }
+            }
+        }
         game.batch.end();
 
         button_stage.getViewport().apply();
@@ -135,21 +166,28 @@ class EditorScreen implements Screen {
             edit_stage.screenToStageCoordinates(tmp_coords.set(x, y));
             System.out.printf("%f, %f, %d, %d\n", tmp_coords.x, tmp_coords.y, count, button);
 
+            int row = (int) tmp_coords.y;
+            int col = (int) tmp_coords.x;
+
+            System.out.printf("row: %d, col: %d\n", row, col);
+
+            level.set_item(row, col, get_selected_item());
+
             return false;
         }
 
         @Override
         public boolean pan(float x, float y, float deltaX, float deltaY) {
-            camera.translate(-deltaX / camera.viewportWidth * camera.zoom, deltaY / camera.viewportHeight * camera.zoom);
+            camera.translate(-deltaX / camera.viewportWidth * camera.zoom * 1.2f, deltaY / camera.viewportHeight * camera.zoom * 1.2f);
 
             if (camera.position.x < BORDER)
                 camera.position.set(BORDER, camera.position.y, 0);
-            else if (camera.position.x > (game.WORLD_WIDTH - BORDER))
-                camera.position.set(game.WORLD_WIDTH - BORDER, camera.position.y, 0);
+            else if (camera.position.x > (ChargeHockeyGame.WORLD_WIDTH - BORDER))
+                camera.position.set(ChargeHockeyGame.WORLD_WIDTH - BORDER, camera.position.y, 0);
             if (camera.position.y < BORDER)
                 camera.position.set(camera.position.x, BORDER, 0);
-            else if (camera.position.y > (game.WORLD_HEIGHT - BORDER))
-                camera.position.set(camera.position.x, game.WORLD_HEIGHT - BORDER, 0);
+            else if (camera.position.y > (ChargeHockeyGame.WORLD_HEIGHT - BORDER))
+                camera.position.set(camera.position.x, ChargeHockeyGame.WORLD_HEIGHT - BORDER, 0);
 
             return true;
         }

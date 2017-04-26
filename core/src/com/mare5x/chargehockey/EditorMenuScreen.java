@@ -25,6 +25,10 @@ class EditorMenuScreen implements Screen {
 
     private final Stage stage;
 
+    private enum DIALOG_BUTTON {
+        CANCEL, CONFIRM
+    }
+
     public EditorMenuScreen(final ChargeHockeyGame game) {
         this.game = game;
 
@@ -55,7 +59,7 @@ class EditorMenuScreen implements Screen {
                 int selected_idx = list.getSelectedIndex();
                 if (selected_idx != -1) {
                     final String name = list.getItems().get(selected_idx);
-                    game.setScreen(new EditorScreen(game));
+                    game.setScreen(new EditorScreen(game, name));
                 }
                 Gdx.app.log("play_button", "clicked");
             }
@@ -78,10 +82,7 @@ class EditorMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("remove_button", "clicked");
-                int selected_idx = list.getSelectedIndex();
-                if (selected_idx != -1) {
-                    list.getItems().removeIndex(selected_idx);
-                }
+                remove_selected_level();
             }
         });
         remove_button.pad(10);
@@ -109,6 +110,15 @@ class EditorMenuScreen implements Screen {
 
     private void init_list_items() {
         list.setItems("item1", "item2", "asdfasd");
+    }
+
+    private void remove_selected_level() {
+        int selected_idx = list.getSelectedIndex();
+        if (selected_idx != -1) {
+            final String level = list.getItems().get(selected_idx);
+            // TODO remove saved level file
+            list.getItems().removeIndex(selected_idx);
+        }
     }
 
     @Override
@@ -165,8 +175,8 @@ class EditorMenuScreen implements Screen {
             Button confirm_button = new Button(game.skin, "confirm");
             confirm_button.pad(10);
 
-            button(cancel_button, 0);
-            button(confirm_button, 1);
+            button(cancel_button, DIALOG_BUTTON.CANCEL);
+            button(confirm_button, DIALOG_BUTTON.CONFIRM);
 
             getTitleTable().pad(10 * game.DENSITY);
             getContentTable().pad(10 * game.DENSITY);
@@ -190,7 +200,7 @@ class EditorMenuScreen implements Screen {
 
         @Override
         protected void result(Object object) {
-            if (object.equals(1)) {
+            if (object.equals(DIALOG_BUTTON.CONFIRM)) {
                 list.getItems().add(name_input.getText());
                 list.invalidateHierarchy();  // reset the layout (add scroll bars to scroll pane)
             }

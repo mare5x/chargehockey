@@ -1,6 +1,6 @@
 
 sprites.png
-size: 256,128
+size: 512,128
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -11,24 +11,38 @@ goal_greenblack32
   orig: 32, 32
   offset: 0, 0
   index: -1
-neg_blue64
+grid_goal
   rotate: false
   xy: 2, 36
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-pos_red64
+grid_null
+  rotate: false
+  xy: 266, 99
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+grid_wall
   rotate: false
   xy: 68, 36
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-square_black
+neg_blue64
   rotate: false
-  xy: 134, 68
-  size: 32, 32
-  orig: 32, 32
+  xy: 134, 36
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+pos_red64
+  rotate: false
+  xy: 200, 36
+  size: 64, 64
+  orig: 64, 64
   offset: 0, 0
   index: -1
