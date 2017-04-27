@@ -15,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
@@ -28,6 +30,8 @@ class EditorScreen implements Screen {
     private final OrthographicCamera camera;
 
     private Level level;
+
+    private final GridItemSelectorButton grid_item_button;
 
     private Sprite sprite;
     private final TextureRegion bg;
@@ -56,9 +60,20 @@ class EditorScreen implements Screen {
         });
         back_button.pad(10);
 
+        grid_item_button = new GridItemSelectorButton();
+        grid_item_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("grid_item_button", "clicked");
+                grid_item_button.cycle_next_style();
+            }
+        });
+        grid_item_button.pad(10);
+
         Table button_table = new Table();
         button_table.setFillParent(true);
         button_table.setBackground(game.skin.getDrawable("px_black"));
+        button_table.add(grid_item_button).pad(15).size(Value.percentHeight(0.4f, button_table));
         button_table.add(back_button).pad(15).size(Value.percentHeight(0.8f, button_table), Value.percentHeight(0.4f, button_table)).expandX().right();
 
         button_stage.addActor(button_table);
@@ -89,10 +104,6 @@ class EditorScreen implements Screen {
         return false;
     }
 
-    private GRID_ITEM get_selected_item() {
-        return GRID_ITEM.WALL;
-    }
-
     @Override
     public void show() {
         Gdx.input.setInputProcessor(multiplexer);
@@ -109,6 +120,7 @@ class EditorScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
+
         game.batch.draw(bg, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);  // background color
 
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
@@ -169,25 +181,30 @@ class EditorScreen implements Screen {
             int row = (int) tmp_coords.y;
             int col = (int) tmp_coords.x;
 
-            System.out.printf("row: %d, col: %d\n", row, col);
-
-            level.set_item(row, col, get_selected_item());
+            level.set_item(row, col, grid_item_button.get_selected_item());
 
             return false;
         }
 
         @Override
         public boolean pan(float x, float y, float deltaX, float deltaY) {
-            camera.translate(-deltaX / camera.viewportWidth * camera.zoom * 1.2f, deltaY / camera.viewportHeight * camera.zoom * 1.2f);
+            camera.translate(-deltaX / camera.viewportWidth * camera.zoom * 2, deltaY / camera.viewportHeight * camera.zoom * 2);
 
-            if (camera.position.x < BORDER)
-                camera.position.set(BORDER, camera.position.y, 0);
-            else if (camera.position.x > (ChargeHockeyGame.WORLD_WIDTH - BORDER))
-                camera.position.set(ChargeHockeyGame.WORLD_WIDTH - BORDER, camera.position.y, 0);
-            if (camera.position.y < BORDER)
-                camera.position.set(camera.position.x, BORDER, 0);
-            else if (camera.position.y > (ChargeHockeyGame.WORLD_HEIGHT - BORDER))
-                camera.position.set(camera.position.x, ChargeHockeyGame.WORLD_HEIGHT - BORDER, 0);
+            // camera.position is in the center of the camera
+
+            float xw = camera.position.x - camera.viewportWidth / 2f * camera.zoom;
+            float xe = camera.position.x + camera.viewportWidth / 2f * camera.zoom;
+            float yn = camera.position.y + camera.viewportHeight / 2f * camera.zoom;
+            float ys = camera.position.y - camera.viewportHeight / 2f * camera.zoom;
+
+            if (xw < -BORDER * camera.zoom)
+                camera.translate(-BORDER - xw, 0);
+            else if (xe > ChargeHockeyGame.WORLD_WIDTH + BORDER * camera.zoom)
+                camera.translate(ChargeHockeyGame.WORLD_WIDTH + (BORDER * camera.zoom) - xe, 0);
+            if (ys < -BORDER * camera.zoom)
+                camera.translate(0, -BORDER - ys);
+            else if (yn > ChargeHockeyGame.WORLD_HEIGHT + BORDER * camera.zoom)
+                camera.translate(0, ChargeHockeyGame.WORLD_HEIGHT + (BORDER * camera.zoom) - yn);
 
             return true;
         }
@@ -200,10 +217,10 @@ class EditorScreen implements Screen {
 
             camera.zoom -= amount * 0.2f;
 
-            if (camera.zoom < 0.2f)
-                camera.zoom = 0.2f;
-            else if (camera.zoom > 2)
-                camera.zoom = 2;
+            if (camera.zoom < 0.1f)
+                camera.zoom = 0.1f;
+            else if (camera.zoom > 1.8f)
+                camera.zoom = 1.8f;
 
             return true;
         }
@@ -211,6 +228,46 @@ class EditorScreen implements Screen {
         @Override
         public void pinchStop() {
             prev_zoom_distance = 0;
+        }
+    }
+
+    private class GridItemSelectorButton extends Button {
+        private int current_item_idx = 1;  // start = wall index
+        private ObjectMap<GRID_ITEM, ButtonStyle> style_table;
+
+        GridItemSelectorButton() {
+            super();
+
+            style_table = new ObjectMap<GRID_ITEM, ButtonStyle>(GRID_ITEM.values().length);
+
+            TextureRegionDrawable drawable = new TextureRegionDrawable(game.sprites.findRegion("grid_null"));
+            ButtonStyle style = new ButtonStyle(drawable, drawable, null);
+            style_table.put(GRID_ITEM.NULL, style);
+
+            drawable = new TextureRegionDrawable(game.sprites.findRegion("grid_wall"));
+            style = new ButtonStyle(drawable, drawable, null);
+            style_table.put(GRID_ITEM.WALL, style);
+
+            drawable = new TextureRegionDrawable(game.sprites.findRegion("grid_goal"));
+            style = new ButtonStyle(drawable, drawable, null);
+            style_table.put(GRID_ITEM.GOAL, style);
+
+            setStyle(get_style(GRID_ITEM.WALL));
+        }
+
+        void cycle_next_style() {
+            current_item_idx++;
+            if (current_item_idx >= GRID_ITEM.values().length)
+                current_item_idx = 0;
+            setStyle(get_style(GRID_ITEM.values()[current_item_idx]));
+        }
+
+        private ButtonStyle get_style(GRID_ITEM item) {
+            return style_table.get(item);
+        }
+
+        final GRID_ITEM get_selected_item() {
+            return GRID_ITEM.values()[current_item_idx];
         }
     }
 }
