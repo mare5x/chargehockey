@@ -7,8 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -20,8 +18,8 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 class EditorMenuScreen implements Screen {
     private final ChargeHockeyGame game;
 
-    private final List<String> list;
     private final InputDialog input_dialog;
+    private final LevelSelector level_selector;
 
     private final Stage stage;
 
@@ -37,10 +35,7 @@ class EditorMenuScreen implements Screen {
 
         input_dialog = new InputDialog("ADD LEVEL", game.skin);
 
-        list = new List<String>(game.skin);
-        init_list_items();
-        final ScrollPane scroll_pane = new ScrollPane(list, game.skin);
-        scroll_pane.setVariableSizeKnobs(true);
+        level_selector = new LevelSelector(game);
 
         Button back_button = new Button(game.skin, "back");
         back_button.addListener(new ClickListener() {
@@ -48,6 +43,7 @@ class EditorMenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("back_button", "clicked");
                 game.setScreen(game.menu_screen);
+                dispose();
             }
         });
         back_button.pad(10);
@@ -56,12 +52,13 @@ class EditorMenuScreen implements Screen {
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                int selected_idx = list.getSelectedIndex();
-                if (selected_idx != -1) {
-                    final String name = list.getItems().get(selected_idx);
-                    game.setScreen(new EditorScreen(game, name));
-                }
                 Gdx.app.log("play_button", "clicked");
+
+                final String name = level_selector.get_selected_name();
+                if (!name.equals("")) {
+                    game.setScreen(new EditorScreen(game, name));
+                    dispose();
+                }
             }
         });
         play_button.pad(10);
@@ -82,7 +79,7 @@ class EditorMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("remove_button", "clicked");
-                remove_selected_level();
+                level_selector.remove_selected_level();
             }
         });
         remove_button.pad(10);
@@ -101,24 +98,11 @@ class EditorMenuScreen implements Screen {
         table.pad(50 * game.DENSITY, 15 * game.DENSITY, 50 * game.DENSITY, 15 * game.DENSITY);
 
         table.add(left_subtable).pad(15).width(Value.percentWidth(0.25f, table)).expandY().fillY();
-        table.add(scroll_pane).pad(15).expand().fill();
+        table.add(level_selector.get_display()).pad(15).expand().fill();
         table.row();
         table.add(play_button).pad(15).colspan(2).size(Value.percentWidth(0.3f, table));
 
         stage.addActor(table);
-    }
-
-    private void init_list_items() {
-        list.setItems("item1", "item2", "asdfasd");
-    }
-
-    private void remove_selected_level() {
-        int selected_idx = list.getSelectedIndex();
-        if (selected_idx != -1) {
-            final String level = list.getItems().get(selected_idx);
-            // TODO remove saved level file
-            list.getItems().removeIndex(selected_idx);
-        }
     }
 
     @Override
@@ -138,7 +122,6 @@ class EditorMenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height);
-        Gdx.graphics.requestRendering();
     }
 
     @Override
@@ -201,8 +184,7 @@ class EditorMenuScreen implements Screen {
         @Override
         protected void result(Object object) {
             if (object.equals(DIALOG_BUTTON.CONFIRM)) {
-                list.getItems().add(name_input.getText());
-                list.invalidateHierarchy();  // reset the layout (add scroll bars to scroll pane)
+                level_selector.add_level(name_input.getText());
             }
 
             name_input.getOnscreenKeyboard().show(false);

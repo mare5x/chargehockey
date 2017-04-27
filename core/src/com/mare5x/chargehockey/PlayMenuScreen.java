@@ -30,6 +30,7 @@ class PlayMenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("back_button", "clicked");
                 game.setScreen(game.menu_screen);
+                dispose();
             }
         });
         back_button.pad(10);
@@ -66,6 +67,9 @@ class PlayMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("custom_button", "clicked");
+
+                game.setScreen(new LevelSelectorScreen(game));
+                dispose();
             }
         });
         custom_button.pad(10);

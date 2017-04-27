@@ -7,57 +7,61 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
-class MenuScreen implements Screen {
+class LevelSelectorScreen implements Screen {
     private final ChargeHockeyGame game;
 
-    private Stage stage;
+    private final LevelSelector level_selector;
 
-    public MenuScreen(final ChargeHockeyGame game) {
+    private final Stage stage;
+
+    public LevelSelectorScreen(final ChargeHockeyGame game) {
         this.game = game;
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
         stage.setDebugAll(true);
 
-        Table table = new Table(game.skin);
-        table.setFillParent(true);
+        level_selector = new LevelSelector(game);
+
+        Button back_button = new Button(game.skin, "back");
+        back_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("back_button", "clicked");
+                game.setScreen(game.menu_screen);
+                dispose();
+            }
+        });
+        back_button.pad(10);
 
         Button play_button = new Button(game.skin, "play");
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("play_button", "clicked");
-                game.setScreen(new PlayMenuScreen(game));
+
+                final String name = level_selector.get_selected_name();
+                if (!name.equals("")) {
+                    game.setScreen(new GameScreen(game, name));
+                    dispose();
+                }
             }
         });
+        play_button.pad(10);
 
-        TextButton edit_button = new TextButton("CUSTOM EDITOR", game.skin);
-        edit_button.pad(10);
-        edit_button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("edit_button", "clicked");
-                game.setScreen(new EditorMenuScreen(game));
-            }
-        });
+        Table table = new Table();
+        table.setFillParent(true);
 
-        TextButton settings_button = new TextButton("SETTINGS", game.skin);
-        settings_button.pad(10);
-        settings_button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("settings_button", "clicked");
-            }
-        });
+        table.pad(50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY, 50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY);
 
-        table.add(play_button).expandX().pad(15).size(Value.percentWidth(0.6f, table)).row();
-        table.add(edit_button).pad(15).width(Value.percentWidth(0.6f, table)).fillX().row();
-        table.add(settings_button).pad(15).width(Value.percentWidth(0.6f, table)).fillX();
+        table.add(back_button).pad(15).expandX().row();
+        table.add(level_selector.get_display()).pad(15).expand().fill();
+        table.row();
+        table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));
 
         stage.addActor(table);
     }
@@ -78,7 +82,7 @@ class MenuScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, false);
+        stage.getViewport().update(width, height);
     }
 
     @Override
