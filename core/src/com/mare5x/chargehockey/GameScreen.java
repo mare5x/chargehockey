@@ -4,7 +4,7 @@ import com.badlogic.gdx.Screen;
 
 
 class GameScreen implements Screen {
-    public GameScreen(ChargeHockeyGame game, String level_name) {
+    GameScreen(ChargeHockeyGame game, String level_name) {
     }
 
     @Override
@@ -34,7 +34,7 @@ class GameScreen implements Screen {
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override

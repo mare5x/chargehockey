@@ -18,7 +18,7 @@ class PlayMenuScreen implements Screen {
 
     private final Stage stage;
 
-    public PlayMenuScreen(final ChargeHockeyGame game) {
+    PlayMenuScreen(final ChargeHockeyGame game) {
         this.game = game;
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
@@ -30,7 +30,6 @@ class PlayMenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("back_button", "clicked");
                 game.setScreen(game.menu_screen);
-                dispose();
             }
         });
         back_button.pad(10);
@@ -69,14 +68,13 @@ class PlayMenuScreen implements Screen {
                 Gdx.app.log("custom_button", "clicked");
 
                 game.setScreen(new LevelSelectorScreen(game));
-                dispose();
             }
         });
         custom_button.pad(10);
 
         Table table = new Table();
         table.setFillParent(true);
-        table.pad(10 * game.DENSITY);
+        table.pad(10 * ChargeHockeyGame.DENSITY);
 
         Value twidth = Value.percentWidth(0.5f, table);
         table.add(back_button).pad(15).size(Value.percentHeight(2f, easy_button), Value.percentHeight(1f, easy_button)).expandX().left().top().row();
@@ -122,7 +120,7 @@ class PlayMenuScreen implements Screen {
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override

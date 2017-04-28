@@ -27,7 +27,7 @@ class EditorMenuScreen implements Screen {
         CANCEL, CONFIRM
     }
 
-    public EditorMenuScreen(final ChargeHockeyGame game) {
+    EditorMenuScreen(final ChargeHockeyGame game) {
         this.game = game;
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
@@ -43,7 +43,6 @@ class EditorMenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("back_button", "clicked");
                 game.setScreen(game.menu_screen);
-                dispose();
             }
         });
         back_button.pad(10);
@@ -54,10 +53,9 @@ class EditorMenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("play_button", "clicked");
 
-                final String name = level_selector.get_selected_name();
-                if (!name.equals("")) {
-                    game.setScreen(new EditorScreen(game, name));
-                    dispose();
+                final Level level = level_selector.load_selected_level();
+                if (level != null) {
+                    game.setScreen(new EditorScreen(game, level));
                 }
             }
         });
@@ -95,7 +93,7 @@ class EditorMenuScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
 
-        table.pad(50 * game.DENSITY, 15 * game.DENSITY, 50 * game.DENSITY, 15 * game.DENSITY);
+        table.pad(50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY, 50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY);
 
         table.add(left_subtable).pad(15).width(Value.percentWidth(0.25f, table)).expandY().fillY();
         table.add(level_selector.get_display()).pad(15).expand().fill();
@@ -136,7 +134,7 @@ class EditorMenuScreen implements Screen {
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override
@@ -147,11 +145,11 @@ class EditorMenuScreen implements Screen {
     private class InputDialog extends Dialog {
         private final TextField name_input;
 
-        public InputDialog(String title, Skin skin) {
+        InputDialog(String title, Skin skin) {
             super(title, skin);
 
             name_input = new TextField("LEVEL NAME", game.skin);
-            getContentTable().add(name_input).pad(15 * game.DENSITY).width(Value.percentWidth(0.8f, this)).expandX();
+            getContentTable().add(name_input).pad(15 * ChargeHockeyGame.DENSITY).width(Value.percentWidth(0.8f, this)).expandX();
 
             Button cancel_button = new Button(game.skin, "cancel");
             cancel_button.pad(10);
@@ -161,9 +159,9 @@ class EditorMenuScreen implements Screen {
             button(cancel_button, DIALOG_BUTTON.CANCEL);
             button(confirm_button, DIALOG_BUTTON.CONFIRM);
 
-            getTitleTable().pad(10 * game.DENSITY);
-            getContentTable().pad(10 * game.DENSITY);
-            getButtonTable().pad(10 * game.DENSITY);
+            getTitleTable().pad(10 * ChargeHockeyGame.DENSITY);
+            getContentTable().pad(10 * ChargeHockeyGame.DENSITY);
+            getButtonTable().pad(10 * ChargeHockeyGame.DENSITY);
 
             Value size = Value.percentHeight(3, name_input);
             getButtonTable().getCell(cancel_button).size(size);

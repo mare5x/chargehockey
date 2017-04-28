@@ -1,9 +1,12 @@
 package com.mare5x.chargehockey;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.ObjectMap;
 
-public class Level {
+import java.util.Arrays;
+
+class Level {
     private final ChargeHockeyGame game;
 
     private final String name;
@@ -12,7 +15,7 @@ public class Level {
 
     private final Grid grid;
 
-    public Level(final String level_name, final ChargeHockeyGame game) {
+    Level(final String level_name, final ChargeHockeyGame game) {
         this.name = level_name;
         this.game = game;
 
@@ -33,15 +36,36 @@ public class Level {
         grid_sprites.put(GRID_ITEM.GOAL, goal_sprite);
     }
 
-    public void set_item(int row, int col, GRID_ITEM item) {
+    void set_item(int row, int col, GRID_ITEM item) {
         grid.set_item(row, col, item);
     }
 
-    public final Sprite get_item_sprite(GRID_ITEM item) {
+    final Sprite get_item_sprite(GRID_ITEM item) {
         return grid_sprites.get(item);
     }
 
-    public final GRID_ITEM get_grid_item(int row, int col) {
+    final GRID_ITEM get_grid_item(int row, int col) {
         return grid.get_item(row, col);
+    }
+
+    static byte[] get_empty_level_data() {
+        byte[] level_data = new byte[ChargeHockeyGame.WORLD_WIDTH * ChargeHockeyGame.WORLD_HEIGHT];
+        Arrays.fill(level_data, (byte) GRID_ITEM.NULL.ordinal());
+
+        return level_data;
+    }
+
+    byte[] get_level_data() {
+        return grid.get_byte_data();
+    }
+
+    void save() {
+        FileHandle file = LevelSelector.get_level_fhandle(name);
+
+        file.writeBytes(get_level_data(), false);
+    }
+
+    void load_from_data(byte[] level_data) {
+        grid.from_byte_data(level_data);
     }
 }

@@ -36,8 +36,9 @@ class EditorScreen implements Screen {
     private Sprite sprite;
     private final TextureRegion bg;
 
-    public EditorScreen(final ChargeHockeyGame game, final String level_name) {
+    EditorScreen(final ChargeHockeyGame game, Level level) {
         this.game = game;
+        this.level = level;
 
         camera = new OrthographicCamera();
 
@@ -55,7 +56,6 @@ class EditorScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("back_button", "clicked");
                 game.setScreen(game.menu_screen);
-                dispose();
             }
         });
         back_button.pad(10);
@@ -80,28 +80,7 @@ class EditorScreen implements Screen {
 
         bg = game.skin.getRegion("px_black");
 
-        load_level(level_name);
-
         multiplexer = new InputMultiplexer(new GestureDetector(new EditGestureAdapter()), edit_stage, button_stage);
-    }
-
-    // Loads an existing level or creates a new one if it doesn't exist.
-    private void load_level(final String level_name) {
-        if (!level_exists(level_name))
-            create_level(level_name);
-    }
-
-    // Creates a new level
-    private void create_level(final String level_name) {
-        level = new Level(level_name, this.game);
-    }
-
-    private void save_level() {
-
-    }
-
-    private boolean level_exists(final String level_name) {
-        return false;
     }
 
     @Override
@@ -159,7 +138,8 @@ class EditorScreen implements Screen {
 
     @Override
     public void hide() {
-
+        level.save();
+        dispose();
     }
 
     @Override
@@ -238,7 +218,7 @@ class EditorScreen implements Screen {
         GridItemSelectorButton() {
             super();
 
-            style_table = new ObjectMap<GRID_ITEM, ButtonStyle>(GRID_ITEM.values().length);
+            style_table = new ObjectMap<GRID_ITEM, ButtonStyle>(GRID_ITEM.values.length);
 
             TextureRegionDrawable drawable = new TextureRegionDrawable(game.sprites.findRegion("grid_null"));
             ButtonStyle style = new ButtonStyle(drawable, drawable, null);
@@ -257,9 +237,9 @@ class EditorScreen implements Screen {
 
         void cycle_next_style() {
             current_item_idx++;
-            if (current_item_idx >= GRID_ITEM.values().length)
+            if (current_item_idx >= GRID_ITEM.values.length)
                 current_item_idx = 0;
-            setStyle(get_style(GRID_ITEM.values()[current_item_idx]));
+            setStyle(get_style(GRID_ITEM.values[current_item_idx]));
         }
 
         private ButtonStyle get_style(GRID_ITEM item) {
@@ -267,7 +247,7 @@ class EditorScreen implements Screen {
         }
 
         final GRID_ITEM get_selected_item() {
-            return GRID_ITEM.values()[current_item_idx];
+            return GRID_ITEM.values[current_item_idx];
         }
     }
 }

@@ -19,7 +19,7 @@ class LevelSelectorScreen implements Screen {
 
     private final Stage stage;
 
-    public LevelSelectorScreen(final ChargeHockeyGame game) {
+    LevelSelectorScreen(final ChargeHockeyGame game) {
         this.game = game;
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
@@ -33,7 +33,6 @@ class LevelSelectorScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("back_button", "clicked");
                 game.setScreen(game.menu_screen);
-                dispose();
             }
         });
         back_button.pad(10);
@@ -47,7 +46,6 @@ class LevelSelectorScreen implements Screen {
                 final String name = level_selector.get_selected_name();
                 if (!name.equals("")) {
                     game.setScreen(new GameScreen(game, name));
-                    dispose();
                 }
             }
         });
@@ -97,7 +95,7 @@ class LevelSelectorScreen implements Screen {
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override

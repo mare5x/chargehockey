@@ -6,6 +6,8 @@ enum GRID_ITEM {
     NULL,
     WALL,
     GOAL;
+
+    public static final GRID_ITEM[] values = values();
 }
 
 class Grid {
@@ -13,29 +15,46 @@ class Grid {
 
     private final Array<GRID_ITEM> grid;
 
-    public Grid() {
+    Grid() {
         grid = new Array<GRID_ITEM>(true, WIDTH * HEIGHT);
         for (int i = 0; i < WIDTH * HEIGHT; i++)
             grid.add(GRID_ITEM.NULL);
     }
 
-    public int get_idx(int row, int col) {
+    private int get_idx(int row, int col) {
         if (row >= 0 && row < HEIGHT && col >= 0 && col < WIDTH) {
             return row * WIDTH + col;
         }
         return -1;
     }
 
-    public void set_item(int row, int col, GRID_ITEM item) {
+    void set_item(int row, int col, GRID_ITEM item) {
         int idx = get_idx(row, col);
         if (idx != -1)
             grid.set(idx, item);
     }
 
-    public GRID_ITEM get_item(int row, int col) {
+    GRID_ITEM get_item(int row, int col) {
         int idx = get_idx(row, col);
         if (idx != -1)
             return grid.get(idx);
         return GRID_ITEM.NULL;
+    }
+
+    byte[] get_byte_data() {
+        byte[] data = new byte[grid.size];
+
+        for (int i = 0; i < data.length; i++) {
+            data[i] = (byte) (grid.get(i).ordinal());
+        }
+
+        return data;
+    }
+
+    // Load a grid using a byte array, as if from get_byte_data().
+    void from_byte_data(byte[] data) {
+        for (int i = 0; i < data.length; i++) {
+            grid.set(i, GRID_ITEM.values[data[i]]);
+        }
     }
 }
