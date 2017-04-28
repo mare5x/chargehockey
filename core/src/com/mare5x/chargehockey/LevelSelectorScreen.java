@@ -43,9 +43,9 @@ class LevelSelectorScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("play_button", "clicked");
 
-                final String name = level_selector.get_selected_name();
-                if (!name.equals("")) {
-                    game.setScreen(new GameScreen(game, name));
+                final Level level = level_selector.load_selected_level();
+                if (level != null) {
+                    game.setScreen(new GameScreen(game, level));
                 }
             }
         });

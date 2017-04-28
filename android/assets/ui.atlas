@@ -32,7 +32,7 @@ confirm_green64
   orig: 64, 64
   offset: 0, 0
   index: -1
-pause_green64
+menu_green64
   rotate: false
   xy: 260, 329
   size: 64, 64

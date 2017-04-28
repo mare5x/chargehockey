@@ -50,15 +50,15 @@ class EditorScreen implements Screen {
         button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
         button_stage.setDebugAll(true);
 
-        Button back_button = new Button(game.skin, "back");
-        back_button.addListener(new ClickListener() {
+        Button menu_button = new Button(game.skin, "menu");
+        menu_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("back_button", "clicked");
                 game.setScreen(game.menu_screen);
             }
         });
-        back_button.pad(10);
+        menu_button.pad(10);
 
         grid_item_button = new GridItemSelectorButton();
         grid_item_button.addListener(new ClickListener() {
@@ -73,14 +73,14 @@ class EditorScreen implements Screen {
         Table button_table = new Table();
         button_table.setFillParent(true);
         button_table.setBackground(game.skin.getDrawable("px_black"));
-        button_table.add(grid_item_button).pad(15).size(Value.percentHeight(0.4f, button_table));
-        button_table.add(back_button).pad(15).size(Value.percentHeight(0.8f, button_table), Value.percentHeight(0.4f, button_table)).expandX().right();
+        button_table.add(grid_item_button).pad(15).size(Value.percentHeight(0.6f, button_table));
+        button_table.add(menu_button).pad(15).size(Value.percentHeight(0.6f, button_table)).expandX().right();
 
         button_stage.addActor(button_table);
 
         bg = game.skin.getRegion("px_black");
 
-        multiplexer = new InputMultiplexer(new GestureDetector(new EditGestureAdapter()), edit_stage, button_stage);
+        multiplexer = new InputMultiplexer(new GestureDetector(new EditGestureAdapter(camera)), edit_stage, button_stage);
     }
 
     @Override
@@ -148,10 +148,12 @@ class EditorScreen implements Screen {
         button_stage.dispose();
     }
 
-    private class EditGestureAdapter extends GestureDetector.GestureAdapter {
+    private class EditGestureAdapter extends BaseGestureAdapter {
         final Vector2 tmp_coords = new Vector2();
-        static final int BORDER = 16;
-        float prev_zoom_distance = 0;
+
+        EditGestureAdapter(OrthographicCamera camera) {
+            super(camera);
+        }
 
         @Override
         public boolean tap(float x, float y, int count, int button) {
@@ -164,50 +166,6 @@ class EditorScreen implements Screen {
             level.set_item(row, col, grid_item_button.get_selected_item());
 
             return false;
-        }
-
-        @Override
-        public boolean pan(float x, float y, float deltaX, float deltaY) {
-            camera.translate(-deltaX / camera.viewportWidth * camera.zoom * 2, deltaY / camera.viewportHeight * camera.zoom * 2);
-
-            // camera.position is in the center of the camera
-
-            float xw = camera.position.x - camera.viewportWidth / 2f * camera.zoom;
-            float xe = camera.position.x + camera.viewportWidth / 2f * camera.zoom;
-            float yn = camera.position.y + camera.viewportHeight / 2f * camera.zoom;
-            float ys = camera.position.y - camera.viewportHeight / 2f * camera.zoom;
-
-            if (xw < -BORDER * camera.zoom)
-                camera.translate(-BORDER - xw, 0);
-            else if (xe > ChargeHockeyGame.WORLD_WIDTH + BORDER * camera.zoom)
-                camera.translate(ChargeHockeyGame.WORLD_WIDTH + (BORDER * camera.zoom) - xe, 0);
-            if (ys < -BORDER * camera.zoom)
-                camera.translate(0, -BORDER - ys);
-            else if (yn > ChargeHockeyGame.WORLD_HEIGHT + BORDER * camera.zoom)
-                camera.translate(0, ChargeHockeyGame.WORLD_HEIGHT + (BORDER * camera.zoom) - yn);
-
-            return true;
-        }
-
-        @Override
-        public boolean zoom(float initialDistance, float distance) {
-            float new_zoom_distance = distance - initialDistance;
-            float amount = (new_zoom_distance - prev_zoom_distance) / camera.viewportHeight;
-            prev_zoom_distance = new_zoom_distance;
-
-            camera.zoom -= amount * 0.2f;
-
-            if (camera.zoom < 0.1f)
-                camera.zoom = 0.1f;
-            else if (camera.zoom > 1.8f)
-                camera.zoom = 1.8f;
-
-            return true;
-        }
-
-        @Override
-        public void pinchStop() {
-            prev_zoom_distance = 0;
         }
     }
 

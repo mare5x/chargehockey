@@ -37,6 +37,11 @@
         "confirm": {
              "down": "confirm_green64",
              "up": "confirm_green64"
+        },
+
+        "menu": {
+            "down": "menu_green64",
+            "up": "menu_green64"
         }
     },
 

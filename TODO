@@ -1,1 +1,3 @@
 SetCullingArea
+
+make Level maintain its own texture, that gets updated only when necessary.
