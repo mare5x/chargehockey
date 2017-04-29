@@ -14,6 +14,11 @@
             "up": "play_green256"
         },
 
+        "stop": {
+            "down": "stop_green64",
+            "up": "stop_green64"
+        },
+
         "back": {
             "down": "back_arrow_green128",
             "up": "back_arrow_green128"

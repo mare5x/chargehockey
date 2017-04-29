@@ -65,7 +65,7 @@ class EditorScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("grid_item_button", "clicked");
-                grid_item_button.cycle_next_style();
+                grid_item_button.cycle_style();
             }
         });
         grid_item_button.pad(10);
@@ -193,7 +193,7 @@ class EditorScreen implements Screen {
             setStyle(get_style(GRID_ITEM.WALL));
         }
 
-        void cycle_next_style() {
+        void cycle_style() {
             current_item_idx++;
             if (current_item_idx >= GRID_ITEM.values.length)
                 current_item_idx = 0;

@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
@@ -23,6 +24,7 @@ class GameScreen implements Screen {
     private final ChargeHockeyGame game;
 
     private final Level level;
+    private final GameLogic game_logic;
 
     private final Stage game_stage, button_stage;
     private final OrthographicCamera camera;
@@ -32,7 +34,7 @@ class GameScreen implements Screen {
     private Sprite sprite;
     private final TextureRegion bg;
 
-    GameScreen(ChargeHockeyGame game, Level level) {
+    GameScreen(final ChargeHockeyGame game, Level level) {
         this.game = game;
         this.level = level;
 
@@ -42,6 +44,8 @@ class GameScreen implements Screen {
         game_stage = new Stage(new FillViewport(edit_aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
         game_stage.setDebugAll(true);
+
+        game_logic = new GameLogic(game, game_stage);
 
         button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
         button_stage.setDebugAll(true);
@@ -55,10 +59,47 @@ class GameScreen implements Screen {
         });
         menu_button.pad(10);
 
+        Button charge_pos_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("pos_red64")));
+        charge_pos_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("charge_pos_button", "clicked");
+
+                game_logic.add_charge(CHARGE.POSITIVE);
+            }
+        });
+        charge_pos_button.pad(10);
+
+        Button charge_neg_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("neg_blue64")));
+        charge_neg_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("charge_neg_button", "clicked");
+
+                game_logic.add_charge(CHARGE.NEGATIVE);
+            }
+        });
+        charge_neg_button.pad(10);
+
+        final PlayButton play_button = new PlayButton();
+        play_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("play_button", "clicked");
+
+                play_button.cycle_style();
+                game_logic.set_playing(!game_logic.is_playing());
+            }
+        });
+        play_button.pad(10);
+
         Table button_table = new Table();
         button_table.setFillParent(true);
         button_table.setBackground(game.skin.getDrawable("px_black"));
-        button_table.add(menu_button).pad(15).size(Value.percentHeight(0.6f, button_table)).expandX().right();
+        button_table.add(play_button).size(Value.percentHeight(0.5f, button_table)).uniform().pad(15);
+        button_table.add(charge_pos_button).pad(15).uniform().fill();
+        button_table.add(charge_neg_button).pad(15).uniform().fill();
+        button_table.add(menu_button).pad(15).uniform().fill();
 
         button_stage.addActor(button_table);
 
@@ -78,14 +119,11 @@ class GameScreen implements Screen {
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game_stage.getViewport().apply();
-        game_stage.act();
-        game_stage.draw();
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
         game.batch.draw(bg, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);  // background color
-
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
@@ -97,6 +135,11 @@ class GameScreen implements Screen {
             }
         }
         game.batch.end();
+
+        game_logic.update();
+
+        game_stage.act();
+        game_stage.draw();
 
         button_stage.getViewport().apply();
         button_stage.act();
@@ -147,6 +190,28 @@ class GameScreen implements Screen {
             int col = (int) tmp_coords.x;
 
             return false;
+        }
+    }
+
+    private class PlayButton extends Button {
+        private boolean is_playing = false;
+
+        private final ButtonStyle play_style = game.skin.get("play", ButtonStyle.class);
+        private final ButtonStyle stop_style = game.skin.get("stop", ButtonStyle.class);
+
+        PlayButton() {
+            super();
+
+            setStyle(play_style);
+        }
+
+        void cycle_style() {
+            is_playing = !is_playing;
+
+            if (is_playing)
+                setStyle(stop_style);
+            else
+                setStyle(play_style);
         }
     }
 }
