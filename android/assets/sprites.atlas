@@ -39,3 +39,10 @@ pos_red64
   orig: 64, 64
   offset: 0, 0
   index: -1
+puck
+  rotate: false
+  xy: 332, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1

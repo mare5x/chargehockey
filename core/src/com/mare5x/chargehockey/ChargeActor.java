@@ -5,6 +5,11 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 
+enum CHARGE {
+    POSITIVE, NEGATIVE, PUCK
+}
+
+
 class ChargeActor extends Actor {
     private final CHARGE charge_type;
     private final Sprite sprite;
@@ -21,6 +26,9 @@ class ChargeActor extends Actor {
                 break;
             case NEGATIVE:
                 sprite.setRegion(game.sprites.findRegion("neg_blue64"));
+                break;
+            case PUCK:
+                sprite.setRegion(game.sprites.findRegion("puck"));
                 break;
         }
 

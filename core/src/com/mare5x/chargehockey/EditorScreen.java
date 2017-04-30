@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.FillViewport;
@@ -32,8 +33,9 @@ class EditorScreen implements Screen {
     private Level level;
 
     private final GridItemSelectorButton grid_item_button;
+    private final Button puck_button;
 
-    private Sprite sprite;
+    private Sprite tmp_sprite;
     private final TextureRegion bg;
 
     EditorScreen(final ChargeHockeyGame game, Level level) {
@@ -70,11 +72,24 @@ class EditorScreen implements Screen {
         });
         grid_item_button.pad(10);
 
+        puck_button = new Button();
+        TextureRegionDrawable puck_drawable_on = new TextureRegionDrawable(game.sprites.findRegion("puck"));
+        Drawable puck_drawable_off = puck_drawable_on.tint(game.skin.getColor("grey"));
+        puck_button.setStyle(new Button.ButtonStyle(puck_drawable_off, puck_drawable_off, puck_drawable_on));
+        puck_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("puck_button", "clicked");
+            }
+        });
+        puck_button.pad(10);
+
         Table button_table = new Table();
         button_table.setFillParent(true);
         button_table.setBackground(game.skin.getDrawable("px_black"));
-        button_table.add(grid_item_button).pad(15).size(Value.percentHeight(0.6f, button_table));
-        button_table.add(menu_button).pad(15).size(Value.percentHeight(0.6f, button_table)).expandX().right();
+        button_table.add(grid_item_button).pad(15).size(Value.percentHeight(0.6f, button_table)).uniform();
+        button_table.add(puck_button).pad(15).fill().uniform();
+        button_table.add(menu_button).pad(15).size(Value.percentHeight(0.6f, button_table)).expandX().right().uniform();
 
         button_stage.addActor(button_table);
 
@@ -106,9 +121,9 @@ class EditorScreen implements Screen {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
                 if (item != GRID_ITEM.NULL) {
-                    sprite = level.get_item_sprite(item);
-                    sprite.setPosition(col, row);
-                    sprite.draw(game.batch);
+                    tmp_sprite = level.get_item_sprite(item);
+                    tmp_sprite.setPosition(col, row);
+                    tmp_sprite.draw(game.batch);
                 }
             }
         }
@@ -163,20 +178,23 @@ class EditorScreen implements Screen {
             int row = (int) tmp_coords.y;
             int col = (int) tmp_coords.x;
 
-            level.set_item(row, col, grid_item_button.get_selected_item());
+            if (puck_button.isChecked())
+                level.set_item(row, col, GRID_ITEM.PUCK);
+            else
+                level.set_item(row, col, grid_item_button.get_selected_item());
 
             return false;
         }
     }
 
     private class GridItemSelectorButton extends Button {
-        private int current_item_idx = 1;  // start = wall index
+        private int current_item_idx = GRID_ITEM.WALL.ordinal();  // start = wall index
         private ObjectMap<GRID_ITEM, ButtonStyle> style_table;
 
         GridItemSelectorButton() {
             super();
 
-            style_table = new ObjectMap<GRID_ITEM, ButtonStyle>(GRID_ITEM.values.length);
+            style_table = new ObjectMap<GRID_ITEM, ButtonStyle>(GRID_ITEM.size());
 
             TextureRegionDrawable drawable = new TextureRegionDrawable(game.sprites.findRegion("grid_null"));
             ButtonStyle style = new ButtonStyle(drawable, drawable, null);
@@ -195,7 +213,7 @@ class EditorScreen implements Screen {
 
         void cycle_style() {
             current_item_idx++;
-            if (current_item_idx >= GRID_ITEM.values.length)
+            if (current_item_idx >= GRID_ITEM.size())
                 current_item_idx = 0;
             setStyle(get_style(GRID_ITEM.values[current_item_idx]));
         }

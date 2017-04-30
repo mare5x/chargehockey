@@ -45,7 +45,7 @@ class GameScreen implements Screen {
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
         game_stage.setDebugAll(true);
 
-        game_logic = new GameLogic(game, game_stage);
+        game_logic = new GameLogic(game, game_stage, level);
 
         button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
         button_stage.setDebugAll(true);
@@ -99,7 +99,7 @@ class GameScreen implements Screen {
         button_table.add(play_button).size(Value.percentHeight(0.5f, button_table)).uniform().pad(15);
         button_table.add(charge_pos_button).pad(15).uniform().fill();
         button_table.add(charge_neg_button).pad(15).uniform().fill();
-        button_table.add(menu_button).pad(15).uniform().fill();
+        button_table.add(menu_button).pad(15).expandX().right().uniform().fill();
 
         button_stage.addActor(button_table);
 

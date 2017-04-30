@@ -2,12 +2,19 @@ package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.utils.Array;
 
+import java.util.Arrays;
+
 enum GRID_ITEM {
     NULL,
     WALL,
-    GOAL;
+    GOAL,
+    PUCK;
 
     public static final GRID_ITEM[] values = values();
+    // get the number of elements excluding PUCK
+    public static int size() {
+        return PUCK.ordinal();
+    }
 }
 
 class Grid {
