@@ -1,5 +1,6 @@
 package com.mare5x.chargehockey;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
@@ -12,6 +13,7 @@ class GameLogic {
     private boolean is_playing = false;
 
     private Array<ChargeActor> charge_actors;
+    private Array<ChargeActor> puck_actors;
 
     GameLogic(ChargeHockeyGame game, Stage game_stage, Level level) {
         this.game = game;
@@ -19,8 +21,18 @@ class GameLogic {
         this.level = level;
 
         charge_actors = new Array<ChargeActor>();
+        puck_actors = new Array<ChargeActor>();
 
-//        level.get_pucks();
+        // replace puck positions in level with null items and instead place puck charge actors
+        for (Vector2 pos : level.get_puck_positions()) {
+            level.set_item((int) (pos.y), (int) (pos.x), GRID_ITEM.NULL);
+
+            ChargeActor puck = new ChargeActor(game, CHARGE.PUCK);
+            puck.setPosition(pos.x, pos.y);
+
+            puck_actors.add(puck);
+            game_stage.addActor(puck);
+        }
     }
 
     // Add a charge of type charge_type to the center of the camera position.
@@ -38,11 +50,11 @@ class GameLogic {
         if (!is_playing())
             return;
 
-//        for (Puck puck : pucks) {
-//            for (ChargeActor charge : charge_actors) {
+        for (ChargeActor puck : puck_actors) {
+            for (ChargeActor charge : charge_actors) {
 //                apply_force(puck, charge);
-//            }
-//        }
+            }
+        }
     }
 
     void set_playing(boolean value) {

@@ -1,5 +1,6 @@
 package com.mare5x.chargehockey;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.Arrays;
@@ -63,5 +64,13 @@ class Grid {
         for (int i = 0; i < data.length; i++) {
             grid.set(i, GRID_ITEM.values[data[i]]);
         }
+    }
+
+    int get_height() {
+        return HEIGHT;
+    }
+
+    int get_width() {
+        return WIDTH;
     }
 }

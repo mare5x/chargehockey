@@ -2,6 +2,8 @@ package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 
 import java.util.Arrays;
@@ -71,5 +73,21 @@ class Level {
 
     void load_from_data(byte[] level_data) {
         grid.from_byte_data(level_data);
+    }
+
+    // x = col, y = row
+    Array<Vector2> get_puck_positions() {
+        // I'm manually checking the positions, since this functions should only get called once per level load.
+        Array<Vector2> positions = new Array<Vector2>();
+
+        for (int row = 0; row < grid.get_height(); row++) {
+            for (int col = 0; col < grid.get_width(); col++) {
+                if (grid.get_item(row, col) == GRID_ITEM.PUCK) {
+                    positions.add(new Vector2(col, row));
+                }
+            }
+        }
+
+        return positions;
     }
 }
