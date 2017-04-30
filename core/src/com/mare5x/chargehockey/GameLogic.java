@@ -52,9 +52,13 @@ class GameLogic {
 
         for (ChargeActor puck : puck_actors) {
             for (ChargeActor charge : charge_actors) {
-//                apply_force(puck, charge);
+                apply_force(puck, charge);
             }
         }
+    }
+
+    private void apply_force(ChargeActor puck, ChargeActor charge) {
+
     }
 
     void set_playing(boolean value) {

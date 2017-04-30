@@ -3,6 +3,8 @@ package com.mare5x.chargehockey;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 
 
 enum CHARGE {
@@ -34,6 +36,22 @@ class ChargeActor extends Actor {
 
         sprite.setSize(1, 1);
         setBounds(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+
+        DragListener drag_listener = new DragListener() {
+            @Override
+            public void drag(InputEvent event, float x, float y, int pointer) {
+                moveBy(x, y);
+            }
+        };
+        drag_listener.setTapSquareSize(getWidth());
+
+        addListener(drag_listener);
+    }
+
+    @Override
+    public void moveBy(float x, float y) {
+        super.moveBy(x, y);
+        sprite.translate(x, y);
     }
 
     @Override

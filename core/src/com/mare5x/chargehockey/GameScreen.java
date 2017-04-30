@@ -105,7 +105,7 @@ class GameScreen implements Screen {
 
         bg = game.skin.getRegion("px_black");
 
-        multiplexer = new InputMultiplexer(new GestureDetector(new GameGestureAdapter(camera)), game_stage, button_stage);
+        multiplexer = new InputMultiplexer(game_stage, new GestureDetector(new GameGestureAdapter(camera)), button_stage);
     }
 
     @Override
