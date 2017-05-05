@@ -16,7 +16,8 @@ class GameLogic {
 
     private boolean is_playing = false;
 
-    private static final float dt = 0.004f;
+    private static final float dt = 0.01f;
+    private float dt_accumulator = 0;  // http://gafferongames.com/game-physics/fix-your-timestep/
 
     private final Vector2 force_vec = new Vector2(), puck_vec = new Vector2();
     private final Vector2 tmp_vec = new Vector2();
@@ -65,12 +66,18 @@ class GameLogic {
         if (!is_playing())
             return;
 
-        update_pucks(dt);
+        dt_accumulator += delta;
 
-        // TODO check collisions
-        if (is_game_won()) {
-            set_playing(false);
-            return;
+        while (dt_accumulator >= dt) {
+            update_pucks(dt);
+
+            // TODO check collisions
+            if (is_game_won()) {
+                set_playing(false);
+                return;
+            }
+
+            dt_accumulator -= dt;
         }
     }
 
@@ -84,12 +91,12 @@ class GameLogic {
             float dy = delta * (velocity_vec.y + delta * acceleration_vec.y / 2);  // average velocity
             puck.moveBy(dx, dy);
 
-//            for (ChargeActor charge : charge_actors) {
-//                if (puck.overlaps(charge)) {
-//                    puck.moveBy(dx, dy);
-//                    System.out.println("move");
-//                }
-//            }
+            for (ChargeActor charge : charge_actors) {
+                while (puck.overlaps(charge)) {
+                    puck.moveBy(dx, dy);
+                    System.out.println("move");
+                }
+            }
 
             calc_net_force(puck);
             tmp_vec.x = force_vec.x / weight;  // a = F / m
@@ -125,6 +132,7 @@ class GameLogic {
         // reset positions if changing to playing from not playing
         if (value && !is_playing)
             reset_pucks();
+        dt_accumulator = 0;
         is_playing = value;
         if (is_playing) {
             Gdx.graphics.setContinuousRendering(true);

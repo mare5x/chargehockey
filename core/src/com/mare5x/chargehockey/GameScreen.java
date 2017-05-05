@@ -44,6 +44,7 @@ class GameScreen implements Screen {
         float edit_aspect_ratio = Gdx.graphics.getWidth() / (Gdx.graphics.getHeight() * 0.8f);
         game_stage = new Stage(new FillViewport(edit_aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
+        camera.zoom = 0.9f;
         game_stage.setDebugAll(true);
 
         game_logic = new GameLogic(game, game_stage, level);
