@@ -2,9 +2,12 @@ package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.badlogic.gdx.utils.Align;
 
 
 enum CHARGE {
@@ -15,6 +18,9 @@ enum CHARGE {
 class ChargeActor extends Actor {
     private final CHARGE charge_type;
     private final Sprite sprite;
+
+    private static final float WEIGHT = 9.1e-31f;  // kg
+    private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
     ChargeActor(final ChargeHockeyGame game, CHARGE charge_type) {
         super();
@@ -36,6 +42,8 @@ class ChargeActor extends Actor {
 
         sprite.setSize(1, 1);
         setBounds(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+        sprite.setOriginCenter();
+        setOrigin(Align.center);
 
         DragListener drag_listener = new DragListener() {
             @Override
@@ -71,7 +79,35 @@ class ChargeActor extends Actor {
         sprite.draw(batch);
     }
 
+    float get_charge() {
+        return ABS_CHARGE * get_direction();
+    }
+
+    float get_abs_charge() {
+        return ABS_CHARGE;
+    }
+
+    private int get_direction() {
+        return charge_type == CHARGE.POSITIVE || charge_type == CHARGE.PUCK ? 1 : -1;
+    }
+
     CHARGE get_type() {
         return charge_type;
+    }
+
+    float get_weight() {
+        return WEIGHT;
+    }
+
+    Vector2 get_vec(Vector2 puck_vec) {
+        return new Vector2(puck_vec).sub(getX(Align.center), getY(Align.center)).scl(get_direction());
+    }
+
+    boolean overlaps(ChargeActor charge) {
+        return get_rect().overlaps(charge.get_rect());
+    }
+
+    private Rectangle get_rect() {
+        return sprite.getBoundingRectangle();
     }
 }
