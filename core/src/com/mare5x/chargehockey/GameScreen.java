@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -30,6 +29,8 @@ class GameScreen implements Screen {
     private final Stage game_stage, button_stage;
     private final OrthographicCamera camera;
 
+    private final PlayButton play_button;
+
     private final InputMultiplexer multiplexer;
 
     private Sprite sprite;
@@ -47,7 +48,7 @@ class GameScreen implements Screen {
         camera.zoom = 0.9f;
         game_stage.setDebugAll(true);
 
-        game_logic = new GameLogic(game, game_stage, level);
+        game_logic = new GameLogic(game, game_stage, level, this);
 
         button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
         button_stage.setDebugAll(true);
@@ -83,14 +84,13 @@ class GameScreen implements Screen {
         });
         charge_neg_button.pad(10);
 
-        final PlayButton play_button = new PlayButton();
+        play_button = new PlayButton();
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("play_button", "clicked");
 
-                play_button.cycle_style();
-                game_logic.set_playing(!game_logic.is_playing());
+                toggle_playing();
             }
         });
         play_button.pad(10);
@@ -108,6 +108,11 @@ class GameScreen implements Screen {
         bg = game.skin.getRegion("px_black");
 
         multiplexer = new InputMultiplexer(game_stage, new GestureDetector(new GameGestureAdapter(camera)), button_stage);
+    }
+
+    void toggle_playing() {
+        play_button.cycle_style();
+        game_logic.set_playing(!game_logic.is_playing());
     }
 
     @Override

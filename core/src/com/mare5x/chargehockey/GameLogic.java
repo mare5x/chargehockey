@@ -13,6 +13,7 @@ class GameLogic {
     private final ChargeHockeyGame game;
     private final Stage game_stage;
     private final Level level;
+    private final GameScreen game_screen;
 
     private boolean is_playing = false;
 
@@ -26,16 +27,17 @@ class GameLogic {
     private final Array<PuckActor> puck_actors;
     private final Array<Vector2> initial_puck_positions;
 
-    GameLogic(ChargeHockeyGame game, Stage game_stage, Level level) {
+    GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, GameScreen game_screen) {
         this.game = game;
         this.game_stage = game_stage;
         this.level = level;
+        this.game_screen = game_screen;
 
         charge_actors = new Array<ChargeActor>();
         puck_actors = new Array<PuckActor>();
         initial_puck_positions = level.get_puck_positions();
 
-        // replace puck positions in level with null items and instead place puck charge actors
+        // replace puck positions in level with null items and instead place puck actors
         for (Vector2 pos : initial_puck_positions) {
             level.set_item((int) (pos.y), (int) (pos.x), GRID_ITEM.NULL);
 
@@ -71,14 +73,26 @@ class GameLogic {
         while (dt_accumulator >= dt) {
             update_pucks(dt);
 
-            // TODO check collisions
-            if (is_game_won()) {
-                set_playing(false);
+            GRID_ITEM collision = get_collision();
+            if (collision == GRID_ITEM.GOAL) {
+                game_screen.toggle_playing();
+                return;
+            } else if (collision == GRID_ITEM.WALL) {
+                game_screen.toggle_playing();
                 return;
             }
 
             dt_accumulator -= dt;
         }
+    }
+
+    private GRID_ITEM get_collision() {
+        for (PuckActor puck : puck_actors) {
+            GRID_ITEM grid_item = level.get_grid_item((int) (puck.getY()), (int) (puck.getX()));  // row = y, col = x
+            if (grid_item == GRID_ITEM.GOAL || grid_item == GRID_ITEM.WALL)
+                return grid_item;
+        }
+        return GRID_ITEM.NULL;
     }
 
     private void update_pucks(float delta) {
@@ -143,6 +157,10 @@ class GameLogic {
         Gdx.graphics.requestRendering();
     }
 
+    boolean is_playing() {
+        return is_playing;
+    }
+
     private void reset_pucks() {
         for (int i = 0; i < initial_puck_positions.size; i++) {
             final Vector2 pos = initial_puck_positions.get(i);
@@ -152,14 +170,5 @@ class GameLogic {
         tmp_vec.setZero();
         force_vec.setZero();
         puck_vec.setZero();
-    }
-
-    boolean is_playing() {
-        return is_playing;
-    }
-
-    // TODO
-    boolean is_game_won() {
-        return false;
     }
 }
