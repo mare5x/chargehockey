@@ -74,16 +74,23 @@ px_grey
   orig: 1, 1
   offset: 0, 0
   index: -1
-px_white
+px_purple
   rotate: false
   xy: 2, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-px_white_opaque
+px_white
   rotate: false
   xy: 68, 68
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_white_opaque
+  rotate: false
+  xy: 134, 134
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
