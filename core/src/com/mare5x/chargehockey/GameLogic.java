@@ -81,6 +81,11 @@ class GameLogic {
         while (dt_accumulator >= dt) {
             update_pucks(dt);
 
+            if (check_puck_out_of_bounds()) {
+                game_screen.toggle_playing();
+                return;
+            }
+
             GRID_ITEM collision = get_collision();
             if (collision == GRID_ITEM.GOAL) {
                 game_screen.toggle_playing();
@@ -92,6 +97,16 @@ class GameLogic {
 
             dt_accumulator -= dt;
         }
+    }
+
+    private boolean check_puck_out_of_bounds() {
+        for (PuckActor puck : puck_actors) {
+            float x = puck.getX();
+            float y = puck.getY();
+            if (x < 0 || x > ChargeHockeyGame.WORLD_WIDTH || y < 0 || y > ChargeHockeyGame.WORLD_HEIGHT)
+                return true;
+        }
+        return false;
     }
 
     private GRID_ITEM get_collision() {
@@ -110,7 +125,10 @@ class GameLogic {
     }
 
     private void update_pucks(float delta) {
-        for (PuckActor puck : puck_actors) {
+        // can't use nested iterators: https://github.com/libgdx/libgdx/wiki/Collections
+        for (int i = 0; i < puck_actors.size; i++) {
+            PuckActor puck = puck_actors.get(i);
+
             float weight = puck.get_weight();
             Vector2 velocity_vec = puck.get_velocity();
             Vector2 acceleration_vec = puck.get_acceleration();
@@ -119,10 +137,18 @@ class GameLogic {
             float dy = delta * (velocity_vec.y + delta * acceleration_vec.y / 2);  // average velocity
             puck.moveBy(dx, dy);  // TODO make speed adjustable (so its slower on higher zoom levels ...)
 
-            for (ChargeActor charge : charge_actors) {
+            for (int j = 0; j < charge_actors.size; j++) {
+                ChargeActor charge = charge_actors.get(j);
                 while (puck.overlaps(charge)) {
-                    puck.moveBy(dx, dy);
                     System.out.println("move");
+                    puck.moveBy(dx, dy);
+
+                    // make sure that the puck doesn't bypass an obstacle
+                    GRID_ITEM collision = get_collision();
+                    if (collision == GRID_ITEM.GOAL || collision == GRID_ITEM.WALL) {
+                        puck.reset_vectors();
+                        return;
+                    }
                 }
             }
 
