@@ -185,4 +185,14 @@ class GameLogic {
         force_vec.setZero();
         puck_vec.setZero();
     }
+
+    // Resets the state of the loaded level to its initial state.
+    void reset() {
+        reset_pucks();
+        for (ChargeActor charge : charge_actors) {
+            charge.clear();
+            charge.remove();
+        }
+        charge_actors.clear();
+    }
 }

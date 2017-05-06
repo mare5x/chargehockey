@@ -58,6 +58,8 @@ class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("menu_button", "clicked");
+
+                game.setScreen(new GameMenuScreen(game, GameScreen.this));
             }
         });
         menu_button.pad(10);
@@ -113,6 +115,10 @@ class GameScreen implements Screen {
     void toggle_playing() {
         play_button.cycle_style();
         game_logic.set_playing(!game_logic.is_playing());
+    }
+
+    void restart_level() {
+        game_logic.reset();
     }
 
     @Override
@@ -172,7 +178,7 @@ class GameScreen implements Screen {
 
     @Override
     public void hide() {
-        dispose();
+//        dispose();
     }
 
     @Override
@@ -192,9 +198,6 @@ class GameScreen implements Screen {
         public boolean tap(float x, float y, int count, int button) {
             game_stage.screenToStageCoordinates(tmp_coords.set(x, y));
             System.out.printf("%f, %f, %d, %d\n", tmp_coords.x, tmp_coords.y, count, button);
-
-            int row = (int) tmp_coords.y;
-            int col = (int) tmp_coords.x;
 
             return false;
         }
