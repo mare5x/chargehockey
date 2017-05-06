@@ -22,7 +22,7 @@ class ChargeActor extends Actor {
     private static final float WEIGHT = 9.1e-31f;  // kg
     private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
-    ChargeActor(final ChargeHockeyGame game, CHARGE charge_type) {
+    ChargeActor(final ChargeHockeyGame game, CHARGE charge_type, final GameLogic game_logic) {
         super();
 
         this.charge_type = charge_type;
@@ -49,6 +49,14 @@ class ChargeActor extends Actor {
             @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
                 moveBy(x, y);
+            }
+
+            @Override
+            public void dragStop(InputEvent event, float x, float y, int pointer) {
+                // if the actor was dragged out the stage, remove it
+                if (!getStage().getCamera().frustum.pointInFrustum(getX(), getY(), 0)) {
+                    game_logic.remove_charge(ChargeActor.this);
+                }
             }
         };
         drag_listener.setTapSquareSize(getWidth() / 4);

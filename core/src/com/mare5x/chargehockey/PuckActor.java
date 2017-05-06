@@ -11,8 +11,10 @@ class PuckActor extends ChargeActor {
 
     private static boolean draw_velocity = false, draw_acceleration = false;
 
-    PuckActor(ChargeHockeyGame game, CHARGE charge_type) {
-        super(game, charge_type);
+    PuckActor(ChargeHockeyGame game, CHARGE charge_type, GameLogic game_logic) {
+        super(game, charge_type, game_logic);
+
+        removeListener(getListeners().first());
 
         velocity_sprite = new Sprite(game.skin.getRegion("px_green"));
         acceleration_sprite = new Sprite(game.skin.getRegion("px_purple"));

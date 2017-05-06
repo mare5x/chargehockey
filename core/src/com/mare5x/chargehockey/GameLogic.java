@@ -41,7 +41,7 @@ class GameLogic {
         for (Vector2 pos : initial_puck_positions) {
             level.set_item((int) (pos.y), (int) (pos.x), GRID_ITEM.NULL);
 
-            PuckActor puck = new PuckActor(game, CHARGE.PUCK);
+            PuckActor puck = new PuckActor(game, CHARGE.PUCK, this);
             puck.setPosition(pos.x, pos.y);
 
             puck_actors.add(puck);
@@ -55,13 +55,21 @@ class GameLogic {
 
     // Add a charge of type charge_type to the center of the camera position.
     final ChargeActor add_charge(CHARGE charge_type) {
-        ChargeActor charge = new ChargeActor(game, charge_type);
+        ChargeActor charge = new ChargeActor(game, charge_type, this);
         charge.setPosition(game_stage.getCamera().position.x, game_stage.getCamera().position.y);
 
         charge_actors.add(charge);
         game_stage.addActor(charge);
 
         return charge;
+    }
+
+    void remove_charge(ChargeActor charge) {
+        if (charge instanceof PuckActor)
+            return;
+        charge_actors.removeValue(charge, true);
+        charge.clear();
+        charge.remove();
     }
 
     void update(float delta) {
