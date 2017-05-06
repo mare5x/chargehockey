@@ -28,7 +28,7 @@ class EditorScreen implements Screen {
     private final InputMultiplexer multiplexer;
 
     private final Stage edit_stage, button_stage;
-    private final OrthographicCamera camera;
+    private final OrthographicCamera camera;  // camera of edit_stage
 
     private Level level;
 
@@ -68,6 +68,7 @@ class EditorScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("grid_item_button", "clicked");
                 grid_item_button.cycle_style();
+                puck_button.setChecked(false);
             }
         });
         grid_item_button.pad(10);
@@ -174,6 +175,11 @@ class EditorScreen implements Screen {
         public boolean tap(float x, float y, int count, int button) {
             edit_stage.screenToStageCoordinates(tmp_coords.set(x, y));
             System.out.printf("%f, %f, %d, %d\n", tmp_coords.x, tmp_coords.y, count, button);
+
+            // ignore taps outside of edit_stage's camera
+            if (!point_in_view(tmp_coords.x, tmp_coords.y)) {
+                return false;
+            }
 
             int row = (int) tmp_coords.y;
             int col = (int) tmp_coords.x;

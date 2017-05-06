@@ -91,6 +91,12 @@ class GameLogic {
             GRID_ITEM grid_item = level.get_grid_item((int) (puck.getY()), (int) (puck.getX()));  // row = y, col = x
             if (grid_item == GRID_ITEM.GOAL || grid_item == GRID_ITEM.WALL)
                 return grid_item;
+            grid_item = level.get_grid_item((int) (puck.getY()), (int) (puck.getRight()));  // row = y, col = x
+            if (grid_item == GRID_ITEM.GOAL || grid_item == GRID_ITEM.WALL)
+                return grid_item;
+            grid_item = level.get_grid_item((int) (puck.getTop()), (int) (puck.getX()));  // row = y, col = x
+            if (grid_item == GRID_ITEM.GOAL || grid_item == GRID_ITEM.WALL)
+                return grid_item;
         }
         return GRID_ITEM.NULL;
     }
@@ -103,7 +109,7 @@ class GameLogic {
 
             float dx = delta * (velocity_vec.x + delta * acceleration_vec.x / 2);  // x = v * t
             float dy = delta * (velocity_vec.y + delta * acceleration_vec.y / 2);  // average velocity
-            puck.moveBy(dx, dy);
+            puck.moveBy(dx, dy);  // TODO make speed adjustable (so its slower on higher zoom levels ...)
 
             for (ChargeActor charge : charge_actors) {
                 while (puck.overlaps(charge)) {

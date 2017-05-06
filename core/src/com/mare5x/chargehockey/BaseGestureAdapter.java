@@ -1,16 +1,26 @@
 package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.input.GestureDetector;import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Rectangle;
 
 public class BaseGestureAdapter extends GestureDetector.GestureAdapter {
-//    private final Vector2 tmp_coords = new Vector2();
     private static final int BORDER = 16;
     private float prev_zoom_distance = 0;
     private final OrthographicCamera camera;
 
     public BaseGestureAdapter(OrthographicCamera camera) {
         this.camera = camera;
+    }
+
+    Rectangle get_camera_rect() {
+        float x = camera.position.x - camera.viewportWidth / 2f * camera.zoom;
+        float y = camera.position.y - camera.viewportHeight / 2f * camera.zoom;
+        return new Rectangle(x, y, camera.viewportWidth, camera.viewportHeight);
+    }
+
+    boolean point_in_view(float x, float y) {
+        return camera.frustum.pointInFrustum(x, y, 0);
     }
 
     @Override

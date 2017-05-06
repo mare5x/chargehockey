@@ -51,7 +51,7 @@ class ChargeActor extends Actor {
                 moveBy(x, y);
             }
         };
-        drag_listener.setTapSquareSize(getWidth());
+        drag_listener.setTapSquareSize(getWidth() / 4);
 
         addListener(drag_listener);
     }
