@@ -8,15 +8,16 @@ import com.badlogic.gdx.utils.Array;
 
 
 class GameLogic {
-    private static final float E_CONST = 1.1e-10f;
-
     private final ChargeHockeyGame game;
-    private final Stage game_stage;
     private final Level level;
     private final GameScreen game_screen;
 
+    private final Stage game_stage;
+
     private boolean is_playing = false;
 
+    private static final float MIN_DIST = PuckActor.SIZE;  // how many units apart can two charges be when calculating the force? (avoids infinite forces)
+    private static final float E_CONST = 1.1e-10f;
     private static final float dt = 0.01f;
     private float dt_accumulator = 0;  // http://gafferongames.com/game-physics/fix-your-timestep/
 
@@ -48,15 +49,21 @@ class GameLogic {
             game_stage.addActor(puck);
         }
 
+        load_charge_state();
+
         // temp TODO make this an option in the settings menu
         PuckActor.set_draw_acceleration(true);
         PuckActor.set_draw_velocity(true);
     }
 
     // Add a charge of type charge_type to the center of the camera position.
-    final ChargeActor add_charge(CHARGE charge_type) {
+    ChargeActor add_charge(CHARGE charge_type) {
+        return add_charge(charge_type, game_stage.getCamera().position.x, game_stage.getCamera().position.y);
+    }
+
+    private ChargeActor add_charge(CHARGE charge_type, float x, float y) {
         ChargeActor charge = new ChargeActor(game, charge_type, this);
-        charge.setPosition(game_stage.getCamera().position.x, game_stage.getCamera().position.y);
+        charge.setPosition(x, y);
 
         charge_actors.add(charge);
         game_stage.addActor(charge);
@@ -137,21 +144,6 @@ class GameLogic {
             float dy = delta * (velocity_vec.y + delta * acceleration_vec.y / 2);  // average velocity
             puck.moveBy(dx, dy);  // TODO make speed adjustable (so its slower on higher zoom levels ...)
 
-            for (int j = 0; j < charge_actors.size; j++) {
-                ChargeActor charge = charge_actors.get(j);
-                while (puck.overlaps(charge)) {
-                    System.out.println("move");
-                    puck.moveBy(dx, dy);
-
-                    // make sure that the puck doesn't bypass an obstacle
-                    GRID_ITEM collision = get_collision();
-                    if (collision == GRID_ITEM.GOAL || collision == GRID_ITEM.WALL) {
-                        puck.reset_vectors();
-                        return;
-                    }
-                }
-            }
-
             calc_net_force(puck);
             tmp_vec.x = force_vec.x / weight;  // a = F / m
             tmp_vec.y = force_vec.y / weight;
@@ -177,6 +169,7 @@ class GameLogic {
     private void apply_force(PuckActor puck, ChargeActor charge) {
         Vector2 vec = charge.get_vec(puck_vec);
         float dist_squared = vec.len2();
+        dist_squared = dist_squared < MIN_DIST * MIN_DIST ? MIN_DIST * MIN_DIST : dist_squared;
         float val = (puck.get_abs_charge() * charge.get_abs_charge()) / (dist_squared * E_CONST);
         vec.scl(val);
         force_vec.add(vec);
@@ -220,5 +213,20 @@ class GameLogic {
             charge.remove();
         }
         charge_actors.clear();
+    }
+
+    void save_charge_state() {
+        level.save_charge_state(charge_actors);
+    }
+
+    private void load_charge_state() {
+        Array<ChargeState> charge_states = level.load_charge_state();
+        if (charge_states == null)
+            return;
+
+        charge_actors.clear();
+        for (ChargeState charge_state : charge_states) {
+            add_charge(charge_state.type, charge_state.x, charge_state.y);
+        }
     }
 }

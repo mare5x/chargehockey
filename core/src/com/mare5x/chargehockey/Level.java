@@ -1,25 +1,40 @@
 package com.mare5x.chargehockey;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.StreamUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
+import java.util.Locale;
+
+
+enum LEVEL_TYPE {
+    EASY, NORMAL, HARD, CUSTOM
+}
+
 
 class Level {
     private final ChargeHockeyGame game;
 
     private final String name;
+    private final LEVEL_TYPE level_type;
 
     private final ObjectMap<GRID_ITEM, Sprite> grid_sprites;
 
     private final Grid grid;
 
-    Level(final String level_name, final ChargeHockeyGame game) {
-        this.name = level_name;
+    Level(final ChargeHockeyGame game, final String level_name, final LEVEL_TYPE level_type) {
         this.game = game;
+        this.name = level_name;
+        this.level_type = level_type;
 
         this.grid = new Grid();
 
@@ -61,18 +76,74 @@ class Level {
         return level_data;
     }
 
-    byte[] get_level_data() {
+    private byte[] get_level_data() {
         return grid.get_byte_data();
     }
 
-    void save() {
-        FileHandle file = LevelSelector.get_level_fhandle(name);
+    void save_grid() {
+        Gdx.app.log("Level", "saving grid");
+
+        FileHandle file = LevelSelector.get_level_grid_fhandle(level_type, name);
 
         file.writeBytes(get_level_data(), false);
     }
 
-    void load_from_data(byte[] level_data) {
+    void load_grid_from_data(byte[] level_data) {
+        Gdx.app.log("Level", "loading grid");
+
         grid.from_byte_data(level_data);
+    }
+
+    /*
+    Charge save data structure:
+    N (number of charges (lines))
+    CHARGE_TYPE X Y
+     */
+    void save_charge_state(Array<ChargeActor> charge_actors) {
+        Gdx.app.log("Level", "saving charge state");
+
+        FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name);
+        Writer writer = file.writer(false, "UTF-8");
+
+        try {
+            writer.write(String.valueOf(charge_actors.size) + "\n");
+            for (ChargeActor charge : charge_actors) {
+                ChargeState state = charge.get_state();
+
+                writer.write(String.format(Locale.US, "%s %f %f\n", state.type.name(), state.x, state.y));
+            }
+        } catch (IOException e) {
+            file.delete();
+            throw new GdxRuntimeException("Error writing file", e);
+        } finally {
+            StreamUtils.closeQuietly(writer);
+        }
+    }
+
+    Array<ChargeState> load_charge_state() {
+        Gdx.app.log("Level", "loading charge state");
+
+        FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name);
+        if (!file.exists()) {
+            return null;
+        }
+
+        BufferedReader reader = file.reader(256, "UTF-8");
+        try {
+            int n = Integer.parseInt(reader.readLine());
+            Array<ChargeState> states = new Array<ChargeState>(n);
+
+            for (int i = 0; i < n; i++) {
+                String[] split = reader.readLine().split(" ");
+                states.add(new ChargeState(CHARGE.valueOf(split[0]), Float.parseFloat(split[1]), Float.parseFloat(split[2])));
+            }
+
+            return states;
+        } catch (IOException e) {
+            throw new GdxRuntimeException("Error reading file", e);
+        } finally {
+            StreamUtils.closeQuietly(reader);
+        }
     }
 
     // x = col, y = row

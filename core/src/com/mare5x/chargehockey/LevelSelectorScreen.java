@@ -19,13 +19,13 @@ class LevelSelectorScreen implements Screen {
 
     private final Stage stage;
 
-    LevelSelectorScreen(final ChargeHockeyGame game) {
+    LevelSelectorScreen(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
         this.game = game;
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
         stage.setDebugAll(true);
 
-        level_selector = new LevelSelector(game);
+        level_selector = new LevelSelector(game, level_type);
 
         Button back_button = new Button(game.skin, "back");
         back_button.addListener(new ClickListener() {
@@ -56,7 +56,7 @@ class LevelSelectorScreen implements Screen {
 
         table.pad(50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY, 50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY);
 
-        table.add(back_button).pad(15).expandX().row();
+        table.add(back_button).pad(15).expandX().size(Value.percentWidth(1f, play_button), Value.percentWidth(0.5f, play_button)).row();
         table.add(level_selector.get_display()).pad(15).expand().fill();
         table.row();
         table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));

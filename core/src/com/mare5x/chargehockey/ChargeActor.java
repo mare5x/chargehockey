@@ -14,13 +14,25 @@ enum CHARGE {
     POSITIVE, NEGATIVE, PUCK
 }
 
+class ChargeState {
+    CHARGE type;
+    float x, y;
+
+    ChargeState(CHARGE type, float x, float y) {
+        this.type = type;
+        this.x = x;
+        this.y = y;
+    }
+}
+
 
 class ChargeActor extends Actor {
     private final CHARGE charge_type;
     private final Sprite sprite;
 
-    private static final float WEIGHT = 9.1e-31f;  // kg
-    private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
+    static final byte SIZE = 1;  // width = height = size
+    static final float WEIGHT = 9.1e-31f;  // kg
+    static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
     ChargeActor(final ChargeHockeyGame game, CHARGE charge_type, final GameLogic game_logic) {
         super();
@@ -40,7 +52,7 @@ class ChargeActor extends Actor {
                 break;
         }
 
-        sprite.setSize(1, 1);
+        sprite.setSize(SIZE, SIZE);
         setBounds(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
         sprite.setOriginCenter();
         setOrigin(Align.center);
@@ -117,5 +129,9 @@ class ChargeActor extends Actor {
 
     private Rectangle get_rect() {
         return sprite.getBoundingRectangle();
+    }
+
+    ChargeState get_state() {
+        return new ChargeState(charge_type, getX(), getY());
     }
 }

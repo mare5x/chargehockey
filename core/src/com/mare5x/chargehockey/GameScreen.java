@@ -168,7 +168,7 @@ class GameScreen implements Screen {
 
     @Override
     public void pause() {
-
+        game_logic.save_charge_state();
     }
 
     @Override
@@ -179,6 +179,9 @@ class GameScreen implements Screen {
     @Override
     public void hide() {
 //        dispose();
+        game_logic.save_charge_state();
+        if (game_logic.is_playing())
+            toggle_playing();
     }
 
     @Override

@@ -35,7 +35,7 @@ class EditorMenuScreen implements Screen {
 
         input_dialog = new InputDialog("ADD LEVEL", game.skin);
 
-        level_selector = new LevelSelector(game);
+        level_selector = new LevelSelector(game, LEVEL_TYPE.CUSTOM);
 
         Button back_button = new Button(game.skin, "back");
         back_button.addListener(new ClickListener() {

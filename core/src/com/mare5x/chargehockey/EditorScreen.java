@@ -144,7 +144,7 @@ class EditorScreen implements Screen {
 
     @Override
     public void pause() {
-
+        level.save_grid();
     }
 
     @Override
@@ -154,7 +154,7 @@ class EditorScreen implements Screen {
 
     @Override
     public void hide() {
-        level.save();
+        level.save_grid();
         dispose();
     }
 

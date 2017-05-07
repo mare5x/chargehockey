@@ -67,7 +67,7 @@ class PlayMenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("custom_button", "clicked");
 
-                game.setScreen(new LevelSelectorScreen(game));
+                game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.CUSTOM));
             }
         });
         custom_button.pad(10);
