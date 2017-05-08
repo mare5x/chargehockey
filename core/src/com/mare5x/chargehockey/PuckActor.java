@@ -11,6 +11,8 @@ class PuckActor extends ChargeActor {
 
     private static boolean draw_velocity = false, draw_acceleration = false;
 
+    private GRID_ITEM collision = GRID_ITEM.NULL;
+
     PuckActor(ChargeHockeyGame game, CHARGE charge_type, GameLogic game_logic) {
         super(game, charge_type, game_logic);
 
@@ -68,5 +70,13 @@ class PuckActor extends ChargeActor {
 
     static void set_draw_acceleration(boolean draw) {
         draw_acceleration = draw;
+    }
+
+    GRID_ITEM get_collision() {
+        return collision;
+    }
+
+    void set_collision(GRID_ITEM collision) {
+        this.collision = collision;
     }
 }

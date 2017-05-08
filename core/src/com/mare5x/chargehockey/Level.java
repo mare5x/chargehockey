@@ -57,6 +57,10 @@ class Level {
         grid_sprites.put(GRID_ITEM.PUCK, puck_sprite);
     }
 
+    final String get_name() {
+        return name;
+    }
+
     void set_item(int row, int col, GRID_ITEM item) {
         grid.set_item(row, col, item);
     }

@@ -8,6 +8,10 @@ import com.badlogic.gdx.utils.Array;
 
 
 class GameLogic {
+    private enum GAME_RESULT {
+        WIN, LOSS, IN_PROGRESS
+    }
+
     private final ChargeHockeyGame game;
     private final Level level;
     private final GameScreen game_screen;
@@ -88,53 +92,82 @@ class GameLogic {
         while (dt_accumulator >= dt) {
             update_pucks(dt);
 
-            if (check_puck_out_of_bounds()) {
-                game_screen.toggle_playing();
-                return;
-            }
+            update_collisions();
 
-            GRID_ITEM collision = get_collision();
-            if (collision == GRID_ITEM.GOAL) {
-                game_screen.toggle_playing();
-                return;
-            } else if (collision == GRID_ITEM.WALL) {
-                game_screen.toggle_playing();
-                return;
+            GAME_RESULT result = get_game_result();
+            switch (result) {
+                case WIN:
+                    game_screen.toggle_playing();
+                    Gdx.app.log("game", "WIN");
+                    break;
+                case LOSS:
+                    game_screen.toggle_playing();
+                    Gdx.app.log("game", "LOSS");
+                    break;
+                case IN_PROGRESS:
+                    break;
             }
 
             dt_accumulator -= dt;
         }
     }
 
-    private boolean check_puck_out_of_bounds() {
+    private GAME_RESULT get_game_result() {
+        int goals = 0;
+        int walls = 0;
         for (PuckActor puck : puck_actors) {
-            float x = puck.getX();
-            float y = puck.getY();
-            if (x < 0 || x > ChargeHockeyGame.WORLD_WIDTH || y < 0 || y > ChargeHockeyGame.WORLD_HEIGHT)
-                return true;
+            if (check_out_of_bounds(puck))
+                return GAME_RESULT.LOSS;
+
+            GRID_ITEM collision = puck.get_collision();
+            if (collision == GRID_ITEM.GOAL)
+                goals++;
+            else if (collision == GRID_ITEM.WALL)
+                walls++;
         }
-        return false;
+        if (walls > 0)
+            return GAME_RESULT.LOSS;
+        else if (goals == puck_actors.size)
+            return GAME_RESULT.WIN;
+        else
+            return GAME_RESULT.IN_PROGRESS;
     }
 
-    private GRID_ITEM get_collision() {
-        for (PuckActor puck : puck_actors) {
-            GRID_ITEM grid_item = level.get_grid_item((int) (puck.getY()), (int) (puck.getX()));  // row = y, col = x
-            if (grid_item == GRID_ITEM.GOAL || grid_item == GRID_ITEM.WALL)
-                return grid_item;
-            grid_item = level.get_grid_item((int) (puck.getY()), (int) (puck.getRight()));  // row = y, col = x
-            if (grid_item == GRID_ITEM.GOAL || grid_item == GRID_ITEM.WALL)
-                return grid_item;
-            grid_item = level.get_grid_item((int) (puck.getTop()), (int) (puck.getX()));  // row = y, col = x
-            if (grid_item == GRID_ITEM.GOAL || grid_item == GRID_ITEM.WALL)
-                return grid_item;
-        }
+    private boolean check_out_of_bounds(PuckActor puck) {
+        float x = puck.getX();
+        float y = puck.getY();
+        return x < 0 || x > ChargeHockeyGame.WORLD_WIDTH || y < 0 || y > ChargeHockeyGame.WORLD_HEIGHT;
+    }
+
+    private GRID_ITEM get_collision(PuckActor puck) {
+        GRID_ITEM grid_item = level.get_grid_item((int) (puck.getY()), (int) (puck.getX()));  // row = y, col = x
+        if (is_collision(grid_item))
+            return grid_item;
+        grid_item = level.get_grid_item((int) (puck.getY()), (int) (puck.getRight()));  // row = y, col = x
+        if (is_collision(grid_item))
+            return grid_item;
+        grid_item = level.get_grid_item((int) (puck.getTop()), (int) (puck.getX()));  // row = y, col = x
+        if (is_collision(grid_item))
+            return grid_item;
+
         return GRID_ITEM.NULL;
+    }
+
+    private void update_collisions() {
+        for (PuckActor puck : puck_actors) {
+            if (!is_collision(puck.get_collision())) {
+                puck.set_collision(get_collision(puck));
+            }
+        }
     }
 
     private void update_pucks(float delta) {
         // can't use nested iterators: https://github.com/libgdx/libgdx/wiki/Collections
         for (int i = 0; i < puck_actors.size; i++) {
             PuckActor puck = puck_actors.get(i);
+
+            if (is_collision(puck.get_collision()))
+                continue;
 
             float weight = puck.get_weight();
             Vector2 velocity_vec = puck.get_velocity();
@@ -197,8 +230,10 @@ class GameLogic {
     private void reset_pucks() {
         for (int i = 0; i < initial_puck_positions.size; i++) {
             final Vector2 pos = initial_puck_positions.get(i);
-            puck_actors.get(i).setPosition(pos.x, pos.y);
-            puck_actors.get(i).reset_vectors();
+            PuckActor puck = puck_actors.get(i);
+            puck.setPosition(pos.x, pos.y);
+            puck.reset_vectors();
+            puck.set_collision(GRID_ITEM.NULL);
         }
         tmp_vec.setZero();
         force_vec.setZero();
@@ -228,5 +263,9 @@ class GameLogic {
         for (ChargeState charge_state : charge_states) {
             add_charge(charge_state.type, charge_state.x, charge_state.y);
         }
+    }
+
+    private static boolean is_collision(final GRID_ITEM collision) {
+        return collision == GRID_ITEM.WALL || collision == GRID_ITEM.GOAL;
     }
 }

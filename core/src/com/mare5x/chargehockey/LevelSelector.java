@@ -60,6 +60,12 @@ class LevelSelector {
         }
     }
 
+    void remove_level_save(String level_name) {
+        FileHandle file = get_level_save_fhandle(level_type, level_name);
+        if (file.exists())
+            file.delete();
+    }
+
     void add_level(String level_name) {
         if (!level_exists(level_name)) {
             create_level_file(level_name);
