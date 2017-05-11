@@ -47,6 +47,12 @@
         "menu": {
             "down": "menu_green64",
             "up": "menu_green64"
+        },
+
+        "checkbox": {
+            "up": "check_off",
+            "down": "check_on",
+            "checked": "check_on"
         }
     },
 
@@ -110,6 +116,15 @@
         "default": {
             "hScrollKnob": "px_white",
             "vScrollKnob": "px_white"
+        }
+    },
+
+    "com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle": {
+        "default": {
+            "checkboxOn": "check_on",
+            "checkboxOff": "check_off",
+            "font": "font",
+            "fontColor": "white"
         }
     }
 }

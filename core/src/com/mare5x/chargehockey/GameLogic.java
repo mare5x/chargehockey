@@ -54,10 +54,6 @@ class GameLogic {
         }
 
         load_charge_state();
-
-        // temp TODO make this an option in the settings menu
-        PuckActor.set_draw_acceleration(true);
-        PuckActor.set_draw_velocity(true);
     }
 
     // Add a charge of type charge_type to the center of the camera position.

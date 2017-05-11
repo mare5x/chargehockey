@@ -52,6 +52,7 @@ class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("settings_button", "clicked");
+                game.setScreen(new SettingsScreen(game, MenuScreen.this));
             }
         });
 

@@ -32,9 +32,6 @@ public class ChargeHockeyGame extends Game {
     private AssetManager manager;
 
     Screen menu_screen;
-//    final protected Screen level_screen;
-//    final protected Screen editor_screen;
-//    final protected Screen game_screen;
 
 	@Override
 	public void create () {
@@ -73,6 +70,8 @@ public class ChargeHockeyGame extends Game {
         skin = manager.get("skin.json", Skin.class);
 
         sprites = manager.get("sprites.atlas", TextureAtlas.class);
+
+        SettingsFile.initialize();
 
         menu_screen = new MenuScreen(this);
         setScreen(menu_screen);

@@ -13,15 +13,9 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
 class GameMenuScreen implements Screen {
-    private final ChargeHockeyGame game;
-    private final Screen parent_screen;
-
     private final Stage stage;
 
     GameMenuScreen(final ChargeHockeyGame game, final Screen parent_screen) {
-        this.game = game;
-        this.parent_screen = parent_screen;
-
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
         stage.setDebugAll(true);
 
@@ -65,6 +59,8 @@ class GameMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("settings_button", "clicked");
+
+                game.setScreen(new SettingsScreen(game, parent_screen));
             }
         });
 

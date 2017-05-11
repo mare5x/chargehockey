@@ -124,6 +124,15 @@ class GameScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(multiplexer);
+
+        load_settings();
+    }
+
+    private void load_settings() {
+        SettingsFile settings = new SettingsFile();
+
+        PuckActor.set_draw_velocity(settings.get(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
+        PuckActor.set_draw_acceleration(settings.get(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
     }
 
     @Override
