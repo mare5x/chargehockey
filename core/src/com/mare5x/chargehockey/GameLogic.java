@@ -75,6 +75,7 @@ class GameLogic {
     void remove_charge(ChargeActor charge) {
         if (charge instanceof PuckActor)
             return;
+
         charge_actors.removeValue(charge, true);
         charge.clear();
         charge.remove();
@@ -172,7 +173,7 @@ class GameLogic {
 
             float dx = delta * (velocity_vec.x + delta * acceleration_vec.x / 2);  // x = v * t
             float dy = delta * (velocity_vec.y + delta * acceleration_vec.y / 2);  // average velocity
-            puck.moveBy(dx, dy);  // TODO make speed adjustable (so its slower on higher zoom levels ...)
+            puck.moveBy(dx * GAME_SPEED, dy * GAME_SPEED);
 
             calc_net_force(puck);
             tmp_vec.x = force_vec.x / weight;  // a = F / m
@@ -193,7 +194,6 @@ class GameLogic {
         for (ChargeActor charge : charge_actors) {
             apply_force(puck, charge);
         }
-        force_vec.scl(GAME_SPEED * GAME_SPEED);
         return force_vec;
     }
 

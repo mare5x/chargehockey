@@ -45,7 +45,7 @@ class SettingsScreen implements Screen {
         final Label game_speed_label = new Label("GAME SPEED: ", game.skin);
         game_speed_label.setWrap(true);
         game_speed_label.setAlignment(Align.center);
-        game_speed_slider = new Slider(0.2f, 1.5f, 0.1f, false, game.skin);
+        game_speed_slider = new Slider(0.1f, 1.5f, 0.1f, false, game.skin);
         game_speed_slider.setValue(settings_file.getFloat(SETTINGS_KEY.GAME_SPEED));
         game_speed_label.setText(String.format(Locale.US, "GAME SPEED: %.1f", game_speed_slider.getValue()));
         game_speed_slider.addListener(new ChangeListener() {
