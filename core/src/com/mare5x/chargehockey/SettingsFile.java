@@ -6,7 +6,7 @@ import com.badlogic.gdx.Preferences;
 
 
 enum SETTINGS_KEY {
-    SHOW_VELOCITY_VECTOR, SHOW_ACCELERATION_VECTOR
+    SHOW_VELOCITY_VECTOR, SHOW_ACCELERATION_VECTOR, GAME_SPEED
 }
 
 
@@ -27,15 +27,24 @@ class SettingsFile {
             return;
         prefs.putBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR.name(), false);
         prefs.putBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR.name(), false);
+        prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
         prefs.flush();
     }
 
-    boolean get(SETTINGS_KEY key) {
-        return prefs.getBoolean(key.name(), false);
+    boolean getBoolean(SETTINGS_KEY key) {
+        return prefs.getBoolean(key.name());
+    }
+
+    float getFloat(SETTINGS_KEY key) {
+        return prefs.getFloat(key.name());
     }
 
     void put(SETTINGS_KEY key, boolean val) {
         prefs.putBoolean(key.name(), val);
+    }
+
+    void put(SETTINGS_KEY key, float val) {
+        prefs.putFloat(key.name(), val);
     }
 
     void save() {

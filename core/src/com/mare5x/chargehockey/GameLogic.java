@@ -22,6 +22,7 @@ class GameLogic {
 
     private static final float MIN_DIST = PuckActor.SIZE;  // how many units apart can two charges be when calculating the force? (avoids infinite forces)
     private static final float E_CONST = 1.1e-10f;
+    private static float GAME_SPEED = 1;  // game speed (force scalar) set by the user in settings
     private static final float dt = 0.01f;
     private float dt_accumulator = 0;  // http://gafferongames.com/game-physics/fix-your-timestep/
 
@@ -192,6 +193,7 @@ class GameLogic {
         for (ChargeActor charge : charge_actors) {
             apply_force(puck, charge);
         }
+        force_vec.scl(GAME_SPEED * GAME_SPEED);
         return force_vec;
     }
 
@@ -263,5 +265,9 @@ class GameLogic {
 
     private static boolean is_collision(final GRID_ITEM collision) {
         return collision == GRID_ITEM.WALL || collision == GRID_ITEM.GOAL;
+    }
+
+    static void set_game_speed(float value) {
+        GAME_SPEED = value;
     }
 }

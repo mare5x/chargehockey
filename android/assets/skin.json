@@ -126,5 +126,12 @@
             "font": "font",
             "fontColor": "white"
         }
+    },
+
+    "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {
+        "default-horizontal": {
+            "background": "px_white",
+            "knob": "slider_knob"
+        }
     }
 }

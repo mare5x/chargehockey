@@ -31,7 +31,6 @@ class MenuScreen implements Screen {
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("play_button", "clicked");
                 game.setScreen(new PlayMenuScreen(game));
             }
         });
@@ -41,7 +40,6 @@ class MenuScreen implements Screen {
         edit_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("edit_button", "clicked");
                 game.setScreen(new EditorMenuScreen(game));
             }
         });
@@ -51,7 +49,6 @@ class MenuScreen implements Screen {
         settings_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("settings_button", "clicked");
                 game.setScreen(new SettingsScreen(game, MenuScreen.this));
             }
         });
@@ -80,6 +77,8 @@ class MenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, false);
+
+        Gdx.graphics.requestRendering();
     }
 
     @Override

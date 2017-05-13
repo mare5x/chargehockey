@@ -41,7 +41,6 @@ class EditorMenuScreen implements Screen {
         back_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("back_button", "clicked");
                 game.setScreen(game.menu_screen);
             }
         });
@@ -51,8 +50,6 @@ class EditorMenuScreen implements Screen {
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("play_button", "clicked");
-
                 final Level level = level_selector.load_selected_level();
                 if (level != null) {
                     game.setScreen(new EditorScreen(game, level));
@@ -65,8 +62,6 @@ class EditorMenuScreen implements Screen {
         add_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("add_button", "clicked");
-
                 input_dialog.show(stage);
             }
         });
@@ -76,7 +71,6 @@ class EditorMenuScreen implements Screen {
         remove_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("remove_button", "clicked");
                 level_selector.remove_selected_level();
             }
         });
@@ -120,6 +114,8 @@ class EditorMenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height);
+
+        Gdx.graphics.requestRendering();
     }
 
     @Override

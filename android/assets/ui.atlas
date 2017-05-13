@@ -69,42 +69,42 @@ px_black
   index: -1
 px_darkbrown
   rotate: false
-  xy: 392, 458
+  xy: 2, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_green
   rotate: false
-  xy: 2, 2
+  xy: 68, 68
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_grey
   rotate: false
-  xy: 68, 68
+  xy: 134, 134
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_purple
   rotate: false
-  xy: 134, 134
+  xy: 260, 260
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_white
   rotate: false
-  xy: 260, 260
+  xy: 326, 326
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_white_opaque
   rotate: false
-  xy: 326, 326
+  xy: 392, 392
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
@@ -116,16 +116,23 @@ remove_green64
   orig: 64, 64
   offset: 0, 0
   index: -1
-stop_green64
+slider_knob
   rotate: false
   xy: 260, 263
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-undo_green64
+stop_green64
   rotate: false
   xy: 326, 329
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+undo_green64
+  rotate: false
+  xy: 392, 395
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

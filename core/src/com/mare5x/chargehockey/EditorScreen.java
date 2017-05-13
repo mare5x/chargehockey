@@ -56,7 +56,6 @@ class EditorScreen implements Screen {
         menu_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("back_button", "clicked");
                 game.setScreen(game.menu_screen);
             }
         });
@@ -66,7 +65,6 @@ class EditorScreen implements Screen {
         grid_item_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("grid_item_button", "clicked");
                 grid_item_button.cycle_style();
                 puck_button.setChecked(false);
             }
@@ -77,12 +75,6 @@ class EditorScreen implements Screen {
         TextureRegionDrawable puck_drawable_on = new TextureRegionDrawable(game.sprites.findRegion("puck"));
         Drawable puck_drawable_off = puck_drawable_on.tint(game.skin.getColor("grey"));
         puck_button.setStyle(new Button.ButtonStyle(puck_drawable_off, puck_drawable_off, puck_drawable_on));
-        puck_button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("puck_button", "clicked");
-            }
-        });
         puck_button.pad(10);
 
         Table button_table = new Table();
@@ -140,6 +132,8 @@ class EditorScreen implements Screen {
         edit_stage.getViewport().setScreenBounds(0, (int) (height * 0.2f), width, (int) (height * 0.8f));
 
         button_stage.getViewport().setScreenBounds(0, 0, width, (int) (height * 0.2f));
+
+        Gdx.graphics.requestRendering();
     }
 
     @Override

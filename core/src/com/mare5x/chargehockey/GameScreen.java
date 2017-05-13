@@ -57,8 +57,6 @@ class GameScreen implements Screen {
         menu_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("menu_button", "clicked");
-
                 game.setScreen(new GameMenuScreen(game, GameScreen.this));
             }
         });
@@ -68,8 +66,6 @@ class GameScreen implements Screen {
         charge_pos_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("charge_pos_button", "clicked");
-
                 game_logic.add_charge(CHARGE.POSITIVE);
             }
         });
@@ -79,8 +75,6 @@ class GameScreen implements Screen {
         charge_neg_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("charge_neg_button", "clicked");
-
                 game_logic.add_charge(CHARGE.NEGATIVE);
             }
         });
@@ -90,8 +84,6 @@ class GameScreen implements Screen {
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("play_button", "clicked");
-
                 toggle_playing();
             }
         });
@@ -131,8 +123,9 @@ class GameScreen implements Screen {
     private void load_settings() {
         SettingsFile settings = new SettingsFile();
 
-        PuckActor.set_draw_velocity(settings.get(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
-        PuckActor.set_draw_acceleration(settings.get(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
+        PuckActor.set_draw_velocity(settings.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
+        PuckActor.set_draw_acceleration(settings.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
+        GameLogic.set_game_speed(settings.getFloat(SETTINGS_KEY.GAME_SPEED));
     }
 
     @Override
@@ -173,6 +166,8 @@ class GameScreen implements Screen {
         game_stage.getViewport().setScreenBounds(0, (int) (height * 0.2f), width, (int) (height * 0.8f));
 
         button_stage.getViewport().setScreenBounds(0, 0, width, (int) (height * 0.2f));
+
+        Gdx.graphics.requestRendering();
     }
 
     @Override
