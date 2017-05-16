@@ -6,7 +6,7 @@ import com.badlogic.gdx.Preferences;
 
 
 enum SETTINGS_KEY {
-    SHOW_VELOCITY_VECTOR, SHOW_ACCELERATION_VECTOR, GAME_SPEED
+    SHOW_VELOCITY_VECTOR, SHOW_ACCELERATION_VECTOR, GAME_SPEED, TRACE_PATH
 }
 
 
@@ -28,6 +28,7 @@ class SettingsFile {
         prefs.putBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR.name(), false);
         prefs.putBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR.name(), false);
         prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
+        prefs.putBoolean(SETTINGS_KEY.TRACE_PATH.name(), false);
         prefs.flush();
     }
 

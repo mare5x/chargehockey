@@ -5,8 +5,11 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -34,7 +37,9 @@ class GameScreen implements Screen {
     private final InputMultiplexer multiplexer;
 
     private Sprite sprite;
-    private final TextureRegion bg;
+
+    private static FrameBuffer fbo = null;
+    private static TextureRegion fbo_region = null;
 
     GameScreen(final ChargeHockeyGame game, Level level) {
         this.game = game;
@@ -99,14 +104,13 @@ class GameScreen implements Screen {
 
         button_stage.addActor(button_table);
 
-        bg = game.skin.getRegion("px_black");
-
         multiplexer = new InputMultiplexer(game_stage, new GestureDetector(new GameGestureAdapter(camera)), button_stage);
     }
 
     void toggle_playing() {
         play_button.cycle_style();
         game_logic.set_playing(!game_logic.is_playing());
+        render_background_fbo();
     }
 
     void restart_level() {
@@ -125,20 +129,19 @@ class GameScreen implements Screen {
 
         PuckActor.set_draw_velocity(settings.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         PuckActor.set_draw_acceleration(settings.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
+        PuckActor.set_trace_path(settings.getBoolean(SETTINGS_KEY.TRACE_PATH));
         GameLogic.set_game_speed(settings.getFloat(SETTINGS_KEY.GAME_SPEED));
     }
 
-    @Override
-    public void render(float delta) {
-        Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
-        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    private void render_background_fbo() {
+        fbo.begin();
 
-        game_stage.getViewport().apply();
+        Gdx.gl20.glClearColor(0, 0, 0, 1);
+        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
-        game.batch.draw(bg, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);  // background color
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
@@ -151,9 +154,50 @@ class GameScreen implements Screen {
         }
         game.batch.end();
 
-        game_logic.update(delta);
+        fbo.end();
+    }
 
+    private void update_puck_trace_path() {
+        if (!PuckActor.get_trace_path() || !game_logic.is_playing())
+            return;
+
+        // render on the fbo
+        fbo.begin();
+
+        game_stage.getViewport().apply();
+        game.batch.setProjectionMatrix(camera.combined);
+        game.batch.begin();
+
+        for (PuckActor puck : game_logic.get_pucks()) {
+            puck.draw_trace_path_point(game.batch);
+        }
+
+        game.batch.end();
+        fbo.end();
+    }
+
+    @Override
+    public void render(float delta) {
+        Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
+        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        game_stage.getViewport().apply();
+
+        game_logic.update(delta);
         game_stage.act();
+
+        // fbo_region contains the static level background and the dynamically added puck trace path points
+//        game.batch.begin();
+
+//        update_puck_trace_path();
+
+        game_stage.getViewport().apply();
+        game.batch.setProjectionMatrix(camera.combined);
+
+        game.batch.begin();
+        game.batch.draw(fbo_region, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
+        game.batch.end();
+
         game_stage.draw();
 
         button_stage.getViewport().apply();
@@ -163,10 +207,20 @@ class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        game_stage.getViewport().setScreenBounds(0, (int) (height * 0.2f), width, (int) (height * 0.8f));
+        int w = width;
+        int h = (int) (height * 0.8f);
+        game_stage.getViewport().setScreenBounds(0, (int) (height * 0.2f), w, h);
 
         button_stage.getViewport().setScreenBounds(0, 0, width, (int) (height * 0.2f));
 
+        if (fbo != null)
+            fbo.dispose();
+        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, w, h, false);
+        fbo_region = new TextureRegion(fbo.getColorBufferTexture());
+//        fbo_region.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        fbo_region.flip(false, true);  // FBO uses lower left, TextureRegion uses upper-left
+
+        render_background_fbo();
         Gdx.graphics.requestRendering();
     }
 
@@ -190,6 +244,7 @@ class GameScreen implements Screen {
 
     @Override
     public void dispose() {
+        fbo.dispose();
         game_stage.dispose();
         button_stage.dispose();
     }

@@ -208,8 +208,9 @@ class GameLogic {
 
     void set_playing(boolean value) {
         // reset positions if changing to playing from not playing
-        if (value && !is_playing)
+        if (value && !is_playing) {
             reset_pucks();
+        }
         dt_accumulator = 0;
         is_playing = value;
         if (is_playing) {
@@ -246,6 +247,10 @@ class GameLogic {
             charge.remove();
         }
         charge_actors.clear();
+    }
+
+    final Array<PuckActor> get_pucks() {
+        return puck_actors;
     }
 
     void save_charge_state() {

@@ -8,10 +8,12 @@ import com.badlogic.gdx.utils.Align;
 
 class PuckActor extends ChargeActor {
     private final Sprite velocity_sprite, acceleration_sprite;
+    private final Sprite path_px;
 
     private final Vector2 velocity_vec = new Vector2(), acceleration_vec = new Vector2();
 
     private static boolean draw_velocity = false, draw_acceleration = false;
+    private static boolean trace_path = false;
 
     private static final float _MAX_LENGTH = ChargeHockeyGame.WORLD_WIDTH;
     private static final float _MIN_VEC_HEIGHT = 0.6f;
@@ -29,6 +31,9 @@ class PuckActor extends ChargeActor {
         acceleration_sprite = new Sprite(game.sprites.findRegion("blank_vector"));
         acceleration_sprite.setColor(game.skin.getColor("purple"));
 
+        path_px = new Sprite(game.skin.getRegion("px_white"));
+        path_px.setSize(getWidth() / 2, getHeight() / 2);
+
         reset_vectors();
     }
 
@@ -38,6 +43,11 @@ class PuckActor extends ChargeActor {
 
         if (draw_velocity) velocity_sprite.draw(batch);
         if (draw_acceleration) acceleration_sprite.draw(batch);
+    }
+
+    void draw_trace_path_point(Batch batch) {
+        path_px.setPosition(getX(Align.center), getY(Align.center));
+        path_px.draw(batch);
     }
 
     void reset_vectors() {
@@ -94,6 +104,14 @@ class PuckActor extends ChargeActor {
 
     static void set_draw_acceleration(boolean draw) {
         draw_acceleration = draw;
+    }
+
+    static void set_trace_path(boolean val) {
+        trace_path = val;
+    }
+
+    static boolean get_trace_path() {
+        return trace_path;
     }
 
     GRID_ITEM get_collision() {
