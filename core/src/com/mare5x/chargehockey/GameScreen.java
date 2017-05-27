@@ -28,6 +28,7 @@ class GameScreen implements Screen {
 
     private final Stage game_stage, button_stage;
     private final OrthographicCamera camera;
+    private final GameGestureAdapter camera_controller;
 
     private final PlayButton play_button;
 
@@ -101,12 +102,16 @@ class GameScreen implements Screen {
 
         bg = game.skin.getRegion("px_black");
 
-        multiplexer = new InputMultiplexer(game_stage, new GestureDetector(new GameGestureAdapter(camera)), button_stage);
+        camera_controller = new GameGestureAdapter(camera);
+        multiplexer = new InputMultiplexer(game_stage, new GestureDetector(camera_controller), button_stage);
     }
 
     void toggle_playing() {
         play_button.cycle_style();
         game_logic.set_playing(!game_logic.is_playing());
+        Gdx.graphics.setContinuousRendering(game_logic.is_playing());
+        Gdx.graphics.requestRendering();
+        camera_controller.set_rendering(game_logic.is_playing());
     }
 
     void restart_level() {
@@ -132,6 +137,8 @@ class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        camera_controller.update(delta);
 
         game_stage.getViewport().apply();
 
@@ -203,6 +210,8 @@ class GameScreen implements Screen {
 
         @Override
         public boolean tap(float x, float y, int count, int button) {
+            super.tap(x, y, count, button);
+
             game_stage.screenToStageCoordinates(tmp_coords.set(x, y));
             System.out.printf("%f, %f, %d, %d\n", tmp_coords.x, tmp_coords.y, count, button);
 

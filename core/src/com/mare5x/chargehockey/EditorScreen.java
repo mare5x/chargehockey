@@ -29,6 +29,7 @@ class EditorScreen implements Screen {
 
     private final Stage edit_stage, button_stage;
     private final OrthographicCamera camera;  // camera of edit_stage
+    private final EditGestureAdapter camera_controller;
 
     private Level level;
 
@@ -88,7 +89,8 @@ class EditorScreen implements Screen {
 
         bg = game.skin.getRegion("px_black");
 
-        multiplexer = new InputMultiplexer(new GestureDetector(new EditGestureAdapter(camera)), edit_stage, button_stage);
+        camera_controller = new EditGestureAdapter(camera);
+        multiplexer = new InputMultiplexer(new GestureDetector(camera_controller), edit_stage, button_stage);
     }
 
     @Override
@@ -100,6 +102,8 @@ class EditorScreen implements Screen {
     public void render(float delta) {
         Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        camera_controller.update(delta);
 
         edit_stage.getViewport().apply();
         edit_stage.act();
@@ -167,6 +171,14 @@ class EditorScreen implements Screen {
 
         @Override
         public boolean tap(float x, float y, int count, int button) {
+            super.tap(x, y, count, button);
+
+            // first the camera must be stopped, then items can be set
+            if (count == 1 && is_moving())
+                return false;
+            else
+                stop_movement(true);
+
             edit_stage.screenToStageCoordinates(tmp_coords.set(x, y));
             System.out.printf("%f, %f, %d, %d\n", tmp_coords.x, tmp_coords.y, count, button);
 
