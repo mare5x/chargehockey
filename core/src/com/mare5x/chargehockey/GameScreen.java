@@ -5,11 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -32,15 +28,13 @@ class GameScreen implements Screen {
     private final Stage game_stage, button_stage;
     private final OrthographicCamera camera;
 
+    private final LevelFrameBuffer fbo;
+
     private final PlayButton play_button;
 
     private final InputMultiplexer multiplexer;
 
     private Sprite sprite;
-
-    private static FrameBuffer fbo = null;
-    private static TextureRegion fbo_region = null;
-    private final OrthographicCamera fbo_camera;
 
     GameScreen(final ChargeHockeyGame game, Level level) {
         this.game = game;
@@ -56,15 +50,7 @@ class GameScreen implements Screen {
         camera.zoom = 0.8f;
         game_stage.setDebugAll(true);
 
-        // For pixel perfect rendering, the width and height of the FBO must be a multiple of the world width * sprite size.
-        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, 1024, 1024, false);
-        fbo.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-        fbo_region = new TextureRegion(fbo.getColorBufferTexture());
-        fbo_region.flip(false, true);  // FBO uses lower left, TextureRegion uses upper-left
-
-        fbo_camera = new OrthographicCamera(ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
-        fbo_camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
-        fbo_camera.update();
+        fbo = new LevelFrameBuffer();
 
         game_logic = new GameLogic(game, game_stage, level, this);
 
@@ -153,7 +139,7 @@ class GameScreen implements Screen {
         Gdx.gl20.glClearColor(0, 0, 0, 1);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        game.batch.setProjectionMatrix(fbo_camera.combined);
+        fbo.set_projection_matrix(game.batch);
 
         game.batch.begin();
         game.batch.disableBlending();
@@ -180,7 +166,7 @@ class GameScreen implements Screen {
         // render on the fbo
         fbo.begin();
 
-        game.batch.setProjectionMatrix(fbo_camera.combined);
+        fbo.set_projection_matrix(game.batch);
         game.batch.begin();
 
         for (PuckActor puck : game_logic.get_pucks()) {
@@ -197,7 +183,6 @@ class GameScreen implements Screen {
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
-        fbo_camera.update();
 
         game_logic.update(delta);
         game_stage.act();
@@ -210,7 +195,7 @@ class GameScreen implements Screen {
 
         game.batch.begin();
         game.batch.disableBlending();
-        game.batch.draw(fbo_region, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
+        fbo.render(game.batch, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
         game.batch.enableBlending();
         game.batch.end();
 
@@ -253,7 +238,6 @@ class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        fbo_region.getTexture().dispose();
         fbo.dispose();
         game_stage.dispose();
         button_stage.dispose();
