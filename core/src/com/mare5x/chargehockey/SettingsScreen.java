@@ -24,7 +24,7 @@ class SettingsScreen implements Screen {
     private final Stage stage;
     private final SettingsFile settings_file;
 
-    private final Button acceleration_checkbox, velocity_checkbox;
+    private final Button acceleration_checkbox, velocity_checkbox, trace_path_checkbox;
     private final Slider game_speed_slider;
 
     SettingsScreen(final ChargeHockeyGame game, final Screen parent_screen) {
@@ -81,8 +81,22 @@ class SettingsScreen implements Screen {
             }
         });
 
+        trace_path_checkbox = new Button(game.skin, "checkbox");
+        trace_path_checkbox.setChecked(settings_file.getBoolean(SETTINGS_KEY.TRACE_PATH));
+        trace_path_checkbox.pad(10);
+
+        final TextButton trace_path_text = new TextButton("TRACE PATH?", game.skin);
+        trace_path_text.pad(10);
+        trace_path_text.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                trace_path_checkbox.toggle();
+            }
+        });
+
         velocity_vector_text.getLabel().setWrap(true);
         acceleration_vector_text.getLabel().setWrap(true);
+        trace_path_text.getLabel().setWrap(true);
 
         Table table = new Table();
         table.setFillParent(true);
@@ -102,6 +116,9 @@ class SettingsScreen implements Screen {
         table.add(acceleration_vector_text).pad(15).width(Value.percentWidth(0.6f, table)).fillX();
         table.add(acceleration_checkbox).pad(15).size(Value.percentWidth(0.125f, table)).row();
 
+        table.add(trace_path_text).pad(15).width(Value.percentWidth(0.6f, table)).fillX();
+        table.add(trace_path_checkbox).pad(15).size(Value.percentWidth(0.125f, table)).row();
+
         table.add().colspan(2).expand();
 
         stage.addActor(table);
@@ -112,6 +129,7 @@ class SettingsScreen implements Screen {
         settings_file.put(SETTINGS_KEY.GAME_SPEED, game_speed_slider.getValue());
         settings_file.put(SETTINGS_KEY.SHOW_VELOCITY_VECTOR, velocity_checkbox.isChecked());
         settings_file.put(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR, acceleration_checkbox.isChecked());
+        settings_file.put(SETTINGS_KEY.TRACE_PATH, trace_path_checkbox.isChecked());
         settings_file.save();
     }
 

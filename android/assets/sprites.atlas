@@ -1,54 +1,54 @@
 
 sprites.png
-size: 512,128
+size: 256,128
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 blank_vector
   rotate: false
-  xy: 2, 68
+  xy: 4, 72
   size: 128, 44
   orig: 128, 44
   offset: 0, 0
   index: -1
 grid_goal
   rotate: false
-  xy: 2, 2
-  size: 64, 64
-  orig: 64, 64
+  xy: 140, 32
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 grid_null
   rotate: false
-  xy: 68, 2
-  size: 64, 64
-  orig: 64, 64
+  xy: 208, 100
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 grid_wall
   rotate: false
-  xy: 134, 48
-  size: 64, 64
-  orig: 64, 64
+  xy: 140, 12
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 neg_blue64
   rotate: false
-  xy: 200, 48
+  xy: 4, 4
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 pos_red64
   rotate: false
-  xy: 266, 48
+  xy: 72, 4
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 puck
   rotate: false
-  xy: 332, 48
+  xy: 140, 52
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

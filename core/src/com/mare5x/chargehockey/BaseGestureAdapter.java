@@ -6,7 +6,6 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-
 class BaseGestureAdapter extends GestureDetector.GestureAdapter {
     private static final int BORDER = 16;
     private final OrthographicCamera camera;

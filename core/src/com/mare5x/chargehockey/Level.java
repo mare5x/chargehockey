@@ -38,16 +38,16 @@ class Level {
 
         this.grid = new Grid();
 
-        Sprite null_sprite = new Sprite(game.sprites.findRegion("grid_null"));
+        Sprite null_sprite = game.sprites.createSprite("grid_null");
         null_sprite.setSize(1, 1);
 
-        Sprite wall_sprite = new Sprite(game.sprites.findRegion("grid_wall"));
+        Sprite wall_sprite = game.sprites.createSprite("grid_wall");
         wall_sprite.setSize(1, 1);
 
-        Sprite goal_sprite = new Sprite(game.sprites.findRegion("grid_goal"));
+        Sprite goal_sprite = game.sprites.createSprite("grid_goal");
         goal_sprite.setSize(1, 1);
 
-        Sprite puck_sprite = new Sprite(game.sprites.findRegion("puck"));
+        Sprite puck_sprite = game.sprites.createSprite("puck");
         puck_sprite.setSize(1, 1);
 
         grid_sprites = new ObjectMap<GRID_ITEM, Sprite>(GRID_ITEM.values.length);

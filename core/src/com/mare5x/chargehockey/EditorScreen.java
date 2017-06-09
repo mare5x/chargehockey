@@ -6,7 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -31,13 +30,14 @@ class EditorScreen implements Screen {
     private final OrthographicCamera camera;  // camera of edit_stage
     private final EditGestureAdapter camera_controller;
 
+    private final LevelFrameBuffer fbo;
+
     private Level level;
 
     private final GridItemSelectorButton grid_item_button;
     private final Button puck_button;
 
     private Sprite tmp_sprite;
-    private final TextureRegion bg;
 
     EditorScreen(final ChargeHockeyGame game, Level level) {
         this.game = game;
@@ -49,6 +49,8 @@ class EditorScreen implements Screen {
         edit_stage = new Stage(new FillViewport(edit_aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
         edit_stage.setDebugAll(true);
+
+        fbo = new LevelFrameBuffer();
 
         button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
         button_stage.setDebugAll(true);
@@ -87,8 +89,6 @@ class EditorScreen implements Screen {
 
         button_stage.addActor(button_table);
 
-        bg = game.skin.getRegion("px_black");
-
         camera_controller = new EditGestureAdapter(camera);
         multiplexer = new InputMultiplexer(new GestureDetector(camera_controller), edit_stage, button_stage);
     }
@@ -98,22 +98,16 @@ class EditorScreen implements Screen {
         Gdx.input.setInputProcessor(multiplexer);
     }
 
-    @Override
-    public void render(float delta) {
-        Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
+    private void render_background_fbo() {
+        fbo.begin();
+
+        Gdx.gl20.glClearColor(0, 0, 0, 1);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera_controller.update(delta);
+        fbo.set_projection_matrix(game.batch);
 
-        edit_stage.getViewport().apply();
-        edit_stage.act();
-        edit_stage.draw();
-
-        game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-
-        game.batch.draw(bg, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);  // background color
-
+        game.batch.disableBlending();
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
@@ -124,6 +118,28 @@ class EditorScreen implements Screen {
                 }
             }
         }
+        game.batch.enableBlending();
+        game.batch.end();
+
+        fbo.end();
+    }
+
+    @Override
+    public void render(float delta) {
+        Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
+        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        edit_stage.getViewport().apply();
+        game.batch.setProjectionMatrix(camera.combined);
+
+        camera_controller.update(delta);
+        edit_stage.act();
+        edit_stage.draw();
+
+        game.batch.begin();
+        game.batch.disableBlending();
+        fbo.render(game.batch, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
+        game.batch.enableBlending();
         game.batch.end();
 
         button_stage.getViewport().apply();
@@ -137,6 +153,7 @@ class EditorScreen implements Screen {
 
         button_stage.getViewport().setScreenBounds(0, 0, width, (int) (height * 0.2f));
 
+        render_background_fbo();
         Gdx.graphics.requestRendering();
     }
 
@@ -158,6 +175,7 @@ class EditorScreen implements Screen {
 
     @Override
     public void dispose() {
+        fbo.dispose();
         edit_stage.dispose();
         button_stage.dispose();
     }
@@ -194,6 +212,9 @@ class EditorScreen implements Screen {
                 level.set_item(row, col, GRID_ITEM.PUCK);
             else
                 level.set_item(row, col, grid_item_button.get_selected_item());
+
+            // update the background every tap
+            render_background_fbo();
 
             return false;
         }
