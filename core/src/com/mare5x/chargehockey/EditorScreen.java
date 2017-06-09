@@ -101,6 +101,8 @@ class EditorScreen implements Screen {
         Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        camera.update();
+
         edit_stage.getViewport().apply();
         edit_stage.act();
         edit_stage.draw();

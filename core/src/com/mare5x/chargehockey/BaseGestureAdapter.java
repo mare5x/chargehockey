@@ -4,12 +4,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Rectangle;
 
-public class BaseGestureAdapter extends GestureDetector.GestureAdapter {
+class BaseGestureAdapter extends GestureDetector.GestureAdapter {
     private static final int BORDER = 16;
     private float prev_zoom_distance = 0;
     private final OrthographicCamera camera;
 
-    public BaseGestureAdapter(OrthographicCamera camera) {
+    BaseGestureAdapter(OrthographicCamera camera) {
         this.camera = camera;
     }
 
@@ -42,6 +42,11 @@ public class BaseGestureAdapter extends GestureDetector.GestureAdapter {
             camera.translate(0, -BORDER - ys);
         else if (yn > ChargeHockeyGame.WORLD_HEIGHT + BORDER * camera.zoom)
             camera.translate(0, ChargeHockeyGame.WORLD_HEIGHT + (BORDER * camera.zoom) - yn);
+
+//        float fx = Gdx.graphics.getWidth() / ChargeHockeyGame.WORLD_WIDTH;
+//        float fy = (Gdx.graphics.getHeight() * 0.8f) / ChargeHockeyGame.WORLD_HEIGHT;
+//        camera.position.x = MathUtils.floor(camera.position.x * fx) / fx;
+//        camera.position.y = MathUtils.floor(camera.position.y * fy) / fy;
 
         return true;
     }

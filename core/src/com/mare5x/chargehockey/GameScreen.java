@@ -40,6 +40,7 @@ class GameScreen implements Screen {
 
     private static FrameBuffer fbo = null;
     private static TextureRegion fbo_region = null;
+    private final OrthographicCamera fbo_camera;
 
     GameScreen(final ChargeHockeyGame game, Level level) {
         this.game = game;
@@ -47,11 +48,23 @@ class GameScreen implements Screen {
 
         camera = new OrthographicCamera();
 
-        float edit_aspect_ratio = Gdx.graphics.getWidth() / (Gdx.graphics.getHeight() * 0.8f);
+        int w = Gdx.graphics.getWidth();
+        int h = Gdx.graphics.getHeight();
+        float edit_aspect_ratio = w / (h * 0.8f);
         game_stage = new Stage(new FillViewport(edit_aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
-        camera.zoom = 0.9f;
+        camera.zoom = 0.8f;
         game_stage.setDebugAll(true);
+
+        // For pixel perfect rendering, the width and height of the FBO must be a multiple of the world width * sprite size.
+        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, 1024, 1024, false);
+        fbo.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        fbo_region = new TextureRegion(fbo.getColorBufferTexture());
+        fbo_region.flip(false, true);  // FBO uses lower left, TextureRegion uses upper-left
+
+        fbo_camera = new OrthographicCamera(ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
+        fbo_camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
+        fbo_camera.update();
 
         game_logic = new GameLogic(game, game_stage, level, this);
 
@@ -108,9 +121,10 @@ class GameScreen implements Screen {
     }
 
     void toggle_playing() {
+        if (!game_logic.is_playing())  // render if going from pause to playing
+            render_background_fbo();
         play_button.cycle_style();
         game_logic.set_playing(!game_logic.is_playing());
-        render_background_fbo();
     }
 
     void restart_level() {
@@ -139,9 +153,10 @@ class GameScreen implements Screen {
         Gdx.gl20.glClearColor(0, 0, 0, 1);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        game.batch.setProjectionMatrix(camera.combined);
-        game.batch.begin();
+        game.batch.setProjectionMatrix(fbo_camera.combined);
 
+        game.batch.begin();
+        game.batch.disableBlending();
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
@@ -152,6 +167,7 @@ class GameScreen implements Screen {
                 }
             }
         }
+        game.batch.enableBlending();
         game.batch.end();
 
         fbo.end();
@@ -164,8 +180,7 @@ class GameScreen implements Screen {
         // render on the fbo
         fbo.begin();
 
-        game_stage.getViewport().apply();
-        game.batch.setProjectionMatrix(camera.combined);
+        game.batch.setProjectionMatrix(fbo_camera.combined);
         game.batch.begin();
 
         for (PuckActor puck : game_logic.get_pucks()) {
@@ -181,21 +196,22 @@ class GameScreen implements Screen {
         Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        game_stage.getViewport().apply();
+        camera.update();
+        fbo_camera.update();
 
         game_logic.update(delta);
         game_stage.act();
 
         // fbo_region contains the static level background and the dynamically added puck trace path points
-//        game.batch.begin();
-
-//        update_puck_trace_path();
+        update_puck_trace_path();
 
         game_stage.getViewport().apply();
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
+        game.batch.disableBlending();
         game.batch.draw(fbo_region, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
+        game.batch.enableBlending();
         game.batch.end();
 
         game_stage.draw();
@@ -212,13 +228,6 @@ class GameScreen implements Screen {
         game_stage.getViewport().setScreenBounds(0, (int) (height * 0.2f), w, h);
 
         button_stage.getViewport().setScreenBounds(0, 0, width, (int) (height * 0.2f));
-
-        if (fbo != null)
-            fbo.dispose();
-        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, w, h, false);
-        fbo_region = new TextureRegion(fbo.getColorBufferTexture());
-//        fbo_region.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        fbo_region.flip(false, true);  // FBO uses lower left, TextureRegion uses upper-left
 
         render_background_fbo();
         Gdx.graphics.requestRendering();
@@ -244,6 +253,7 @@ class GameScreen implements Screen {
 
     @Override
     public void dispose() {
+        fbo_region.getTexture().dispose();
         fbo.dispose();
         game_stage.dispose();
         button_stage.dispose();

@@ -32,7 +32,7 @@ class PuckActor extends ChargeActor {
         acceleration_sprite.setColor(game.skin.getColor("purple"));
 
         path_px = new Sprite(game.skin.getRegion("px_white"));
-        path_px.setSize(getWidth() / 2, getHeight() / 2);
+        path_px.setSize(getWidth() / 5, getHeight() / 5);
 
         reset_vectors();
     }
