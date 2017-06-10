@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 
 // Wrapper for a FrameBuffer
 // TODO fix camera rounding errors
-@SuppressWarnings("FieldCanBeLocal")
 class LevelFrameBuffer {
     private static FrameBuffer fbo = null;
     private static TextureRegion fbo_region = null;
@@ -20,7 +20,7 @@ class LevelFrameBuffer {
 
     private Sprite sprite;
 
-    private final Level level;
+    private Level level;
 
     LevelFrameBuffer(final Level level) {
         this.level = level;
@@ -52,6 +52,8 @@ class LevelFrameBuffer {
     /*  Update the FBO with the level data.
     **/
     void update(final SpriteBatch batch) {
+        if (level == null) return;
+
         fbo.begin();
 
         Gdx.gl20.glClearColor(0, 0, 0, 1);
@@ -75,7 +77,12 @@ class LevelFrameBuffer {
         fbo.end();
     }
 
-    void render(SpriteBatch batch, float x, float y, float w, float h) {
+    /** NOTE: call update() after changing the level. */
+    void set_level(final Level new_level) {
+        level = new_level;
+    }
+
+    void render(Batch batch, float x, float y, float w, float h) {
         batch.draw(fbo_region, x, y, w, h);
     }
 

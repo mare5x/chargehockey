@@ -55,6 +55,8 @@ class Level {
         grid_sprites.put(GRID_ITEM.WALL, wall_sprite);
         grid_sprites.put(GRID_ITEM.GOAL, goal_sprite);
         grid_sprites.put(GRID_ITEM.PUCK, puck_sprite);
+
+        load_grid_from_data(read_level_data(level_name));
     }
 
     final String get_name() {
@@ -82,6 +84,13 @@ class Level {
 
     private byte[] get_level_data() {
         return grid.get_byte_data();
+    }
+
+    // Assumes that the level file exists!
+    private byte[] read_level_data(String level_name) {
+        FileHandle file = LevelSelector.get_level_grid_fhandle(level_type, level_name);
+
+        return file.readBytes();
     }
 
     void save_grid() {

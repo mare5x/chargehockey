@@ -23,7 +23,7 @@ class LevelSelector {
         list = new List<String>(game.skin);
         init_list();
 
-        scroll_pane = new ScrollPane(list, game.skin);
+        scroll_pane = new PreviewScrollPane(list, game.skin, this, game.batch);
         scroll_pane.setVariableSizeKnobs(true);
     }
 
@@ -91,18 +91,9 @@ class LevelSelector {
     Level load_selected_level() {
         final String level_name = get_selected_name();
         if (level_name != null) {
-            Level level = new Level(game, level_name, level_type);
-            level.load_grid_from_data(read_level_data(level_name));
-            return level;
+            return new Level(game, level_name, level_type);
         }
         return null;
-    }
-
-    // Assumes that the level file exists!
-    private byte[] read_level_data(String level_name) {
-        FileHandle file = get_level_grid_fhandle(level_type, level_name);
-
-        return file.readBytes();
     }
 
     static FileHandle get_level_grid_fhandle(LEVEL_TYPE level_type, String level_name) {
