@@ -1,6 +1,9 @@
 package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -22,6 +25,8 @@ import java.util.Locale;
 
 class SettingsScreen implements Screen {
     private final Stage stage;
+    private final InputMultiplexer input_multiplexer;
+
     private final SettingsFile settings_file;
 
     private final Button acceleration_checkbox, velocity_checkbox, trace_path_checkbox;
@@ -31,7 +36,6 @@ class SettingsScreen implements Screen {
         settings_file = new SettingsFile();
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
-        stage.setDebugAll(true);
 
         Button back_button = new Button(game.skin, "back");
         back_button.pad(10);
@@ -105,7 +109,7 @@ class SettingsScreen implements Screen {
 
         table.add().expand().colspan(2).row();
 
-        Table slider_table = new Table();
+        final Table slider_table = new Table();
         slider_table.add(game_speed_label).pad(15).width(Value.percentWidth(0.4f, table)).height(Value.percentHeight(1, velocity_vector_text)).fill().center();
         slider_table.add(game_speed_slider).pad(15).width(Value.percentWidth(0.4f, table)).height(Value.percentHeight(1, velocity_checkbox)).expandX().fillX().row();
         table.add(slider_table).colspan(2).pad(15).row();
@@ -122,6 +126,17 @@ class SettingsScreen implements Screen {
         table.add().colspan(2).expand();
 
         stage.addActor(table);
+
+        InputAdapter back_key_processor = new InputAdapter() {
+            @Override
+            public boolean keyUp(int keycode) {
+                if (keycode == Input.Keys.BACK) {
+                    game.setScreen(parent_screen);
+                }
+                return true;
+            }
+        };
+        input_multiplexer = new InputMultiplexer(stage, back_key_processor);
     }
 
     private void save() {
@@ -135,7 +150,7 @@ class SettingsScreen implements Screen {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(input_multiplexer);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -49,16 +51,14 @@ class GameScreen implements Screen {
         game_stage = new Stage(new FillViewport(edit_aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
-        game_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer();
 
         game_logic = new GameLogic(game, game_stage, level, this);
 
         button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
-        button_stage.setDebugAll(true);
 
-        Button menu_button = new Button(game.skin, "menu");
+        final Button menu_button = new Button(game.skin, "menu");
         menu_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -105,7 +105,16 @@ class GameScreen implements Screen {
         button_stage.addActor(button_table);
 
         camera_controller = new GameGestureAdapter(camera);
-        multiplexer = new InputMultiplexer(game_stage, new GestureDetector(camera_controller), button_stage);
+        InputAdapter back_key_processor = new InputAdapter() {  // same as menu_button
+            @Override
+            public boolean keyUp(int keycode) {
+                if (keycode == Input.Keys.BACK) {
+                    game.setScreen(new GameMenuScreen(game, GameScreen.this));
+                }
+                return true;
+            }
+        };
+        multiplexer = new InputMultiplexer(game_stage, new GestureDetector(camera_controller), button_stage, back_key_processor);
     }
 
     void toggle_playing() {
@@ -148,7 +157,6 @@ class GameScreen implements Screen {
         fbo.set_projection_matrix(game.batch);
 
         game.batch.begin();
-        game.batch.disableBlending();
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
@@ -159,7 +167,6 @@ class GameScreen implements Screen {
                 }
             }
         }
-        game.batch.enableBlending();
         game.batch.end();
 
         fbo.end();

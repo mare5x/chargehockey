@@ -37,6 +37,8 @@ public class ChargeHockeyGame extends Game {
 	public void create () {
         DENSITY = Gdx.graphics.getDensity();
 
+        Gdx.input.setCatchBackKey(true);
+
         Gdx.graphics.setContinuousRendering(false);
         Gdx.graphics.requestRendering();
 

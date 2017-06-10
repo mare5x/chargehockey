@@ -1,6 +1,8 @@
 package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -48,12 +50,10 @@ class EditorScreen implements Screen {
         float edit_aspect_ratio = Gdx.graphics.getWidth() / (Gdx.graphics.getHeight() * 0.8f);
         edit_stage = new Stage(new FillViewport(edit_aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
-        edit_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer();
 
         button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
-        button_stage.setDebugAll(true);
 
         Button menu_button = new Button(game.skin, "menu");
         menu_button.addListener(new ClickListener() {
@@ -90,7 +90,16 @@ class EditorScreen implements Screen {
         button_stage.addActor(button_table);
 
         camera_controller = new EditGestureAdapter(camera);
-        multiplexer = new InputMultiplexer(new GestureDetector(camera_controller), edit_stage, button_stage);
+        InputAdapter back_key_processor = new InputAdapter() {  // same as menu_button
+            @Override
+            public boolean keyUp(int keycode) {
+                if (keycode == Input.Keys.BACK) {
+                    game.setScreen(game.menu_screen);
+                }
+                return true;
+            }
+        };
+        multiplexer = new InputMultiplexer(new GestureDetector(camera_controller), edit_stage, button_stage, back_key_processor);
     }
 
     @Override
@@ -107,7 +116,6 @@ class EditorScreen implements Screen {
         fbo.set_projection_matrix(game.batch);
 
         game.batch.begin();
-        game.batch.disableBlending();
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
@@ -118,7 +126,6 @@ class EditorScreen implements Screen {
                 }
             }
         }
-        game.batch.enableBlending();
         game.batch.end();
 
         fbo.end();

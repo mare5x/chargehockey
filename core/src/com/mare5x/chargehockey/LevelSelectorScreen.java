@@ -1,6 +1,9 @@
 package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -18,12 +21,12 @@ class LevelSelectorScreen implements Screen {
     private final LevelSelector level_selector;
 
     private final Stage stage;
+    private final InputMultiplexer input_multiplexer;
 
     LevelSelectorScreen(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
         this.game = game;
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
-        stage.setDebugAll(true);
 
         level_selector = new LevelSelector(game, level_type);
 
@@ -59,11 +62,22 @@ class LevelSelectorScreen implements Screen {
         table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));
 
         stage.addActor(table);
+
+        InputAdapter back_key_processor = new InputAdapter() {  // same as return button
+            @Override
+            public boolean keyUp(int keycode) {
+                if (keycode == Input.Keys.BACK) {
+                    game.setScreen(game.menu_screen);
+                }
+                return true;
+            }
+        };
+        input_multiplexer = new InputMultiplexer(stage, back_key_processor);
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(input_multiplexer);
     }
 
     @Override

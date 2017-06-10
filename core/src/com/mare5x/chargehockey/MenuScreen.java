@@ -1,6 +1,9 @@
 package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -17,12 +20,12 @@ class MenuScreen implements Screen {
     private final ChargeHockeyGame game;
 
     private Stage stage;
+    private final InputMultiplexer input_multiplexer;
 
     public MenuScreen(final ChargeHockeyGame game) {
         this.game = game;
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
-        stage.setDebugAll(true);
 
         Table table = new Table(game.skin);
         table.setFillParent(true);
@@ -58,11 +61,22 @@ class MenuScreen implements Screen {
         table.add(settings_button).pad(15).width(Value.percentWidth(0.6f, table)).fillX();
 
         stage.addActor(table);
+
+        InputAdapter back_key_processor = new InputAdapter() {  // same as return button
+            @Override
+            public boolean keyUp(int keycode) {
+                if (keycode == Input.Keys.BACK) {
+                    Gdx.app.exit();
+                }
+                return true;
+            }
+        };
+        input_multiplexer = new InputMultiplexer(stage, back_key_processor);
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(input_multiplexer);
     }
 
     @Override
