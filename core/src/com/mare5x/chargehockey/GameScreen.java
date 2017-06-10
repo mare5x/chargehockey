@@ -7,7 +7,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -37,8 +36,6 @@ class GameScreen implements Screen {
 
     private final InputMultiplexer multiplexer;
 
-    private Sprite sprite;
-
     GameScreen(final ChargeHockeyGame game, Level level) {
         this.game = game;
         this.level = level;
@@ -52,7 +49,7 @@ class GameScreen implements Screen {
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
 
-        fbo = new LevelFrameBuffer();
+        fbo = new LevelFrameBuffer(level);
 
         game_logic = new GameLogic(game, game_stage, level, this);
 
@@ -119,7 +116,7 @@ class GameScreen implements Screen {
 
     void toggle_playing() {
         if (!game_logic.is_playing())  // render if going from pause to playing
-            render_background_fbo();
+            fbo.update(game.batch);
         play_button.cycle_style();
         game_logic.set_playing(!game_logic.is_playing());
 
@@ -146,30 +143,6 @@ class GameScreen implements Screen {
         PuckActor.set_draw_acceleration(settings.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
         PuckActor.set_trace_path(settings.getBoolean(SETTINGS_KEY.TRACE_PATH));
         GameLogic.set_game_speed(settings.getFloat(SETTINGS_KEY.GAME_SPEED));
-    }
-
-    private void render_background_fbo() {
-        fbo.begin();
-
-        Gdx.gl20.glClearColor(0, 0, 0, 1);
-        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        fbo.set_projection_matrix(game.batch);
-
-        game.batch.begin();
-        for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
-            for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
-                GRID_ITEM item = level.get_grid_item(row, col);
-                if (item != GRID_ITEM.NULL) {
-                    sprite = level.get_item_sprite(item);
-                    sprite.setPosition(col, row);
-                    sprite.draw(game.batch);
-                }
-            }
-        }
-        game.batch.end();
-
-        fbo.end();
     }
 
     private void update_puck_trace_path() {
@@ -225,7 +198,7 @@ class GameScreen implements Screen {
 
         button_stage.getViewport().setScreenBounds(0, 0, width, (int) (height * 0.2f));
 
-        render_background_fbo();
+        fbo.update(game.batch);
         Gdx.graphics.requestRendering();
     }
 

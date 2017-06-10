@@ -1,20 +1,30 @@
 package com.mare5x.chargehockey;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 
 // Wrapper for a FrameBuffer
 // TODO fix camera rounding errors
+@SuppressWarnings("FieldCanBeLocal")
 class LevelFrameBuffer {
     private static FrameBuffer fbo = null;
     private static TextureRegion fbo_region = null;
     private final OrthographicCamera fbo_camera;
 
-    LevelFrameBuffer() {
+    private Sprite sprite;
+
+    private final Level level;
+
+    LevelFrameBuffer(final Level level) {
+        this.level = level;
+
         // For pixel perfect rendering, the width and height of the FBO must be a multiple of the world width * sprite size.
         fbo = new FrameBuffer(Pixmap.Format.RGBA8888, 1024, 1024, false);
         fbo.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
@@ -37,6 +47,32 @@ class LevelFrameBuffer {
 
     void set_projection_matrix(SpriteBatch batch) {
         batch.setProjectionMatrix(fbo_camera.combined);
+    }
+
+    /*  Update the FBO with the level data.
+    **/
+    void update(final SpriteBatch batch) {
+        fbo.begin();
+
+        Gdx.gl20.glClearColor(0, 0, 0, 1);
+        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        set_projection_matrix(batch);
+
+        batch.begin();
+        for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
+            for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
+                GRID_ITEM item = level.get_grid_item(row, col);
+                if (item != GRID_ITEM.NULL) {
+                    sprite = level.get_item_sprite(item);
+                    sprite.setPosition(col, row);
+                    sprite.draw(batch);
+                }
+            }
+        }
+        batch.end();
+
+        fbo.end();
     }
 
     void render(SpriteBatch batch, float x, float y, float w, float h) {
