@@ -93,8 +93,7 @@ class EditorMenuScreen implements Screen {
         table.pad(50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY, 50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY);
 
         table.add(left_subtable).pad(15).width(Value.percentWidth(0.25f, table)).expandY().fillY();
-        table.add(level_selector.get_display()).pad(15).expand().fill();
-        table.row();
+        table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(play_button).pad(15).colspan(2).size(Value.percentWidth(0.3f, table));
 
         stage.addActor(table);

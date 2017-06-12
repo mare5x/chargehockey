@@ -16,16 +16,12 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
 class LevelSelectorScreen implements Screen {
-    private final ChargeHockeyGame game;
-
     private final LevelSelector level_selector;
 
     private final Stage stage;
     private final InputMultiplexer input_multiplexer;
 
     LevelSelectorScreen(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
-        this.game = game;
-
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
 
         level_selector = new LevelSelector(game, level_type);
@@ -54,11 +50,10 @@ class LevelSelectorScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
 
-        table.pad(50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY, 50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY);
+//        table.pad(50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY, 50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY);
 
-        table.add(back_button).pad(15).expandX().size(Value.percentWidth(1f, play_button), Value.percentWidth(0.5f, play_button)).row();
-        table.add(level_selector.get_display()).pad(15).expand().fill();
-        table.row();
+        table.add(back_button).pad(15).expandX().size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).left().top().row();
+        table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));
 
         stage.addActor(table);

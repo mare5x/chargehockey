@@ -2,8 +2,14 @@ package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Scaling;
 
 import java.util.Locale;
 
@@ -14,17 +20,41 @@ class LevelSelector {
     private final LEVEL_TYPE level_type;
 
     private final List<String> list;
-    private final ScrollPane scroll_pane;
 
-    LevelSelector(ChargeHockeyGame game, LEVEL_TYPE level_type) {
+    private final LevelFrameBuffer preview_fbo;
+
+    LevelSelector(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
         this.game = game;
         this.level_type = level_type;
 
         list = new List<String>(game.skin);
+        list.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                final Level level = load_selected_level();
+                if (level != null) {
+                    preview_fbo.set_level(level);
+                    preview_fbo.update(game.batch);
+                }
+            }
+        });
         init_list();
 
-        scroll_pane = new PreviewScrollPane(list, game.skin, this, game.batch);
+        preview_fbo = new LevelFrameBuffer(null);
+    }
+
+    Table get_selector_table() {
+        ScrollPane scroll_pane = new ScrollPane(list, game.skin);
         scroll_pane.setVariableSizeKnobs(true);
+
+        Image preview_image = new Image(preview_fbo.get_texture_region());
+        preview_image.setScaling(Scaling.fit);
+
+        Table selector_table = new Table();
+        selector_table.add(scroll_pane).expand().fill().padBottom(10).row();
+        selector_table.add(preview_image).size(Value.percentHeight(0.5f, selector_table));
+
+        return selector_table;
     }
 
     private void init_list() {
@@ -42,10 +72,6 @@ class LevelSelector {
         if (selected_idx != -1)
             return list.getItems().get(selected_idx);
         return null;
-    }
-
-    ScrollPane get_display() {
-        return scroll_pane;
     }
 
     void remove_selected_level() {

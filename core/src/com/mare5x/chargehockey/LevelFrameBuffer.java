@@ -89,4 +89,16 @@ class LevelFrameBuffer {
     void dispose() {
         fbo.dispose();  // this also disposes the bound texture
     }
+
+    TextureRegion get_texture_region() {
+        return fbo_region;
+    }
+
+    int get_width() {
+        return fbo.getWidth();
+    }
+
+    int get_height() {
+        return fbo.getHeight();
+    }
 }

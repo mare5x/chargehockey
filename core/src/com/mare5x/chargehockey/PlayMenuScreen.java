@@ -77,7 +77,7 @@ class PlayMenuScreen implements Screen {
         table.pad(10 * ChargeHockeyGame.DENSITY);
 
         Value twidth = Value.percentWidth(0.5f, table);
-        table.add(back_button).pad(15).size(Value.percentHeight(2f, easy_button), Value.percentHeight(1f, easy_button)).expandX().left().top().row();
+        table.add(back_button).pad(15).size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).expandX().left().top().row();
         table.add().expand().row();
         table.add(easy_button).pad(15).uniform().width(twidth).fillY().row();
         table.add(medium_button).pad(15).uniform().width(twidth).fillY().row();
