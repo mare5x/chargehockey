@@ -1,25 +1,41 @@
 package com.mare5x.chargehockey;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-
-import java.util.Arrays;
+import com.badlogic.gdx.utils.StringBuilder;
 
 enum GRID_ITEM {
-    NULL,
-    WALL,
-    GOAL,
-    PUCK;
+    NULL('n'),
+    WALL('w'),
+    GOAL('g');
+
+    private char code;  // item abbreviation code used to save the items in the file (instead of using .ordinal())
+    GRID_ITEM(char code) {
+        this.code = code;
+    }
+
+    static public GRID_ITEM from_code(char code) {
+        switch (code) {
+            case 'n': return NULL;
+            case 'w': return WALL;
+            case 'g': return GOAL;
+        }
+        return NULL;
+    }
+
+    public char code() {
+        return code;
+    }
 
     public static final GRID_ITEM[] values = values();
-    // get the number of elements excluding PUCK
+
+    // get the number of elements
     public static int size() {
-        return PUCK.ordinal();
+        return GRID_ITEM.values.length;
     }
 }
 
 class Grid {
-    private final static int WIDTH = ChargeHockeyGame.WORLD_WIDTH, HEIGHT = ChargeHockeyGame.WORLD_HEIGHT;
+    private static int WIDTH = ChargeHockeyGame.WORLD_WIDTH, HEIGHT = ChargeHockeyGame.WORLD_HEIGHT;
 
     private final Array<GRID_ITEM> grid;
 
@@ -49,21 +65,24 @@ class Grid {
         return GRID_ITEM.NULL;
     }
 
-    byte[] get_byte_data() {
-        byte[] data = new byte[grid.size];
-
-        for (int i = 0; i < data.length; i++) {
-            data[i] = (byte) (grid.get(i).ordinal());
+    String get_grid_string() {
+        StringBuilder grid_str = new StringBuilder();
+        for (int i = 0; i < grid.size; i++) {
+            grid_str.append(grid.get(i).code());
         }
-
-        return data;
+        return grid_str.toString();
     }
 
-    // Load a grid using a byte array, as if from get_byte_data().
-    void from_byte_data(byte[] data) {
-        for (int i = 0; i < data.length; i++) {
-            grid.set(i, GRID_ITEM.values[data[i]]);
+    void load_from_grid_string(String grid_str) {
+        for (int i = 0; i < grid_str.length(); i++) {
+            grid.set(i, GRID_ITEM.from_code(grid_str.charAt(i)));
         }
+    }
+
+    void set_size(int width, int height) {
+        WIDTH = width;
+        HEIGHT = height;
+        grid.setSize(width * height);
     }
 
     int get_height() {

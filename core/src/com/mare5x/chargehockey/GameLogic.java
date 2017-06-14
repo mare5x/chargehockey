@@ -31,7 +31,6 @@ class GameLogic {
 
     private final Array<ChargeActor> charge_actors;
     private final Array<PuckActor> puck_actors;
-    private final Array<Vector2> initial_puck_positions;
 
     GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, GameScreen game_screen) {
         this.game = game;
@@ -41,13 +40,9 @@ class GameLogic {
 
         charge_actors = new Array<ChargeActor>();
         puck_actors = new Array<PuckActor>();
-        initial_puck_positions = level.get_puck_positions();
 
-        // replace puck positions in level with null items and instead place puck actors
-        for (Vector2 pos : initial_puck_positions) {
-            level.set_item((int) (pos.y), (int) (pos.x), GRID_ITEM.NULL);
-
-            PuckActor puck = new PuckActor(game, CHARGE.PUCK, this);
+        for (Vector2 pos : level.get_puck_positions()) {
+            PuckActor puck = new PuckActor(game, CHARGE.PUCK, null);
             puck.setPosition(pos.x, pos.y);
 
             puck_actors.add(puck);
@@ -63,7 +58,12 @@ class GameLogic {
     }
 
     private ChargeActor add_charge(CHARGE charge_type, float x, float y) {
-        ChargeActor charge = new ChargeActor(game, charge_type, this);
+        ChargeActor charge = new ChargeActor(game, charge_type, new DragCallback() {
+            @Override
+            public void out_of_bounds(ChargeActor charge) {
+                remove_charge(charge);
+            }
+        });
         charge.setPosition(x, y);
 
         charge_actors.add(charge);
@@ -72,7 +72,7 @@ class GameLogic {
         return charge;
     }
 
-    void remove_charge(ChargeActor charge) {
+    private void remove_charge(ChargeActor charge) {
         if (charge instanceof PuckActor)
             return;
 
@@ -227,8 +227,8 @@ class GameLogic {
     }
 
     private void reset_pucks() {
-        for (int i = 0; i < initial_puck_positions.size; i++) {
-            final Vector2 pos = initial_puck_positions.get(i);
+        for (int i = 0; i < level.get_puck_positions().size; i++) {
+            final Vector2 pos = level.get_puck_positions().get(i);
             PuckActor puck = puck_actors.get(i);
             puck.setPosition(pos.x, pos.y);
             puck.reset_vectors();

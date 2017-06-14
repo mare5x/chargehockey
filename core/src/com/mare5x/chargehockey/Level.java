@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.StreamUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Locale;
 
 
@@ -22,41 +21,43 @@ enum LEVEL_TYPE {
 
 
 class Level {
-    private final ChargeHockeyGame game;
-
     private final String name;
     private final LEVEL_TYPE level_type;
 
     private final ObjectMap<GRID_ITEM, Sprite> grid_sprites;
+    private final Sprite puck_sprite;
 
     private final Grid grid;
+    private Array<Vector2> puck_positions = new Array<Vector2>();
 
     Level(final ChargeHockeyGame game, final String level_name, final LEVEL_TYPE level_type) {
-        this.game = game;
         this.name = level_name;
         this.level_type = level_type;
 
         this.grid = new Grid();
 
-        Sprite null_sprite = game.sprites.createSprite("grid_null");
+        Sprite null_sprite = game.sprites.createSprite("grid/grid_null");
         null_sprite.setSize(1, 1);
 
-        Sprite wall_sprite = game.sprites.createSprite("grid_wall");
+        Sprite wall_sprite = game.sprites.createSprite("grid/grid_wall");
         wall_sprite.setSize(1, 1);
 
-        Sprite goal_sprite = game.sprites.createSprite("grid_goal");
+        Sprite goal_sprite = game.sprites.createSprite("grid/grid_goal");
         goal_sprite.setSize(1, 1);
-
-        Sprite puck_sprite = game.sprites.createSprite("puck");
-        puck_sprite.setSize(1, 1);
 
         grid_sprites = new ObjectMap<GRID_ITEM, Sprite>(GRID_ITEM.values.length);
         grid_sprites.put(GRID_ITEM.NULL, null_sprite);
         grid_sprites.put(GRID_ITEM.WALL, wall_sprite);
         grid_sprites.put(GRID_ITEM.GOAL, goal_sprite);
-        grid_sprites.put(GRID_ITEM.PUCK, puck_sprite);
 
-        load_grid_from_data(read_level_data(level_name));
+        puck_sprite = game.sprites.createSprite("puck");
+        puck_sprite.setSize(1, 1);
+
+        if (LevelSelector.level_file_exists(level_type, level_name))
+            load_level();
+        else {
+            save_level();  // this will create an empty/default valid level file
+        }
     }
 
     final String get_name() {
@@ -71,46 +72,86 @@ class Level {
         return grid_sprites.get(item);
     }
 
+    final Sprite get_puck_sprite() {
+        return puck_sprite;
+    }
+
     final GRID_ITEM get_grid_item(int row, int col) {
         return grid.get_item(row, col);
     }
 
-    static byte[] get_empty_level_data() {
-        byte[] level_data = new byte[ChargeHockeyGame.WORLD_WIDTH * ChargeHockeyGame.WORLD_HEIGHT];
-        Arrays.fill(level_data, (byte) GRID_ITEM.NULL.ordinal());
-
-        return level_data;
+    /** LEVEL SAVE STRUCTURE
+     * WIDTH HEIGHT
+     * WIDTH * HEIGHT GRID ITEM CODES (ONE LINE STRING)
+     * N PUCKS
+     * X Y
+     * */
+    void save_level(Array<ChargeActor> puck_actors) {
+        puck_positions.clear();
+        for (ChargeActor puck : puck_actors) {
+            puck_positions.add(new Vector2(puck.getX(), puck.getY()));
+        }
+        save_level();
     }
 
-    private byte[] get_level_data() {
-        return grid.get_byte_data();
-    }
-
-    // Assumes that the level file exists!
-    private byte[] read_level_data(String level_name) {
-        FileHandle file = LevelSelector.get_level_grid_fhandle(level_type, level_name);
-
-        return file.readBytes();
-    }
-
-    void save_grid() {
-        Gdx.app.log("Level", "saving grid");
+    /** Save the grid and puck positions of the currently loaded level. */
+    void save_level() {
+        Gdx.app.log("Level", "saving level data");
 
         FileHandle file = LevelSelector.get_level_grid_fhandle(level_type, name);
+        Writer writer = file.writer(false, "UTF-8");
 
-        file.writeBytes(get_level_data(), false);
+        try {
+            writer.write(String.format(Locale.US, "%d %d\n", grid.get_width(), grid.get_height()));
+            writer.write(grid.get_grid_string() + "\n");
+
+            writer.write(String.format(Locale.US, "%d\n", puck_positions.size));
+            for (Vector2 pos : puck_positions) {
+                writer.write(String.format(Locale.US, "%f %f\n", pos.x, pos.y));
+            }
+        } catch (IOException e) {
+            file.delete();
+            throw new GdxRuntimeException("Error writing save file", e);
+        } finally {
+            StreamUtils.closeQuietly(writer);
+        }
     }
 
-    void load_grid_from_data(byte[] level_data) {
-        Gdx.app.log("Level", "loading grid");
+    /** Loads the grid and puck positions of the current level. */
+    private void load_level() {
+        Gdx.app.log("Level", "loading level");
 
-        grid.from_byte_data(level_data);
+        FileHandle file = LevelSelector.get_level_grid_fhandle(level_type, name);
+        if (!file.exists())
+            return;
+
+        BufferedReader reader = file.reader(256, "UTF-8");
+        try {
+            String[] size = reader.readLine().split(" ");
+            int width = Integer.parseInt(size[0]), height = Integer.parseInt(size[1]);
+            grid.set_size(width, height);
+
+            String grid_str = reader.readLine();
+            grid.load_from_grid_string(grid_str);
+
+            int n_pucks = Integer.parseInt(reader.readLine());
+            puck_positions = new Array<Vector2>(n_pucks);
+
+            String[] pos;
+            for (int i = 0; i < n_pucks; i++) {
+                pos = reader.readLine().split(" ");
+                puck_positions.add(new Vector2(Float.parseFloat(pos[0]), Float.parseFloat(pos[1])));
+            }
+        } catch (IOException e) {
+            throw new GdxRuntimeException("Error reading level file", e);
+        } finally {
+            StreamUtils.closeQuietly(reader);
+        }
     }
 
-    /*
-    Charge save data structure:
-    N (number of charges (lines))
-    CHARGE_TYPE X Y
+    /** Charge save data structure:
+     * N (number of charges (lines))
+     * CHARGE_TYPE X Y
      */
     void save_charge_state(Array<ChargeActor> charge_actors) {
         Gdx.app.log("Level", "saving charge state");
@@ -159,19 +200,7 @@ class Level {
         }
     }
 
-    // x = col, y = row
-    Array<Vector2> get_puck_positions() {
-        // I'm manually checking the positions, since this functions should only get called once per level load.
-        Array<Vector2> positions = new Array<Vector2>();
-
-        for (int row = 0; row < grid.get_height(); row++) {
-            for (int col = 0; col < grid.get_width(); col++) {
-                if (grid.get_item(row, col) == GRID_ITEM.PUCK) {
-                    positions.add(new Vector2(col, row));
-                }
-            }
-        }
-
-        return positions;
+    final Array<Vector2> get_puck_positions() {
+        return puck_positions;
     }
 }

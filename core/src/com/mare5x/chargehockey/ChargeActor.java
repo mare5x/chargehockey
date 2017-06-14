@@ -26,6 +26,11 @@ class ChargeState {
 }
 
 
+interface DragCallback {
+    void out_of_bounds(ChargeActor charge);
+}
+
+
 class ChargeActor extends Actor {
     private final CHARGE charge_type;
     private final Sprite sprite;
@@ -34,7 +39,7 @@ class ChargeActor extends Actor {
     static final float WEIGHT = 9.1e-31f;  // kg
     static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
-    ChargeActor(final ChargeHockeyGame game, CHARGE charge_type, final GameLogic game_logic) {
+    ChargeActor(final ChargeHockeyGame game, CHARGE charge_type, final DragCallback drag_callback) {
         super();
 
         this.charge_type = charge_type;
@@ -66,8 +71,8 @@ class ChargeActor extends Actor {
             @Override
             public void dragStop(InputEvent event, float x, float y, int pointer) {
                 // if the actor was dragged out the stage, remove it
-                if (!getStage().getCamera().frustum.pointInFrustum(getX(), getY(), 0)) {
-                    game_logic.remove_charge(ChargeActor.this);
+                if (!getStage().getCamera().frustum.pointInFrustum(getX(), getY(), 0) || !ChargeHockeyGame.WORLD_RECT.contains(getX(), getY())) {
+                    drag_callback.out_of_bounds(ChargeActor.this);
                 }
             }
         };

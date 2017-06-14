@@ -23,6 +23,8 @@ class LevelSelector {
 
     private final LevelFrameBuffer preview_fbo;
 
+    private Level selected_level = null;
+
     LevelSelector(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
         this.game = game;
         this.level_type = level_type;
@@ -31,9 +33,9 @@ class LevelSelector {
         list.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                final Level level = load_selected_level();
-                if (level != null) {
-                    preview_fbo.set_level(level);
+                selected_level = load_selected_level();
+                if (selected_level != null) {
+                    preview_fbo.set_level(selected_level);
                     preview_fbo.update(game.batch);
                 }
             }
@@ -41,6 +43,7 @@ class LevelSelector {
         init_list();
 
         preview_fbo = new LevelFrameBuffer(null);
+        preview_fbo.set_puck_alpha(1);
     }
 
     Table get_selector_table() {
@@ -94,27 +97,23 @@ class LevelSelector {
 
     void add_level(String level_name) {
         if (!level_exists(level_name)) {
-            create_level_file(level_name);
-
             list.getItems().add(level_name);
             list.invalidateHierarchy();  // reset the layout (add scroll bars to scroll pane)
         }
-    }
-
-    private void create_level_file(String level_name) {
-        FileHandle file = get_level_grid_fhandle(level_type, level_name);
-
-        if (file.exists())
-            return;
-
-        file.writeBytes(Level.get_empty_level_data(), false);
     }
 
     private boolean level_exists(final String level_name) {
         return list.getItems().contains(level_name, false);
     }
 
+    static boolean level_file_exists(LEVEL_TYPE level_type, final String level_name) {
+        return level_name != null && !level_name.isEmpty() && get_level_grid_fhandle(level_type, level_name).exists();
+    }
+
     Level load_selected_level() {
+        if (selected_level != null)
+            return selected_level;
+
         final String level_name = get_selected_name();
         if (level_name != null) {
             return new Level(game, level_name, level_type);
@@ -123,18 +122,18 @@ class LevelSelector {
     }
 
     static FileHandle get_level_grid_fhandle(LEVEL_TYPE level_type, String level_name) {
-        return Gdx.files.local(String.format(Locale.US, "levels/%s/%s/%s.grid", level_type.name(), level_name, level_name));
+        return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.grid", level_type.name(), level_name, level_name));
     }
 
     static FileHandle get_level_save_fhandle(LEVEL_TYPE level_type, String name) {
-        return Gdx.files.local(String.format(Locale.US, "levels/%s/%s/%s.save", level_type.name(), name, name));
+        return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.save", level_type.name(), name, name));
     }
 
     static FileHandle get_level_dir_fhandle(LEVEL_TYPE level_type, String name) {
-        return Gdx.files.local(String.format(Locale.US, "levels/%s/%s/", level_type.name(), name));
+        return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/", level_type.name(), name));
     }
 
     static FileHandle get_levels_dir_fhandle(LEVEL_TYPE level_type) {
-        return Gdx.files.local(String.format(Locale.US, "levels/%s/", level_type));
+        return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/", level_type));
     }
 }

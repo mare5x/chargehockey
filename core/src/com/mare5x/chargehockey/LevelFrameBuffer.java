@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Vector2;
 
 // Wrapper for a FrameBuffer
 // TODO fix camera rounding errors
@@ -17,6 +18,9 @@ class LevelFrameBuffer {
     private static FrameBuffer fbo = null;
     private static TextureRegion fbo_region = null;
     private final OrthographicCamera fbo_camera;
+
+    private float puck_alpha = 0.5f;
+    private boolean draw_pucks = true;
 
     private Sprite sprite;
 
@@ -49,8 +53,7 @@ class LevelFrameBuffer {
         batch.setProjectionMatrix(fbo_camera.combined);
     }
 
-    /*  Update the FBO with the level data.
-    **/
+    /* Update the FBO with the level data. **/
     void update(final SpriteBatch batch) {
         if (level == null) return;
 
@@ -62,6 +65,8 @@ class LevelFrameBuffer {
         set_projection_matrix(batch);
 
         batch.begin();
+
+        // Draw the grid
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
@@ -72,6 +77,38 @@ class LevelFrameBuffer {
                 }
             }
         }
+
+        // Draw the pucks
+        if (draw_pucks) {
+            Sprite puck_sprite = level.get_puck_sprite();
+            puck_sprite.setAlpha(puck_alpha);
+            for (Vector2 pos : level.get_puck_positions()) {
+                puck_sprite.setPosition(pos.x, pos.y);
+                puck_sprite.draw(batch);
+            }
+        }
+
+        batch.end();
+
+        fbo.end();
+    }
+
+    /** Draws the pucks without clearing the buffer. */
+    void draw_pucks(final SpriteBatch batch) {
+        if (level == null) return;
+
+        fbo.begin();
+        set_projection_matrix(batch);
+
+        batch.begin();
+
+        Sprite puck_sprite = level.get_puck_sprite();
+        puck_sprite.setAlpha(puck_alpha);
+        for (Vector2 pos : level.get_puck_positions()) {
+            puck_sprite.setPosition(pos.x, pos.y);
+            puck_sprite.draw(batch);
+        }
+
         batch.end();
 
         fbo.end();
@@ -100,5 +137,13 @@ class LevelFrameBuffer {
 
     int get_height() {
         return fbo.getHeight();
+    }
+
+    void set_puck_alpha(int alpha) {
+        puck_alpha = alpha;
+    }
+
+    void set_draw_pucks(boolean val) {
+        draw_pucks = val;
     }
 }

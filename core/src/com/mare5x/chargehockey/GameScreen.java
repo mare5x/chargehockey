@@ -50,6 +50,7 @@ class GameScreen implements Screen {
         camera.zoom = 0.8f;
 
         fbo = new LevelFrameBuffer(level);
+        fbo.set_draw_pucks(false);
 
         game_logic = new GameLogic(game, game_stage, level, this);
 
@@ -86,14 +87,14 @@ class GameScreen implements Screen {
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                toggle_playing();
+                toggle_playing(!game_logic.is_playing());  // from pause to play
             }
         });
         play_button.pad(10);
 
         Table button_table = new Table();
         button_table.setFillParent(true);
-        button_table.setBackground(game.skin.getDrawable("px_black"));
+        button_table.setBackground(game.skin.getDrawable("pixels/px_black"));
         button_table.add(play_button).size(Value.percentHeight(0.5f, button_table)).uniform().pad(15);
         button_table.add(charge_pos_button).pad(15).uniform().fill();
         button_table.add(charge_neg_button).pad(15).uniform().fill();
@@ -115,10 +116,22 @@ class GameScreen implements Screen {
     }
 
     void toggle_playing() {
-        if (!game_logic.is_playing())  // render if going from pause to playing
-            fbo.update(game.batch);
+        toggle_playing(false);
+    }
+
+    void toggle_playing(boolean update_background) {
         play_button.cycle_style();
         game_logic.set_playing(!game_logic.is_playing());
+
+        // render if going from pause to playing
+        if (update_background) {
+            fbo.set_draw_pucks(!game_logic.is_playing());
+            fbo.update(game.batch);
+        }
+        if (!game_logic.is_playing()) {
+            // if not playing draw pucks on the background without clearing it, so the trace path remains
+            fbo.draw_pucks(game.batch);
+        }
 
         Gdx.graphics.setContinuousRendering(game_logic.is_playing());
         Gdx.graphics.requestRendering();

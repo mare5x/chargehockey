@@ -21,17 +21,17 @@ class PuckActor extends ChargeActor {
 
     private GRID_ITEM collision = GRID_ITEM.NULL;
 
-    PuckActor(ChargeHockeyGame game, CHARGE charge_type, GameLogic game_logic) {
-        super(game, charge_type, game_logic);
+    PuckActor(ChargeHockeyGame game, CHARGE charge_type, DragCallback drag_callback) {
+        super(game, charge_type, drag_callback);
 
-        removeListener(getListeners().first());
+        removeListener(getListeners().first());  // disables dragging
 
         velocity_sprite = new Sprite(game.sprites.findRegion("blank_vector"));
         velocity_sprite.setColor(game.skin.getColor("green"));
         acceleration_sprite = new Sprite(game.sprites.findRegion("blank_vector"));
         acceleration_sprite.setColor(game.skin.getColor("purple"));
 
-        path_px = new Sprite(game.skin.getRegion("px_white"));
+        path_px = new Sprite(game.skin.getRegion("pixels/px_white"));
         path_px.setSize(getWidth() / 5, getHeight() / 5);
 
         reset_vectors();

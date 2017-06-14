@@ -62,14 +62,14 @@
         "default": {
             "font": "font",
             "fontColor": "black",
-            "background": "px_grey"
+            "background": "pixels/px_grey"
         }
      },
 
     "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
         "default": {
-            "down": "px_grey",
-            "up": "px_grey",
+            "down": "pixels/px_grey",
+            "up": "pixels/px_grey",
             "pressedOffsetY": -2,
             "unpressedOffsetY": 0,
             "imageUp": "play_green256",
@@ -79,8 +79,8 @@
 
     "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
         "default": {
-            "up": "px_grey",
-            "down": "px_grey",
+            "up": "pixels/px_grey",
+            "down": "pixels/px_grey",
             "pressedOffsetY": -2,
             "unpressedOffsetY": 0,
             "font": "font",
@@ -93,7 +93,7 @@
             "font": "font",
             "fontColorSelected": "dark_brown",
             "fontColorUnselected": "white",
-            "selection": "px_white_opaque"
+            "selection": "pixels/px_white_opaque"
         }
     },
 
@@ -101,7 +101,7 @@
         "default": {
             "titleFont": "font",
             "titleFontColor": "red",
-            "background": "px_grey",
+            "background": "pixels/px_grey",
         }
     },
 
@@ -109,15 +109,15 @@
         "default": {
             "font": "font",
             "fontColor": "black",
-            "cursor": "px_white",
-            "selection": "px_white_opaque"
+            "cursor": "pixels/px_white",
+            "selection": "pixels/px_white_opaque"
         }
     },
 
     "com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle": {
         "default": {
-            "hScrollKnob": "px_white",
-            "vScrollKnob": "px_white"
+            "hScrollKnob": "pixels/px_white",
+            "vScrollKnob": "pixels/px_white"
         }
     },
 
@@ -132,7 +132,7 @@
 
     "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {
         "default-horizontal": {
-            "background": "px_white",
+            "background": "pixels/px_white",
             "knob": "slider_knob"
         }
     }
