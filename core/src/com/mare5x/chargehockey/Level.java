@@ -24,34 +24,14 @@ class Level {
     private final String name;
     private final LEVEL_TYPE level_type;
 
-    private final ObjectMap<GRID_ITEM, Sprite> grid_sprites;
-    private final Sprite puck_sprite;
-
     private final Grid grid;
     private Array<Vector2> puck_positions = new Array<Vector2>();
 
-    Level(final ChargeHockeyGame game, final String level_name, final LEVEL_TYPE level_type) {
+    Level(final String level_name, final LEVEL_TYPE level_type) {
         this.name = level_name;
         this.level_type = level_type;
 
         this.grid = new Grid();
-
-        Sprite null_sprite = game.sprites.createSprite("grid/grid_null");
-        null_sprite.setSize(1, 1);
-
-        Sprite wall_sprite = game.sprites.createSprite("grid/grid_wall");
-        wall_sprite.setSize(1, 1);
-
-        Sprite goal_sprite = game.sprites.createSprite("grid/grid_goal");
-        goal_sprite.setSize(1, 1);
-
-        grid_sprites = new ObjectMap<GRID_ITEM, Sprite>(GRID_ITEM.values.length);
-        grid_sprites.put(GRID_ITEM.NULL, null_sprite);
-        grid_sprites.put(GRID_ITEM.WALL, wall_sprite);
-        grid_sprites.put(GRID_ITEM.GOAL, goal_sprite);
-
-        puck_sprite = game.sprites.createSprite("puck");
-        puck_sprite.setSize(1, 1);
 
         if (LevelSelector.level_file_exists(level_type, level_name))
             load_level();
@@ -66,14 +46,6 @@ class Level {
 
     void set_item(int row, int col, GRID_ITEM item) {
         grid.set_item(row, col, item);
-    }
-
-    final Sprite get_item_sprite(GRID_ITEM item) {
-        return grid_sprites.get(item);
-    }
-
-    final Sprite get_puck_sprite() {
-        return puck_sprite;
     }
 
     final GRID_ITEM get_grid_item(int row, int col) {

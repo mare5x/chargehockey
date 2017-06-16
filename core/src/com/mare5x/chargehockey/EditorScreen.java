@@ -61,7 +61,7 @@ class EditorScreen implements Screen {
         edit_stage = new Stage(new FillViewport(edit_aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
 
-        fbo = new LevelFrameBuffer(level);
+        fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
 
         // add interactive pucks from the stored puck positions

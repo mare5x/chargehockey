@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.ObjectMap;
 
 // Wrapper for a FrameBuffer
 // TODO fix camera rounding errors
@@ -19,15 +20,33 @@ class LevelFrameBuffer {
     private static TextureRegion fbo_region = null;
     private final OrthographicCamera fbo_camera;
 
+    private final ObjectMap<GRID_ITEM, Sprite> grid_sprites;
+    private final Sprite puck_sprite;
+
     private float puck_alpha = 0.5f;
     private boolean draw_pucks = true;
 
-    private Sprite sprite;
-
     private Level level;
 
-    LevelFrameBuffer(final Level level) {
+    LevelFrameBuffer(final ChargeHockeyGame game, final Level level) {
         this.level = level;
+
+        Sprite null_sprite = game.sprites.createSprite("grid/grid_null");
+        null_sprite.setSize(1, 1);
+
+        Sprite wall_sprite = game.sprites.createSprite("grid/grid_wall");
+        wall_sprite.setSize(1, 1);
+
+        Sprite goal_sprite = game.sprites.createSprite("grid/grid_goal");
+        goal_sprite.setSize(1, 1);
+
+        grid_sprites = new ObjectMap<GRID_ITEM, Sprite>(GRID_ITEM.values.length);
+        grid_sprites.put(GRID_ITEM.NULL, null_sprite);
+        grid_sprites.put(GRID_ITEM.WALL, wall_sprite);
+        grid_sprites.put(GRID_ITEM.GOAL, goal_sprite);
+
+        puck_sprite = game.sprites.createSprite("puck");
+        puck_sprite.setSize(1, 1);
 
         // For pixel perfect rendering, the width and height of the FBO must be a multiple of the world width * sprite size.
         fbo = new FrameBuffer(Pixmap.Format.RGBA8888, 1024, 1024, false);
@@ -71,7 +90,7 @@ class LevelFrameBuffer {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
                 if (item != GRID_ITEM.NULL) {
-                    sprite = level.get_item_sprite(item);
+                    Sprite sprite = grid_sprites.get(item);
                     sprite.setPosition(col, row);
                     sprite.draw(batch);
                 }
@@ -80,7 +99,6 @@ class LevelFrameBuffer {
 
         // Draw the pucks
         if (draw_pucks) {
-            Sprite puck_sprite = level.get_puck_sprite();
             puck_sprite.setAlpha(puck_alpha);
             for (Vector2 pos : level.get_puck_positions()) {
                 puck_sprite.setPosition(pos.x, pos.y);
@@ -102,7 +120,6 @@ class LevelFrameBuffer {
 
         batch.begin();
 
-        Sprite puck_sprite = level.get_puck_sprite();
         puck_sprite.setAlpha(puck_alpha);
         for (Vector2 pos : level.get_puck_positions()) {
             puck_sprite.setPosition(pos.x, pos.y);
@@ -129,14 +146,6 @@ class LevelFrameBuffer {
 
     TextureRegion get_texture_region() {
         return fbo_region;
-    }
-
-    int get_width() {
-        return fbo.getWidth();
-    }
-
-    int get_height() {
-        return fbo.getHeight();
     }
 
     void set_puck_alpha(int alpha) {

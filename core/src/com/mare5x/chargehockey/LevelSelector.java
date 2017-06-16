@@ -42,7 +42,7 @@ class LevelSelector {
         });
         init_list();
 
-        preview_fbo = new LevelFrameBuffer(null);
+        preview_fbo = new LevelFrameBuffer(game, null);
         preview_fbo.set_puck_alpha(1);
     }
 
@@ -116,7 +116,7 @@ class LevelSelector {
 
         final String level_name = get_selected_name();
         if (level_name != null) {
-            return new Level(game, level_name, level_type);
+            return new Level(level_name, level_type);
         }
         return null;
     }

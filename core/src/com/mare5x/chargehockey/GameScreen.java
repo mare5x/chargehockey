@@ -49,7 +49,7 @@ class GameScreen implements Screen {
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
 
-        fbo = new LevelFrameBuffer(level);
+        fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
 
         game_logic = new GameLogic(game, game_stage, level, this);
