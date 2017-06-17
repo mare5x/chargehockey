@@ -28,7 +28,7 @@ class GameScreen implements Screen {
 
     private final Stage game_stage, button_stage;
     private final OrthographicCamera camera;
-    private final GameGestureAdapter camera_controller;
+    private final GameCameraController camera_controller;
 
     private final LevelFrameBuffer fbo;
 
@@ -102,7 +102,7 @@ class GameScreen implements Screen {
 
         button_stage.addActor(button_table);
 
-        camera_controller = new GameGestureAdapter(camera);
+        camera_controller = new GameCameraController(camera);
         InputAdapter back_key_processor = new InputAdapter() {  // same as menu_button
             @Override
             public boolean keyUp(int keycode) {
@@ -145,17 +145,6 @@ class GameScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(multiplexer);
-
-        load_settings();
-    }
-
-    private void load_settings() {
-        SettingsFile settings = new SettingsFile();
-
-        PuckActor.set_draw_velocity(settings.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
-        PuckActor.set_draw_acceleration(settings.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
-        PuckActor.set_trace_path(settings.getBoolean(SETTINGS_KEY.TRACE_PATH));
-        GameLogic.set_game_speed(settings.getFloat(SETTINGS_KEY.GAME_SPEED));
     }
 
     private void update_puck_trace_path() {
@@ -240,10 +229,10 @@ class GameScreen implements Screen {
         button_stage.dispose();
     }
 
-    private class GameGestureAdapter extends BaseGestureAdapter {
+    private class GameCameraController extends CameraController {
         final Vector2 tmp_coords = new Vector2();
 
-        GameGestureAdapter(OrthographicCamera camera) {
+        GameCameraController(OrthographicCamera camera) {
             super(camera);
         }
 

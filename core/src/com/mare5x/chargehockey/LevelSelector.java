@@ -44,6 +44,7 @@ class LevelSelector {
 
         preview_fbo = new LevelFrameBuffer(game, null);
         preview_fbo.set_puck_alpha(1);
+        preview_fbo.set_draw_grid_lines(false);
     }
 
     Table get_selector_table() {

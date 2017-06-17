@@ -1,11 +1,11 @@
 SetCullingArea
 
-make Level maintain its own texture, that gets updated only when necessary.
-
-level preview in level select
-
 smooth camera
 
 circle collision detection
 
-trace path
+better trace path
+
+fix game speed
+
+fix camera movement and position

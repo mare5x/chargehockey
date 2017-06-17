@@ -6,7 +6,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-class BaseGestureAdapter extends GestureDetector.GestureAdapter {
+class CameraController extends GestureDetector.GestureAdapter {
     private static final int BORDER = 16;
     private final OrthographicCamera camera;
 
@@ -20,12 +20,15 @@ class BaseGestureAdapter extends GestureDetector.GestureAdapter {
     private boolean is_moving_to_target = false;
     private final Vector2 target_pos = new Vector2();
 
+    private static final float MIN_ZOOM = 1.6f;
+    private static final float MAX_ZOOM = 0.1f;
+
     private boolean is_zooming = false;
     private float zoom_target_val = -1;
 //    private final Vector2 zoom_target_pos = new Vector2();  TODO zoom to target position
     private float prev_zoom_distance = 0;
 
-    BaseGestureAdapter(OrthographicCamera camera) {
+    CameraController(OrthographicCamera camera) {
         this.camera = camera;
     }
 
@@ -55,7 +58,7 @@ class BaseGestureAdapter extends GestureDetector.GestureAdapter {
         } else {
             move_vel();
 
-            velocity.scl(0.95f);  // smooth camera fling movement
+            velocity.scl(0.9f);  // smooth camera fling movement
             if (Math.abs(velocity.x) < 0.1f) {
                 velocity.x = 0;
             }
@@ -186,7 +189,7 @@ class BaseGestureAdapter extends GestureDetector.GestureAdapter {
         Gdx.graphics.setContinuousRendering(true);
 
         float new_zoom_distance = distance - initialDistance;
-        if (Math.abs(new_zoom_distance) < 0.1f)
+        if (Math.abs(new_zoom_distance) < 3f)  // ignore very small zoom
             return true;
 
         float amount = (new_zoom_distance - prev_zoom_distance) / camera.viewportHeight;
@@ -206,12 +209,12 @@ class BaseGestureAdapter extends GestureDetector.GestureAdapter {
         zoom_target_val = target_val;
         is_zooming = true;
 
-        camera.zoom += (zoom_target_val - camera.zoom) * 0.125f;
+        camera.zoom += (zoom_target_val - camera.zoom) * 0.1f;
 
-        if (camera.zoom < 0.1f)
-            camera.zoom = 0.1f;
-        else if (camera.zoom > 1.7f)
-            camera.zoom = 1.7f;
+        if (camera.zoom < MAX_ZOOM)
+            camera.zoom = MAX_ZOOM;
+        else if (camera.zoom > MIN_ZOOM)
+            camera.zoom = MIN_ZOOM;
     }
 
     @Override

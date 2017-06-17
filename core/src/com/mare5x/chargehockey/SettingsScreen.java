@@ -29,7 +29,7 @@ class SettingsScreen implements Screen {
 
     private final SettingsFile settings_file;
 
-    private final Button acceleration_checkbox, velocity_checkbox, trace_path_checkbox;
+    private final SettingCheckBox acceleration_checkbox, velocity_checkbox, trace_path_checkbox, grid_checkbox;
     private final Slider game_speed_slider;
 
     SettingsScreen(final ChargeHockeyGame game, final Screen parent_screen) {
@@ -59,48 +59,10 @@ class SettingsScreen implements Screen {
             }
         });
 
-        velocity_checkbox = new Button(game.skin, "checkbox");
-        velocity_checkbox.setChecked(settings_file.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
-        velocity_checkbox.pad(10);
-
-        final TextButton velocity_vector_text = new TextButton("SHOW VELOCITY VECTOR", game.skin);
-        velocity_vector_text.pad(10);
-        velocity_vector_text.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                velocity_checkbox.toggle();
-            }
-        });
-
-        acceleration_checkbox = new Button(game.skin, "checkbox");
-        acceleration_checkbox.setChecked(settings_file.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
-        acceleration_checkbox.pad(10);
-
-        final TextButton acceleration_vector_text = new TextButton("SHOW ACCELERATION VECTOR", game.skin);
-        acceleration_vector_text.pad(10);
-        acceleration_vector_text.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                acceleration_checkbox.toggle();
-            }
-        });
-
-        trace_path_checkbox = new Button(game.skin, "checkbox");
-        trace_path_checkbox.setChecked(settings_file.getBoolean(SETTINGS_KEY.TRACE_PATH));
-        trace_path_checkbox.pad(10);
-
-        final TextButton trace_path_text = new TextButton("TRACE PATH?", game.skin);
-        trace_path_text.pad(10);
-        trace_path_text.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                trace_path_checkbox.toggle();
-            }
-        });
-
-        velocity_vector_text.getLabel().setWrap(true);
-        acceleration_vector_text.getLabel().setWrap(true);
-        trace_path_text.getLabel().setWrap(true);
+        velocity_checkbox = new SettingCheckBox(game, "SHOW VELOCITY VECTOR", SETTINGS_KEY.SHOW_VELOCITY_VECTOR);
+        acceleration_checkbox = new SettingCheckBox(game, "SHOW ACCELERATION VECTOR", SETTINGS_KEY.SHOW_ACCELERATION_VECTOR);
+        trace_path_checkbox = new SettingCheckBox(game, "TRACE PATH?", SETTINGS_KEY.TRACE_PATH);
+        grid_checkbox = new SettingCheckBox(game, "SHOW GRID LINES?", SETTINGS_KEY.GRID_LINES);
 
         Table table = new Table();
         table.setFillParent(true);
@@ -109,19 +71,15 @@ class SettingsScreen implements Screen {
 
         table.add().expand().colspan(2).row();
 
-        final Table slider_table = new Table();
-        slider_table.add(game_speed_label).pad(15).width(Value.percentWidth(0.4f, table)).height(Value.percentHeight(1, velocity_vector_text)).fill().center();
-        slider_table.add(game_speed_slider).pad(15).width(Value.percentWidth(0.4f, table)).height(Value.percentHeight(1, velocity_checkbox)).expandX().fillX().row();
+        Table slider_table = new Table();
+        slider_table.add(game_speed_label).pad(15).width(Value.percentWidth(0.4f, table)).fill().center();
+        slider_table.add(game_speed_slider).pad(15).width(Value.percentWidth(0.4f, table)).expandX().fillX().row();
         table.add(slider_table).colspan(2).pad(15).row();
 
-        table.add(velocity_vector_text).pad(15).width(Value.percentWidth(0.6f, table)).fillX();
-        table.add(velocity_checkbox).pad(15).size(Value.percentWidth(0.125f, table)).row();
-
-        table.add(acceleration_vector_text).pad(15).width(Value.percentWidth(0.6f, table)).fillX();
-        table.add(acceleration_checkbox).pad(15).size(Value.percentWidth(0.125f, table)).row();
-
-        table.add(trace_path_text).pad(15).width(Value.percentWidth(0.6f, table)).fillX();
-        table.add(trace_path_checkbox).pad(15).size(Value.percentWidth(0.125f, table)).row();
+        velocity_checkbox.add_to_table(table);
+        acceleration_checkbox.add_to_table(table);
+        trace_path_checkbox.add_to_table(table);
+        grid_checkbox.add_to_table(table);
 
         table.add().colspan(2).expand();
 
@@ -142,9 +100,10 @@ class SettingsScreen implements Screen {
     private void save() {
         Gdx.app.log("SettingsScreen", "saving preferences");
         settings_file.put(SETTINGS_KEY.GAME_SPEED, game_speed_slider.getValue());
-        settings_file.put(SETTINGS_KEY.SHOW_VELOCITY_VECTOR, velocity_checkbox.isChecked());
-        settings_file.put(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR, acceleration_checkbox.isChecked());
-        settings_file.put(SETTINGS_KEY.TRACE_PATH, trace_path_checkbox.isChecked());
+        settings_file.put(SETTINGS_KEY.SHOW_VELOCITY_VECTOR, velocity_checkbox.is_checked());
+        settings_file.put(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR, acceleration_checkbox.is_checked());
+        settings_file.put(SETTINGS_KEY.TRACE_PATH, trace_path_checkbox.is_checked());
+        settings_file.put(SETTINGS_KEY.GRID_LINES, grid_checkbox.is_checked());
         settings_file.save();
     }
 
@@ -186,11 +145,54 @@ class SettingsScreen implements Screen {
     @Override
     public void hide() {
         save();
+        SettingsFile.apply_global_settings(settings_file);
         dispose();
     }
 
     @Override
     public void dispose() {
         stage.dispose();
+    }
+
+    /** Encapsulates a unified checkbox. Use with add_to_table(). DO NOT use it as an Actor. */
+    private class SettingCheckBox extends Actor {
+        private final Button checkbox;
+        private final TextButton text_button;
+
+        SettingCheckBox(final ChargeHockeyGame game, String label, SETTINGS_KEY setting) {
+            checkbox = new Button(game.skin, "checkbox");
+            checkbox.setChecked(settings_file.getBoolean(setting));
+            checkbox.pad(10);
+
+            text_button = new TextButton(label, game.skin);
+            text_button.pad(10);
+            text_button.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    checkbox.toggle();
+                }
+            });
+
+            text_button.getLabel().setWrap(true);
+        }
+
+        void add_to_table(Table parent) {
+            parent.add(text_button).pad(15).width(Value.percentWidth(0.6f, parent)).fillX();
+            parent.add(checkbox).pad(15).size(Value.percentWidth(0.125f, parent)).row();
+        }
+
+        boolean is_checked() {
+            return checkbox.isChecked();
+        }
+
+        @Override
+        public float getHeight() {
+            return text_button.getHeight();
+        }
+
+        @Override
+        public float getWidth() {
+            return text_button.getWidth();
+        }
     }
 }

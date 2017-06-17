@@ -17,14 +17,10 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
 class MenuScreen implements Screen {
-    private final ChargeHockeyGame game;
-
     private Stage stage;
     private final InputMultiplexer input_multiplexer;
 
-    public MenuScreen(final ChargeHockeyGame game) {
-        this.game = game;
-
+    MenuScreen(final ChargeHockeyGame game) {
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
 
         Table table = new Table(game.skin);
@@ -77,6 +73,8 @@ class MenuScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(input_multiplexer);
+
+        SettingsFile.apply_global_settings();
     }
 
     @Override

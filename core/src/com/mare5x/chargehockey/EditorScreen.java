@@ -30,7 +30,7 @@ class EditorScreen implements Screen {
 
     private final Stage edit_stage, button_stage;
     private final OrthographicCamera camera;  // camera of edit_stage
-    private final EditGestureAdapter camera_controller;
+    private final EditCameraController camera_controller;
 
     private final LevelFrameBuffer fbo;
 
@@ -63,6 +63,7 @@ class EditorScreen implements Screen {
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
+        fbo.set_draw_grid_lines(false);
 
         // add interactive pucks from the stored puck positions
         puck_actors = new Array<ChargeActor>(level.get_puck_positions().size * 2);
@@ -109,7 +110,7 @@ class EditorScreen implements Screen {
 
         button_stage.addActor(button_table);
 
-        camera_controller = new EditGestureAdapter(camera);
+        camera_controller = new EditCameraController(camera);
         InputAdapter back_key_processor = new InputAdapter() {  // same as menu_button
             @Override
             public boolean keyUp(int keycode) {
@@ -185,10 +186,10 @@ class EditorScreen implements Screen {
         button_stage.dispose();
     }
 
-    private class EditGestureAdapter extends BaseGestureAdapter {
+    private class EditCameraController extends CameraController {
         final Vector2 tmp_coords = new Vector2();
 
-        EditGestureAdapter(OrthographicCamera camera) {
+        EditCameraController(OrthographicCamera camera) {
             super(camera);
         }
 
@@ -226,6 +227,25 @@ class EditorScreen implements Screen {
             fbo.update(game.batch);
 
             return false;
+        }
+
+        @Override
+        public boolean zoom(float initialDistance, float distance) {
+            super.zoom(initialDistance, distance);
+
+            if (!LevelFrameBuffer.get_grid_lines_setting())
+                return true;
+
+            if (camera.zoom <= 0.6f) {
+                fbo.set_draw_grid_lines(true);
+                fbo.update(game.batch);
+            } else {
+                if (fbo.get_draw_grid_lines()) {
+                    fbo.set_draw_grid_lines(false);
+                    fbo.update(game.batch);
+                }
+            }
+            return true;
         }
     }
 

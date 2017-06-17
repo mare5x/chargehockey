@@ -21,10 +21,15 @@ class LevelFrameBuffer {
     private final OrthographicCamera fbo_camera;
 
     private final ObjectMap<GRID_ITEM, Sprite> grid_sprites;
-    private final Sprite puck_sprite;
 
+    private final Sprite puck_sprite;
     private float puck_alpha = 0.5f;
     private boolean draw_pucks = true;
+
+    private final Sprite grid_line_sprite;
+    private static boolean DRAW_GRID_LINES_SETTING = false;
+    private boolean draw_grid_lines = false;
+    private static float grid_line_sprite_size = 1f / 16f;  // 1 px
 
     private Level level;
 
@@ -48,7 +53,11 @@ class LevelFrameBuffer {
         puck_sprite = game.sprites.createSprite("puck");
         puck_sprite.setSize(1, 1);
 
+        grid_line_sprite = game.skin.getSprite("pixels/px_purple");
+        grid_line_sprite.setSize(grid_line_sprite_size, grid_line_sprite_size);
+
         // For pixel perfect rendering, the width and height of the FBO must be a multiple of the world width * sprite size.
+        // Here each tile has a size of 16*16 px.
         fbo = new FrameBuffer(Pixmap.Format.RGBA8888, 1024, 1024, false);
         fbo.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         fbo_region = new TextureRegion(fbo.getColorBufferTexture());
@@ -85,6 +94,23 @@ class LevelFrameBuffer {
 
         batch.begin();
 
+        // Draw the grid's lines (optional)
+        if (draw_grid_lines) {
+            // vertical lines
+            grid_line_sprite.setSize(grid_line_sprite_size, ChargeHockeyGame.WORLD_HEIGHT);
+            for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
+                grid_line_sprite.setPosition(col, 0);
+                grid_line_sprite.draw(batch);
+            }
+
+            // horizontal lines
+            grid_line_sprite.setSize(ChargeHockeyGame.WORLD_WIDTH, grid_line_sprite_size);
+            for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
+                grid_line_sprite.setPosition(0, row);
+                grid_line_sprite.draw(batch);
+            }
+        }
+
         // Draw the grid
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
@@ -97,7 +123,7 @@ class LevelFrameBuffer {
             }
         }
 
-        // Draw the pucks
+        // Draw the pucks (optional)
         if (draw_pucks) {
             puck_sprite.setAlpha(puck_alpha);
             for (Vector2 pos : level.get_puck_positions()) {
@@ -154,5 +180,21 @@ class LevelFrameBuffer {
 
     void set_draw_pucks(boolean val) {
         draw_pucks = val;
+    }
+
+    void set_draw_grid_lines(boolean val) {
+        draw_grid_lines = val;
+    }
+
+    boolean get_draw_grid_lines() {
+        return draw_grid_lines;
+    }
+
+    static void set_grid_lines_setting(boolean val) {
+        DRAW_GRID_LINES_SETTING = val;
+    }
+
+    static boolean get_grid_lines_setting() {
+        return DRAW_GRID_LINES_SETTING;
     }
 }
