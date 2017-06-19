@@ -50,6 +50,7 @@ class GameScreen implements Screen {
         camera.zoom = 0.8f;
 
         fbo = new LevelFrameBuffer(game, level);
+        fbo.set_draw_grid_lines(false);
         fbo.set_draw_pucks(false);
 
         game_logic = new GameLogic(game, game_stage, level, this);

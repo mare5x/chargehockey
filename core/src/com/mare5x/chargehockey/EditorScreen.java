@@ -63,7 +63,8 @@ class EditorScreen implements Screen {
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
-        fbo.set_draw_grid_lines(false);
+        fbo.set_draw_grid_lines(LevelFrameBuffer.get_grid_lines_setting());
+        fbo.set_grid_line_spacing(CameraController.get_grid_line_spacing(camera.zoom));
 
         // add interactive pucks from the stored puck positions
         puck_actors = new Array<ChargeActor>(level.get_puck_positions().size * 2);
@@ -236,14 +237,10 @@ class EditorScreen implements Screen {
             if (!LevelFrameBuffer.get_grid_lines_setting())
                 return true;
 
-            if (camera.zoom <= 0.6f) {
-                fbo.set_draw_grid_lines(true);
+            int grid_line_spacing = get_grid_line_spacing(camera.zoom);
+            if (fbo.get_grid_line_spacing() != grid_line_spacing) {
+                fbo.set_grid_line_spacing(grid_line_spacing);
                 fbo.update(game.batch);
-            } else {
-                if (fbo.get_draw_grid_lines()) {
-                    fbo.set_draw_grid_lines(false);
-                    fbo.update(game.batch);
-                }
             }
             return true;
         }

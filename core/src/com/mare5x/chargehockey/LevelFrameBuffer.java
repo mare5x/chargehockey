@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 
@@ -28,8 +29,9 @@ class LevelFrameBuffer {
 
     private final Sprite grid_line_sprite;
     private static boolean DRAW_GRID_LINES_SETTING = false;
-    private boolean draw_grid_lines = false;
+    private boolean draw_grid_lines = DRAW_GRID_LINES_SETTING;  // ability to override the setting
     private static float grid_line_sprite_size = 1f / 16f;  // 1 px
+    private int grid_line_spacing = 1;  // determines after how many grid tiles a line is drawn
 
     private Level level;
 
@@ -98,17 +100,22 @@ class LevelFrameBuffer {
         if (draw_grid_lines) {
             // vertical lines
             grid_line_sprite.setSize(grid_line_sprite_size, ChargeHockeyGame.WORLD_HEIGHT);
-            for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
+            for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col += grid_line_spacing) {
                 grid_line_sprite.setPosition(col, 0);
                 grid_line_sprite.draw(batch);
             }
+            // fix for the line on the edge, so it stays on screen
+            grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH - grid_line_sprite_size, 0);
+            grid_line_sprite.draw(batch);
 
             // horizontal lines
             grid_line_sprite.setSize(ChargeHockeyGame.WORLD_WIDTH, grid_line_sprite_size);
-            for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row++) {
+            for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row += grid_line_spacing) {
                 grid_line_sprite.setPosition(0, row);
                 grid_line_sprite.draw(batch);
             }
+            grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT - grid_line_sprite_size);
+            grid_line_sprite.draw(batch);
         }
 
         // Draw the grid
@@ -182,6 +189,14 @@ class LevelFrameBuffer {
         draw_pucks = val;
     }
 
+    void set_grid_line_spacing(int spacing) {
+        grid_line_spacing = MathUtils.clamp(spacing, 1, ChargeHockeyGame.WORLD_WIDTH / 2);
+    }
+
+    int get_grid_line_spacing() {
+        return grid_line_spacing;
+    }
+
     void set_draw_grid_lines(boolean val) {
         draw_grid_lines = val;
     }
@@ -190,6 +205,7 @@ class LevelFrameBuffer {
         return draw_grid_lines;
     }
 
+    /** THIS IS JUST A 'SETTING', TO APPLY IT CALL set_draw_grid_lines(...)!!! */
     static void set_grid_lines_setting(boolean val) {
         DRAW_GRID_LINES_SETTING = val;
     }

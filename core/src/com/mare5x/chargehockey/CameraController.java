@@ -226,4 +226,11 @@ class CameraController extends GestureDetector.GestureAdapter {
     boolean is_moving() {
         return is_moving_to_target || is_stopping || is_zooming;
     }
+
+    static int get_grid_line_spacing(float zoom) {
+        if (zoom <= 0.6f) return 1;
+        else if (zoom <= 1f) return 2;
+        else if (zoom <= 1.4f) return 4;
+        else return 8;
+    }
 }
