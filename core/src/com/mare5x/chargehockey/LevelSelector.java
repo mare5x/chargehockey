@@ -33,7 +33,7 @@ class LevelSelector {
         list.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                selected_level = load_selected_level();
+                selected_level = load_selected_level(true);
                 if (selected_level != null) {
                     preview_fbo.set_level(selected_level);
                     preview_fbo.update(game.batch);
@@ -109,6 +109,11 @@ class LevelSelector {
 
     static boolean level_file_exists(LEVEL_TYPE level_type, final String level_name) {
         return level_name != null && !level_name.isEmpty() && get_level_grid_fhandle(level_type, level_name).exists();
+    }
+
+    private Level load_selected_level(boolean force) {
+        if (force) selected_level = null;
+        return load_selected_level();
     }
 
     Level load_selected_level() {
