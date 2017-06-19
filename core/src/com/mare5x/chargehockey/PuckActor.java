@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 
 
 class PuckActor extends ChargeActor {
@@ -14,6 +15,8 @@ class PuckActor extends ChargeActor {
 
     private static boolean draw_velocity = false, draw_acceleration = false;
     private static boolean trace_path = false;
+
+    private Array<Vector2> trace_path_history = new Array<Vector2>(16);  // holds the puck's position history for the past render frame
 
     private static final float _MAX_LENGTH = ChargeHockeyGame.WORLD_WIDTH;
     private static final float _MIN_VEC_HEIGHT = 0.6f;
@@ -45,9 +48,19 @@ class PuckActor extends ChargeActor {
         if (draw_acceleration) acceleration_sprite.draw(batch);
     }
 
-    void draw_trace_path_point(Batch batch) {
-        path_px.setPosition(getX(Align.center), getY(Align.center));
-        path_px.draw(batch);
+    void draw_trace_path_history(Batch batch) {
+        for (Vector2 point : trace_path_history) {
+            path_px.setPosition(point.x, point.y);
+            path_px.draw(batch);
+        }
+    }
+
+    void reset_trace_path_history() {
+        trace_path_history.clear();
+    }
+
+    void save_path_position() {
+        trace_path_history.add(new Vector2(getX(Align.center), getY(Align.center)));
     }
 
     void reset_vectors() {

@@ -2,6 +2,7 @@ package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -36,6 +37,7 @@ class ChargeActor extends Actor {
     private final Sprite sprite;
 
     static final byte SIZE = 1;  // width = height = size
+    private static final float RADIUS = SIZE / 2f;
     static final float WEIGHT = 9.1e-31f;  // kg
     static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
@@ -128,15 +130,23 @@ class ChargeActor extends Actor {
         return new Vector2(puck_vec).sub(getX(Align.center), getY(Align.center)).scl(get_direction());
     }
 
-    boolean overlaps(ChargeActor charge) {
-        return get_rect().overlaps(charge.get_rect());
-    }
-
-    private Rectangle get_rect() {
-        return sprite.getBoundingRectangle();
-    }
-
     ChargeState get_state() {
         return new ChargeState(charge_type, getX(), getY());
+    }
+
+    /** Circular collision detection with a rectangle. */
+    boolean intersects(Rectangle rectangle) {
+        float center_x = getX(Align.center);
+        float center_y = getY(Align.center);
+
+        // find the closest rectangle point to the circle (charge)
+        float closest_x = MathUtils.clamp(center_x, rectangle.x, rectangle.x + rectangle.width);
+        float closest_y = MathUtils.clamp(center_y, rectangle.y, rectangle.y + rectangle.height);
+
+        float dx = center_x - closest_x;
+        float dy = center_y - closest_y;
+
+        // if the distance from circle to rectangle is less than the circle's radius, there is an intersection
+        return (dx * dx + dy * dy) < (RADIUS * RADIUS);
     }
 }

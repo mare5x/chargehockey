@@ -1,6 +1,7 @@
 package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
@@ -87,6 +88,10 @@ class GameLogic {
 
         dt_accumulator += delta;
 
+        if (PuckActor.get_trace_path() && (dt_accumulator >= dt)) {
+            reset_pucks_history();
+        }
+
         while (dt_accumulator >= dt) {
             update_pucks(dt);
 
@@ -106,7 +111,13 @@ class GameLogic {
                     break;
             }
 
-            dt_accumulator -= dt;
+            dt_accumulator -= dt * (1f / GAME_SPEED);
+        }
+    }
+
+    private void reset_pucks_history() {
+        for (PuckActor puck : puck_actors) {
+            puck.reset_trace_path_history();
         }
     }
 
@@ -138,14 +149,21 @@ class GameLogic {
     }
 
     private GRID_ITEM get_collision(PuckActor puck) {
-        GRID_ITEM grid_item = level.get_grid_item((int) (puck.getY()), (int) (puck.getX()));  // row = y, col = x
-        if (is_collision(grid_item))
+        int row = (int) (puck.getY());  // == y
+        int col = (int) (puck.getX());  // == x
+        GRID_ITEM grid_item = level.get_grid_item(row, col);
+        if (is_collision(grid_item) && puck.intersects(new Rectangle(col, row, 1, 1)))  // left and bottom edge
             return grid_item;
-        grid_item = level.get_grid_item((int) (puck.getY()), (int) (puck.getRight()));  // row = y, col = x
-        if (is_collision(grid_item))
+
+        col = (int) (puck.getRight());
+        grid_item = level.get_grid_item(row, col);
+        if (is_collision(grid_item) && puck.intersects(new Rectangle(col, row, 1, 1)))  // right edge
             return grid_item;
-        grid_item = level.get_grid_item((int) (puck.getTop()), (int) (puck.getX()));  // row = y, col = x
-        if (is_collision(grid_item))
+
+        row = (int) (puck.getTop());
+        col = (int) (puck.getX());
+        grid_item = level.get_grid_item(row, col);
+        if (is_collision(grid_item) && puck.intersects(new Rectangle(col, row, 1, 1)))  // top edge
             return grid_item;
 
         return GRID_ITEM.NULL;
@@ -173,7 +191,10 @@ class GameLogic {
 
             float dx = delta * (velocity_vec.x + delta * acceleration_vec.x / 2);  // x = v * t
             float dy = delta * (velocity_vec.y + delta * acceleration_vec.y / 2);  // average velocity
-            puck.moveBy(dx * GAME_SPEED, dy * GAME_SPEED);
+            puck.moveBy(dx, dy);
+
+            if (PuckActor.get_trace_path())
+                puck.save_path_position();
 
             calc_net_force(puck);
             tmp_vec.x = force_vec.x / weight;  // a = F / m
@@ -231,6 +252,7 @@ class GameLogic {
             final Vector2 pos = level.get_puck_positions().get(i);
             PuckActor puck = puck_actors.get(i);
             puck.setPosition(pos.x, pos.y);
+            puck.reset_trace_path_history();
             puck.reset_vectors();
             puck.set_collision(GRID_ITEM.NULL);
         }

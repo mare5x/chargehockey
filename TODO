@@ -2,10 +2,10 @@ SetCullingArea
 
 smooth camera
 
-circle collision detection
-
 better trace path
 
-fix game speed
-
 fix camera movement and position
+
+add game win/loss message
+
+add logo

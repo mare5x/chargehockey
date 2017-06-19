@@ -158,7 +158,7 @@ class GameScreen implements Screen {
         game.batch.begin();
 
         for (PuckActor puck : game_logic.get_pucks()) {
-            puck.draw_trace_path_point(game.batch);
+            puck.draw_trace_path_history(game.batch);
         }
 
         game.batch.end();
