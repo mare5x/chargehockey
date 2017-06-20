@@ -52,6 +52,7 @@ class GameScreen implements Screen {
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_grid_lines(false);
         fbo.set_draw_pucks(false);
+        fbo.update(game.batch);
 
         game_logic = new GameLogic(game, game_stage, level, this);
 
@@ -201,7 +202,6 @@ class GameScreen implements Screen {
 
         button_stage.getViewport().setScreenBounds(0, 0, width, (int) (height * 0.2f));
 
-        fbo.update(game.batch);
         Gdx.graphics.requestRendering();
     }
 
