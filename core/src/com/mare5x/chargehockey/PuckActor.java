@@ -1,8 +1,11 @@
 package com.mare5x.chargehockey;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
@@ -24,6 +27,8 @@ class PuckActor extends ChargeActor {
 
     private GRID_ITEM collision = GRID_ITEM.NULL;
 
+    private RepeatAction blink_collision_action = null;
+
     PuckActor(ChargeHockeyGame game, CHARGE charge_type, DragCallback drag_callback) {
         super(game, charge_type, drag_callback);
 
@@ -42,6 +47,8 @@ class PuckActor extends ChargeActor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        if (blink_collision_action != null)
+            sprite.setColor(getColor());
         super.draw(batch, parentAlpha);
 
         if (draw_velocity) velocity_sprite.draw(batch);
@@ -69,6 +76,13 @@ class PuckActor extends ChargeActor {
 
         velocity_sprite.setSize(0, 0);
         acceleration_sprite.setSize(0, 0);
+    }
+
+    void reset() {
+        stop_blinking();
+        reset_trace_path_history();
+        reset_vectors();
+        set_collision(GRID_ITEM.NULL);
     }
 
     Vector2 get_velocity() {
@@ -133,5 +147,18 @@ class PuckActor extends ChargeActor {
 
     void set_collision(GRID_ITEM collision) {
         this.collision = collision;
+    }
+
+    void start_blinking() {
+        blink_collision_action = Actions.forever(Actions.sequence(Actions.color(Color.RED, 0.5f), Actions.color(Color.WHITE, 0.5f)));
+        addAction(blink_collision_action);
+    }
+
+    void stop_blinking() {
+        if (blink_collision_action != null)
+            removeAction(blink_collision_action);
+        blink_collision_action = null;
+        setColor(Color.WHITE);
+        sprite.setColor(getColor());
     }
 }

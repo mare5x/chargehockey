@@ -23,7 +23,6 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 class GameScreen implements Screen {
     private final ChargeHockeyGame game;
 
-    private final Level level;
     private final GameLogic game_logic;
 
     private final Stage game_stage, button_stage;
@@ -38,7 +37,6 @@ class GameScreen implements Screen {
 
     GameScreen(final ChargeHockeyGame game, Level level) {
         this.game = game;
-        this.level = level;
 
         camera = new OrthographicCamera();
 
@@ -54,7 +52,18 @@ class GameScreen implements Screen {
         fbo.set_draw_pucks(false);
         fbo.update(game.batch);
 
-        game_logic = new GameLogic(game, game_stage, level, this);
+        game_logic = new GameLogic(game, game_stage, level, new GameLogic.ResultCallback() {
+            @Override
+            public void win() {
+                toggle_playing();
+            }
+
+            @Override
+            public void loss() {
+                toggle_playing();
+                game_logic.blink_collided_pucks();
+            }
+        });
 
         button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
 
@@ -117,11 +126,11 @@ class GameScreen implements Screen {
         multiplexer = new InputMultiplexer(game_stage, new GestureDetector(camera_controller), button_stage, back_key_processor);
     }
 
-    void toggle_playing() {
+    private void toggle_playing() {
         toggle_playing(false);
     }
 
-    void toggle_playing(boolean update_background) {
+    private void toggle_playing(boolean update_background) {
         play_button.cycle_style();
         game_logic.set_playing(!game_logic.is_playing());
 

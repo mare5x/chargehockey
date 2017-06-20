@@ -13,9 +13,14 @@ class GameLogic {
         WIN, LOSS, IN_PROGRESS
     }
 
+    interface ResultCallback {
+        void win();
+        void loss();
+    }
+
     private final ChargeHockeyGame game;
     private final Level level;
-    private final GameScreen game_screen;
+    private final ResultCallback result_callback;
 
     private final Stage game_stage;
 
@@ -33,11 +38,11 @@ class GameLogic {
     private final Array<ChargeActor> charge_actors;
     private final Array<PuckActor> puck_actors;
 
-    GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, GameScreen game_screen) {
+    GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, ResultCallback result_callback) {
         this.game = game;
         this.game_stage = game_stage;
         this.level = level;
-        this.game_screen = game_screen;
+        this.result_callback = result_callback;
 
         charge_actors = new Array<ChargeActor>();
         puck_actors = new Array<PuckActor>();
@@ -97,21 +102,22 @@ class GameLogic {
 
             update_collisions();
 
-            GAME_RESULT result = get_game_result();
-            switch (result) {
-                case WIN:
-                    game_screen.toggle_playing();
-                    Gdx.app.log("game", "WIN");
-                    break;
-                case LOSS:
-                    game_screen.toggle_playing();
-                    Gdx.app.log("game", "LOSS");
-                    break;
-                case IN_PROGRESS:
-                    break;
-            }
+            handle_game_result();
 
             dt_accumulator -= dt * (1f / GAME_SPEED);
+        }
+    }
+
+    private void handle_game_result() {
+        GAME_RESULT result = get_game_result();
+
+        if (result == GAME_RESULT.IN_PROGRESS)
+            return;
+
+        if (result == GAME_RESULT.WIN) {
+            result_callback.win();
+        } else {  // LOSS
+            result_callback.loss();
         }
     }
 
@@ -123,7 +129,6 @@ class GameLogic {
 
     private GAME_RESULT get_game_result() {
         int goals = 0;
-        int walls = 0;
         for (PuckActor puck : puck_actors) {
             if (check_out_of_bounds(puck))
                 return GAME_RESULT.LOSS;
@@ -132,11 +137,9 @@ class GameLogic {
             if (collision == GRID_ITEM.GOAL)
                 goals++;
             else if (collision == GRID_ITEM.WALL)
-                walls++;
+                return GAME_RESULT.LOSS;
         }
-        if (walls > 0)
-            return GAME_RESULT.LOSS;
-        else if (goals == puck_actors.size)
+        if (goals == puck_actors.size)
             return GAME_RESULT.WIN;
         else
             return GAME_RESULT.IN_PROGRESS;
@@ -173,6 +176,14 @@ class GameLogic {
         for (PuckActor puck : puck_actors) {
             if (!is_collision(puck.get_collision())) {
                 puck.set_collision(get_collision(puck));
+            }
+        }
+    }
+
+    void blink_collided_pucks() {
+        for (PuckActor puck : puck_actors) {
+            if (puck.get_collision() == GRID_ITEM.WALL) {
+                puck.start_blinking();
             }
         }
     }
@@ -252,9 +263,7 @@ class GameLogic {
             final Vector2 pos = level.get_puck_positions().get(i);
             PuckActor puck = puck_actors.get(i);
             puck.setPosition(pos.x, pos.y);
-            puck.reset_trace_path_history();
-            puck.reset_vectors();
-            puck.set_collision(GRID_ITEM.NULL);
+            puck.reset();
         }
         tmp_vec.setZero();
         force_vec.setZero();

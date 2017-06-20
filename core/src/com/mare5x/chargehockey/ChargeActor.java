@@ -34,7 +34,7 @@ interface DragCallback {
 
 class ChargeActor extends Actor {
     private final CHARGE charge_type;
-    private final Sprite sprite;
+    protected final Sprite sprite;
 
     static final byte SIZE = 1;  // width = height = size
     private static final float RADIUS = SIZE / 2f;
