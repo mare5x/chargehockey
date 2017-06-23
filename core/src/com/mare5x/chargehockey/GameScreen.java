@@ -9,9 +9,15 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -21,11 +27,15 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
 class GameScreen implements Screen {
+    private enum WinDialogBUTTON {
+        BACK, SHARE, NEXT
+    }
+
     private final ChargeHockeyGame game;
 
     private final GameLogic game_logic;
 
-    private final Stage game_stage, button_stage;
+    private final Stage game_stage, hud_stage;
     private final OrthographicCamera camera;
     private final GameCameraController camera_controller;
 
@@ -52,10 +62,13 @@ class GameScreen implements Screen {
         fbo.set_draw_pucks(false);
         fbo.update(game.batch);
 
+        final WinDialog win_dialog = new WinDialog("WIN", game.skin);
+
         game_logic = new GameLogic(game, game_stage, level, new GameLogic.ResultCallback() {
             @Override
             public void win() {
                 toggle_playing();
+                win_dialog.show(hud_stage);
             }
 
             @Override
@@ -65,7 +78,7 @@ class GameScreen implements Screen {
             }
         });
 
-        button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
+        hud_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
 
         final Button menu_button = new Button(game.skin, "menu");
         menu_button.addListener(new ClickListener() {
@@ -103,15 +116,20 @@ class GameScreen implements Screen {
         });
         play_button.pad(10);
 
+        Table hud_table = new Table();
+        hud_table.setFillParent(true);
+
         Table button_table = new Table();
-        button_table.setFillParent(true);
         button_table.setBackground(game.skin.getDrawable("pixels/px_black"));
         button_table.add(play_button).size(Value.percentHeight(0.5f, button_table)).uniform().pad(15);
         button_table.add(charge_pos_button).pad(15).uniform().fill();
         button_table.add(charge_neg_button).pad(15).uniform().fill();
         button_table.add(menu_button).pad(15).uniform().fill();
 
-        button_stage.addActor(button_table);
+        hud_table.add().expand().fill().row();
+        hud_table.add(button_table).height(Value.percentHeight(0.2f, hud_table)).expandX().fill();
+
+        hud_stage.addActor(hud_table);
 
         camera_controller = new GameCameraController(camera);
         InputAdapter back_key_processor = new InputAdapter() {  // same as menu_button
@@ -123,7 +141,7 @@ class GameScreen implements Screen {
                 return true;
             }
         };
-        multiplexer = new InputMultiplexer(game_stage, new GestureDetector(camera_controller), button_stage, back_key_processor);
+        multiplexer = new InputMultiplexer(hud_stage, game_stage, new GestureDetector(camera_controller), back_key_processor);
     }
 
     private void toggle_playing() {
@@ -151,6 +169,7 @@ class GameScreen implements Screen {
 
     void restart_level() {
         game_logic.reset();
+        fbo.update(game.batch);
     }
 
     @Override
@@ -200,16 +219,16 @@ class GameScreen implements Screen {
 
         game_stage.draw();
 
-        button_stage.getViewport().apply();
-        button_stage.act();
-        button_stage.draw();
+        hud_stage.getViewport().apply();
+        hud_stage.act();
+        hud_stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
         game_stage.getViewport().setScreenBounds(0, (int) (height * 0.2f), width, (int) (height * 0.8f));
 
-        button_stage.getViewport().setScreenBounds(0, 0, width, (int) (height * 0.2f));
+        hud_stage.getViewport().setScreenBounds(0, 0, width, height);
 
         Gdx.graphics.requestRendering();
     }
@@ -236,7 +255,7 @@ class GameScreen implements Screen {
     public void dispose() {
         fbo.dispose();
         game_stage.dispose();
-        button_stage.dispose();
+        hud_stage.dispose();
     }
 
     private class GameCameraController extends CameraController {
@@ -277,5 +296,96 @@ class GameScreen implements Screen {
             else
                 setStyle(play_style);
         }
+    }
+
+    private class WinDialog extends Dialog {
+        WinDialog(String title, Skin skin) {
+            super(title, skin);
+
+            setModal(true);
+            setMovable(false);
+
+            pad(15 * ChargeHockeyGame.DENSITY);
+
+            getTitleTable().clear();  // hide the dumb title
+
+            Table content_table = getContentTable();
+
+            Label level_passed_label = new Label("LEVEL PASSED!", game.skin, "borderless");
+            content_table.add(level_passed_label).padBottom(10).row();
+            content_table.add(new Image(game.skin.getDrawable("star"))).size(percent_width(0.3f)).pad(10);
+
+            Table button_table = getButtonTable();
+
+            Button back_button = new Button(skin, "back");
+            back_button.pad(10);
+
+            button_table.add(back_button).pad(15).size(percent_width(0.2f), percent_width(0.1f)).padRight(30 * ChargeHockeyGame.DENSITY);
+            setObject(back_button, WinDialogBUTTON.BACK);
+
+//            TextButton next_level_button = new TextButton("NEXT LEVEL", skin);
+            Button next_level_button = new Button(skin, "forward");
+            button_table.add(next_level_button).pad(15).size(percent_width(0.2f), percent_width(0.1f));
+            setObject(next_level_button, WinDialogBUTTON.NEXT);
+
+            button_table.row();
+
+//            TextButton share_button = new TextButton("SHARE", skin);
+//            Button share_button = new Button(skin, "share");
+//            button_table.add(share_button).pad(15).size(percent_width(0.1f)).colspan(2).expandX().center();
+//            setObject(share_button, WinDialogBUTTON.SHARE);
+
+            addListener(new InputListener() {
+                @Override
+                public boolean keyUp(InputEvent event, int keycode) {
+                    if (keycode == Input.Keys.BACK) {
+                        result(WinDialogBUTTON.BACK);
+                    }
+                    return true;
+                }
+            });
+        }
+
+        @Override
+        public Dialog show(Stage stage) {
+            super.show(stage);
+
+            return this;
+        }
+
+        @Override
+        protected void result(Object object) {
+            hide();
+
+            if (object == WinDialogBUTTON.BACK) {
+                Gdx.app.log("WinDialog", "BACK");
+            } else if (object == WinDialogBUTTON.SHARE) {
+                Gdx.app.log("WinDialog", "SHARE");
+            } else if (object == WinDialogBUTTON.NEXT) {
+                Gdx.app.log("WinDialog", "NEXT");
+
+                dispose();
+                game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.CUSTOM));
+            }
+        }
+
+        private Value percent_width(final float percent) {
+            return new Value() {
+                @Override
+                public float get(Actor context) {
+                    return percent * hud_stage.getWidth();
+                }
+            };
+        }
+
+//        @Override
+//        public float getPrefWidth() {
+//            return hud_stage.getWidth() * 0.75f;
+//        }
+//
+//        @Override
+//        public float getPrefHeight() {
+//            return hud_stage.getHeight() * 0.5f;
+//        }
     }
 }

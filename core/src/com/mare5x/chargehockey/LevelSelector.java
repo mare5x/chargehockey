@@ -97,7 +97,7 @@ class LevelSelector {
     }
 
     void add_level(String level_name) {
-        if (!level_exists(level_name)) {
+        if (!level_name.isEmpty() && !level_exists(level_name)) {
             list.getItems().add(level_name);
             list.invalidateHierarchy();  // reset the layout (add scroll bars to scroll pane)
         }

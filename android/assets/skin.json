@@ -55,21 +55,37 @@
             "up": "check_off",
             "down": "check_on",
             "checked": "check_on"
+        },
+
+        "share": {
+            "up": "share",
+            "down": "share"
+        },
+
+        "forward": {
+            "up": "forward",
+            "down": "forward"
         }
     },
 
     "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
         "default": {
             "font": "font",
-            "fontColor": "black",
-            "background": "pixels/px_grey"
+            "fontColor": "white",
+            "background": "button_up"
+        },
+
+        "borderless": {
+            "font": "font",
+            "fontColor": "white",
+            "background": "pixels/px_black"
         }
      },
 
     "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
         "default": {
-            "down": "pixels/px_grey",
-            "up": "pixels/px_grey",
+            "down": "button_up",
+            "up": "button_up",
             "pressedOffsetY": -2,
             "unpressedOffsetY": 0,
             "imageUp": "play_green256",
@@ -79,12 +95,12 @@
 
     "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
         "default": {
-            "up": "pixels/px_grey",
-            "down": "pixels/px_grey",
+            "up": "button_up",
+            "down": "button_up",
             "pressedOffsetY": -2,
             "unpressedOffsetY": 0,
             "font": "font",
-            "fontColor": "black"
+            "fontColor": "white"
         }
     },
 
@@ -101,16 +117,17 @@
         "default": {
             "titleFont": "font",
             "titleFontColor": "red",
-            "background": "pixels/px_grey",
+            "background": "button_up",
         }
     },
 
     "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
         "default": {
             "font": "font",
-            "fontColor": "black",
-            "cursor": "pixels/px_white",
-            "selection": "pixels/px_white_opaque"
+            "fontColor": "white",
+            "cursor": "pixels/px_grey",
+            "selection": "pixels/px_white_opaque",
+            "background": "button_up"
         }
     },
 

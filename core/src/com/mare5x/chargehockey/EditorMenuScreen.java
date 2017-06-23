@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -35,6 +36,7 @@ class EditorMenuScreen implements Screen {
         this.game = game;
 
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
+//        stage.setDebugAll(true);
 
         input_dialog = new InputDialog("ADD LEVEL", game.skin);
 
@@ -157,8 +159,20 @@ class EditorMenuScreen implements Screen {
         InputDialog(String title, Skin skin) {
             super(title, skin);
 
+            setModal(true);
+            setResizable(false);
+            setMovable(false);
+
+            pad(15 * ChargeHockeyGame.DENSITY);
+            padTop(game.skin.getFont("font").getLineHeight() * 2);
+
+//            getTitleTable().pad(game.skin.getFont("font").getLineHeight());
+//            getTitleTable().clear();
+
+            getContentTable().pad(15 * ChargeHockeyGame.DENSITY);
+
             name_input = new TextField("LEVEL NAME", game.skin);
-            getContentTable().add(name_input).pad(15 * ChargeHockeyGame.DENSITY).width(Value.percentWidth(0.8f, this)).expandX();
+            getContentTable().add(name_input).width(Value.percentWidth(0.8f, this)).expandX();
 
             Button cancel_button = new Button(game.skin, "cancel");
             cancel_button.pad(10);
@@ -168,11 +182,7 @@ class EditorMenuScreen implements Screen {
             button(cancel_button, DIALOG_BUTTON.CANCEL);
             button(confirm_button, DIALOG_BUTTON.CONFIRM);
 
-            getTitleTable().pad(10 * ChargeHockeyGame.DENSITY);
-            getContentTable().pad(10 * ChargeHockeyGame.DENSITY);
-            getButtonTable().pad(10 * ChargeHockeyGame.DENSITY);
-
-            Value size = Value.percentHeight(3, name_input);
+            Value size = percent_width(0.2f);
             getButtonTable().getCell(cancel_button).size(size);
             getButtonTable().getCell(confirm_button).size(size);
         }
@@ -196,6 +206,16 @@ class EditorMenuScreen implements Screen {
 
             name_input.getOnscreenKeyboard().show(false);
             hide();
+        }
+
+
+        private Value percent_width(final float percent) {
+            return new Value() {
+                @Override
+                public float get(Actor context) {
+                    return percent * stage.getWidth();
+                }
+            };
         }
     }
 }
