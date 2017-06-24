@@ -57,6 +57,22 @@ class SettingsFile {
         prefs.flush();
     }
 
+    /** Convenience method to set a single setting and apply the changes. */
+    static void set_setting(SETTINGS_KEY key, boolean val){
+        SettingsFile settings = new SettingsFile();
+        settings.put(key, val);
+        settings.save();
+        apply_global_settings(settings);
+    }
+
+    /** Convenience method to set a single setting and apply the changes. */
+    static void set_setting(SETTINGS_KEY key, float val){
+        SettingsFile settings = new SettingsFile();
+        settings.put(key, val);
+        settings.save();
+        apply_global_settings(settings);
+    }
+
     /** Applies static/global-level settings. */
     static void apply_global_settings() {
         SettingsFile settings = new SettingsFile();

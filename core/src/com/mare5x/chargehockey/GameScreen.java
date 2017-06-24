@@ -124,8 +124,8 @@ class GameScreen implements Screen {
         button_table.add(play_button).size(Value.percentHeight(0.5f, button_table)).uniform().pad(15);
         button_table.add(charge_pos_button).pad(15).uniform().fill();
         button_table.add(charge_neg_button).pad(15).uniform().fill();
-        button_table.add(menu_button).pad(15).uniform().fill();
 
+        hud_table.add(menu_button).pad(15).expandX().right().size(Value.percentWidth(0.15f, hud_table)).row();
         hud_table.add().expand().fill().row();
         hud_table.add(button_table).height(Value.percentHeight(0.2f, hud_table)).expandX().fill();
 

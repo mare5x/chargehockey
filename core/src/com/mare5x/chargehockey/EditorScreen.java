@@ -28,13 +28,15 @@ class EditorScreen implements Screen {
 
     private final InputMultiplexer multiplexer;
 
-    private final Stage edit_stage, button_stage;
+    private final Stage edit_stage, hud_stage;
     private final OrthographicCamera camera;  // camera of edit_stage
     private final EditCameraController camera_controller;
 
     private final LevelFrameBuffer fbo;
 
     private Level level;
+
+    private boolean show_grid = true;
 
     private final GridItemSelectorButton grid_item_button;
     private final Button puck_button;
@@ -75,7 +77,7 @@ class EditorScreen implements Screen {
             edit_stage.addActor(puck);
         }
 
-        button_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.2f), game.batch);
+        hud_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
 
         Button menu_button = new Button(game.skin, "menu");
         menu_button.addListener(new ClickListener() {
@@ -96,20 +98,40 @@ class EditorScreen implements Screen {
         });
         grid_item_button.pad(10);
 
+        final Button show_grid_button = new Button(game.skin, "grid");
+        show_grid_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                show_grid = show_grid_button.isChecked();
+                fbo.set_draw_grid_lines(show_grid);
+                fbo.set_grid_line_spacing(CameraController.get_grid_line_spacing(camera.zoom));
+                fbo.update(game.batch);
+            }
+        });
+        show_grid = LevelFrameBuffer.get_grid_lines_setting();
+        show_grid_button.setChecked(show_grid);
+        show_grid_button.pad(10);
+
         puck_button = new Button();
         TextureRegionDrawable puck_drawable_on = new TextureRegionDrawable(game.sprites.findRegion("puck"));
         Drawable puck_drawable_off = puck_drawable_on.tint(game.skin.getColor("grey"));
         puck_button.setStyle(new Button.ButtonStyle(puck_drawable_off, puck_drawable_off, puck_drawable_on));
         puck_button.pad(10);
 
+        Table hud_table = new Table();
+        hud_table.setFillParent(true);
+
         Table button_table = new Table();
-        button_table.setFillParent(true);
         button_table.setBackground(game.skin.getDrawable("pixels/px_black"));
         button_table.add(grid_item_button).pad(15).size(Value.percentHeight(0.6f, button_table)).uniform();
         button_table.add(puck_button).pad(15).fill().uniform();
-        button_table.add(menu_button).pad(15).size(Value.percentHeight(0.6f, button_table)).expandX().right().uniform();
+        button_table.add(show_grid_button).pad(15).fill().uniform();
 
-        button_stage.addActor(button_table);
+        hud_table.add(menu_button).pad(15).expandX().right().size(Value.percentWidth(0.15f, hud_table)).row();
+        hud_table.add().expand().fill().row();
+        hud_table.add(button_table).height(Value.percentHeight(0.2f, hud_table)).expandX().fill();
+
+        hud_stage.addActor(hud_table);
 
         camera_controller = new EditCameraController(camera);
         InputAdapter back_key_processor = new InputAdapter() {  // same as menu_button
@@ -121,7 +143,7 @@ class EditorScreen implements Screen {
                 return true;
             }
         };
-        multiplexer = new InputMultiplexer(edit_stage, button_stage, new GestureDetector(camera_controller), back_key_processor);
+        multiplexer = new InputMultiplexer(edit_stage, hud_stage, new GestureDetector(camera_controller), back_key_processor);
     }
 
     @Override
@@ -148,16 +170,16 @@ class EditorScreen implements Screen {
         edit_stage.act();
         edit_stage.draw();
 
-        button_stage.getViewport().apply();
-        button_stage.act();
-        button_stage.draw();
+        hud_stage.getViewport().apply();
+        hud_stage.act();
+        hud_stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
         edit_stage.getViewport().setScreenBounds(0, (int) (height * 0.2f), width, (int) (height * 0.8f));
 
-        button_stage.getViewport().setScreenBounds(0, 0, width, (int) (height * 0.2f));
+        hud_stage.getViewport().setScreenBounds(0, 0, width, height);
 
         fbo.update(game.batch);
         Gdx.graphics.requestRendering();
@@ -166,6 +188,7 @@ class EditorScreen implements Screen {
     @Override
     public void pause() {
         level.save_level(puck_actors);
+        SettingsFile.set_setting(SETTINGS_KEY.GRID_LINES, show_grid);
     }
 
     @Override
@@ -177,6 +200,7 @@ class EditorScreen implements Screen {
     public void hide() {
 //        level.save_grid();
         level.save_level(puck_actors);
+        SettingsFile.set_setting(SETTINGS_KEY.GRID_LINES, show_grid);
         dispose();
     }
 
@@ -184,7 +208,7 @@ class EditorScreen implements Screen {
     public void dispose() {
         fbo.dispose();
         edit_stage.dispose();
-        button_stage.dispose();
+        hud_stage.dispose();
     }
 
     private class EditCameraController extends CameraController {

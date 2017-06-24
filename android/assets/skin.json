@@ -65,6 +65,12 @@
         "forward": {
             "up": "forward",
             "down": "forward"
+        },
+
+        "grid": {
+            "up": "grid_off",
+            "down": "grid_on",
+            "checked": "grid_on"
         }
     },
 
