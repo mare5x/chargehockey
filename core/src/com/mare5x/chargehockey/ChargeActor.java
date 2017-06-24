@@ -66,8 +66,8 @@ class ChargeActor extends Actor {
 
         DragListener drag_listener = new DragListener() {
             @Override
-            public void drag(InputEvent event, float x, float y, int pointer) {
-                moveBy(x, y);
+            public void drag(InputEvent event, float dx, float dy, int pointer) {
+                moveBy(dx - getTouchDownX(), dy - getTouchDownY());
             }
 
             @Override
@@ -78,7 +78,7 @@ class ChargeActor extends Actor {
                 }
             }
         };
-        drag_listener.setTapSquareSize(getWidth() / 4);
+        drag_listener.setTapSquareSize(getWidth() / 8);
 
         addListener(drag_listener);
     }
@@ -93,6 +93,12 @@ class ChargeActor extends Actor {
     public void setPosition(float x, float y) {
         super.setPosition(x, y);
         sprite.setPosition(x, y);
+    }
+
+    @Override
+    public void setPosition(float x, float y, int alignment) {
+        super.setPosition(x, y, alignment);
+        sprite.setPosition(getX(), getY());
     }
 
     @Override
