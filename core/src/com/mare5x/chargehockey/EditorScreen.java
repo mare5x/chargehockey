@@ -144,7 +144,7 @@ class EditorScreen implements Screen {
                 return true;
             }
         };
-        multiplexer = new InputMultiplexer(edit_stage, hud_stage, new GestureDetector(camera_controller), back_key_processor);
+        multiplexer = new InputMultiplexer(hud_stage, edit_stage, new GestureDetector(camera_controller), back_key_processor);
     }
 
     @Override

@@ -148,27 +148,44 @@ class GameLogic {
     private boolean check_out_of_bounds(PuckActor puck) {
         float x = puck.getX();
         float y = puck.getY();
-        return x < 0 || x > ChargeHockeyGame.WORLD_WIDTH || y < 0 || y > ChargeHockeyGame.WORLD_HEIGHT;
+        return x < 0 || x + puck.getWidth() > ChargeHockeyGame.WORLD_WIDTH || y < 0 || y + puck.getHeight() > ChargeHockeyGame.WORLD_HEIGHT;
     }
 
+    /** Priority: wall > goal > ... */
     private GRID_ITEM get_collision(PuckActor puck) {
-        int row = (int) (puck.getY());  // == y
-        int col = (int) (puck.getX());  // == x
-        GRID_ITEM grid_item = level.get_grid_item(row, col);
-        if (is_collision(grid_item) && puck.intersects(new Rectangle(col, row, 1, 1)))  // left and bottom edge
-            return grid_item;
+        int row = (int) (puck.getY());
+        int col = (int) (puck.getX());
+        GRID_ITEM bottom_left = check_collision(puck, row, col);
+        if (bottom_left == GRID_ITEM.WALL)
+            return bottom_left;
 
         col = (int) (puck.getRight());
-        grid_item = level.get_grid_item(row, col);
-        if (is_collision(grid_item) && puck.intersects(new Rectangle(col, row, 1, 1)))  // right edge
-            return grid_item;
+        GRID_ITEM bottom_right = check_collision(puck, row, col);
+        if (bottom_right == GRID_ITEM.WALL)
+            return bottom_right;
 
         row = (int) (puck.getTop());
-        col = (int) (puck.getX());
-        grid_item = level.get_grid_item(row, col);
-        if (is_collision(grid_item) && puck.intersects(new Rectangle(col, row, 1, 1)))  // top edge
-            return grid_item;
+        GRID_ITEM top_right = check_collision(puck, row, col);
+        if (top_right == GRID_ITEM.WALL)
+            return top_right;
 
+        col = (int) (puck.getX());
+        GRID_ITEM top_left = check_collision(puck, row, col);
+        if (top_left == GRID_ITEM.WALL)
+            return top_left;
+
+        if (bottom_left != GRID_ITEM.NULL) return bottom_left;
+        if (bottom_right != GRID_ITEM.NULL) return bottom_right;
+        if (top_right != GRID_ITEM.NULL) return top_right;
+        if (top_left != GRID_ITEM.NULL) return top_left;
+
+        return GRID_ITEM.NULL;
+    }
+
+    private GRID_ITEM check_collision(PuckActor puck, int row, int col) {
+        GRID_ITEM grid_item = level.get_grid_item(row, col);
+        if (is_collision(grid_item) && puck.intersects(new Rectangle(col, row, 1, 1)))
+            return grid_item;
         return GRID_ITEM.NULL;
     }
 
