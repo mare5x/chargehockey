@@ -259,7 +259,7 @@ class EditorScreen implements Screen {
         public boolean zoom(float initialDistance, float distance) {
             super.zoom(initialDistance, distance);
 
-            if (!LevelFrameBuffer.get_grid_lines_setting())
+            if (!show_grid)
                 return true;
 
             int grid_line_spacing = get_grid_line_spacing(camera.zoom);
