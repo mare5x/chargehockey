@@ -263,14 +263,16 @@ class GameScreen implements Screen {
 
         GameCameraController(OrthographicCamera camera) {
             super(camera);
+
+            set_double_tap_zoom(true);
         }
 
         @Override
         public boolean tap(float x, float y, int count, int button) {
-            super.tap(x, y, count, button);
-
             game_stage.screenToStageCoordinates(tmp_coords.set(x, y));
             System.out.printf("%f, %f, %d, %d\n", tmp_coords.x, tmp_coords.y, count, button);
+
+            super.tap(tmp_coords.x, tmp_coords.y, count, button);
 
             return false;
         }

@@ -68,6 +68,7 @@ class EditorScreen implements Screen {
         fbo.set_draw_pucks(false);
         fbo.set_draw_grid_lines(LevelFrameBuffer.get_grid_lines_setting());
         fbo.set_grid_line_spacing(CameraController.get_grid_line_spacing(camera.zoom));
+        fbo.update(game.batch);
 
         // add interactive pucks from the stored puck positions
         puck_actors = new Array<ChargeActor>(level.get_puck_positions().size * 2);
@@ -157,10 +158,10 @@ class EditorScreen implements Screen {
         Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        camera_controller.update(delta);
+
         edit_stage.getViewport().apply();
         game.batch.setProjectionMatrix(camera.combined);
-
-        camera_controller.update(delta);
 
         game.batch.begin();
         game.batch.disableBlending();
@@ -182,7 +183,6 @@ class EditorScreen implements Screen {
 
         hud_stage.getViewport().setScreenBounds(0, 0, width, height);
 
-        fbo.update(game.batch);
         Gdx.graphics.requestRendering();
     }
 
@@ -221,14 +221,6 @@ class EditorScreen implements Screen {
 
         @Override
         public boolean tap(float x, float y, int count, int button) {
-            super.tap(x, y, count, button);
-
-            // first the camera must be stopped, then items can be set
-            if (count == 1 && is_moving())
-                return false;
-            else
-                stop_movement(true);
-
             edit_stage.screenToStageCoordinates(tmp_coords.set(x, y));
             System.out.printf("%f, %f, %d, %d\n", tmp_coords.x, tmp_coords.y, count, button);
 
@@ -236,6 +228,11 @@ class EditorScreen implements Screen {
             if (!point_in_view(tmp_coords.x, tmp_coords.y) || !ChargeHockeyGame.WORLD_RECT.contains(tmp_coords)) {
                 return false;
             }
+
+            super.tap(tmp_coords.x, tmp_coords.y, count, button);
+
+            // finish moving
+            if (is_moving()) return false;
 
             int row = (int) tmp_coords.y;
             int col = (int) tmp_coords.x;

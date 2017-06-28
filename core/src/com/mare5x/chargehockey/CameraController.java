@@ -3,25 +3,63 @@ package com.mare5x.chargehockey;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+
 class CameraController extends GestureDetector.GestureAdapter {
+    private enum ZoomLevel {
+        MIN(1.6f),
+        LEVEL1(0.8f),
+        LEVEL2(0.4f),
+        LEVEL3(0.2f),
+        MAX(0.1f);
+
+        private float amount;
+
+        ZoomLevel(float amount) {
+            this.amount = amount;
+        }
+
+        float get_amount() {
+            return amount;
+        }
+
+        /** Returns the next zoom level after the current one, or MIN/MAX if at the end. */
+        ZoomLevel get_next() {
+            int next_ord = MathUtils.clamp(this.ordinal() + 1, MIN.ordinal(), MAX.ordinal());
+            return ZoomLevel.values()[next_ord];
+        }
+
+        /** Get the appropriate ZoomLevel based on the given camera zoom. */
+        static ZoomLevel get(float zoom) {
+            if (zoom < (LEVEL3.amount + MAX.amount) / 2) return MAX;
+            if (between(zoom, (LEVEL3.amount + MAX.amount) / 2, (LEVEL2.amount + LEVEL3.amount) / 2)) return LEVEL3;
+            if (between(zoom, (LEVEL2.amount + LEVEL3.amount) / 2, (LEVEL1.amount + LEVEL2.amount) / 2)) return LEVEL2;
+            if (between(zoom, (LEVEL1.amount + LEVEL2.amount) / 2, (MIN.amount + LEVEL1.amount) / 2)) return LEVEL1;
+            else return MIN;
+        }
+
+        /** Check whether a <= x < b. */
+        static private boolean between(float x, float a, float b) {
+            return x >= a && x < b;
+        }
+    }
+
     private static final int BORDER = 16;
     private final OrthographicCamera camera;
 
     private final Vector2 velocity = new Vector2();
-    private static final float dt = 0.01f;
 
-    private boolean continuous_rendering = Gdx.graphics.isContinuousRendering();
+    private boolean continuous_rendering = Gdx.graphics.isContinuousRendering();  // continuous rendering as defined by external code
+
+    private boolean double_tap_zoom = false;
 
     private boolean is_stopping = false;
 
     private boolean is_moving_to_target = false;
     private final Vector2 target_pos = new Vector2();
-
-    private static final float MIN_ZOOM = 1.6f;
-    private static final float MAX_ZOOM = 0.1f;
 
     private boolean is_zooming = false;
     private float zoom_target_val = -1;
@@ -52,31 +90,29 @@ class CameraController extends GestureDetector.GestureAdapter {
         } else if (is_stopping) {
             stop_movement(false);
         } else if (velocity.isZero()) {
-            if (Gdx.graphics.isContinuousRendering() != continuous_rendering) {
-                Gdx.graphics.setContinuousRendering(continuous_rendering);
-            }
+            restore_rendering();
         } else {
-            move_vel();
-
-            velocity.scl(0.9f);  // smooth camera fling movement
-            if (Math.abs(velocity.x) < 0.1f) {
-                velocity.x = 0;
-            }
-            if (Math.abs(velocity.y) < 0.1f) {
-                velocity.y = 0;
-            }
+            update_vel(delta);
         }
 
         camera.update();
     }
 
-    // Move the camera based on the current velocity.
-    private void move_vel() {
-        float delta_x = velocity.x * dt;
-        float delta_y = velocity.y * dt;
+    /** Move the camera based on the current velocity. */
+    private void update_vel(float delta) {
+        float delta_x = velocity.x * delta;
+        float delta_y = velocity.y * delta;
 
         move_by(delta_x, delta_y);
         handle_out_of_bounds();
+
+        velocity.scl(0.9f);  // smooth camera fling movement
+        if (Math.abs(velocity.x) < 0.1f) {
+            velocity.x = 0;
+        }
+        if (Math.abs(velocity.y) < 0.1f) {
+            velocity.y = 0;
+        }
     }
 
     private void move_by(float delta_x, float delta_y) {
@@ -120,8 +156,11 @@ class CameraController extends GestureDetector.GestureAdapter {
         if (camera.position.epsilonEquals(x, y, 0, 0.01f)) {
             is_moving_to_target = false;
             velocity.setZero();
+            restore_rendering();
             return;
         }
+        Gdx.graphics.setContinuousRendering(true);
+
         is_moving_to_target = true;
 
         target_pos.set(x, y);
@@ -135,7 +174,13 @@ class CameraController extends GestureDetector.GestureAdapter {
         continuous_rendering = value;
     }
 
-    void stop_movement(boolean force_stop) {
+    private void restore_rendering() {
+        boolean render = continuous_rendering || is_moving();
+        if (Gdx.graphics.isContinuousRendering() != render)
+            Gdx.graphics.setContinuousRendering(render);
+    }
+
+    private void stop_movement(boolean force_stop) {
         is_moving_to_target = false;
 
         if (force_stop || velocity.isZero(0.1f)) {
@@ -145,22 +190,49 @@ class CameraController extends GestureDetector.GestureAdapter {
         } else {
             is_stopping = true;
             velocity.scl(0.6f);
-            move_by(velocity.x * dt, velocity.y * dt);
+            move_by(velocity.x * Gdx.graphics.getDeltaTime(), velocity.y * Gdx.graphics.getDeltaTime());
         }
+    }
+
+    void set_double_tap_zoom(boolean val) {
+        double_tap_zoom = val;
     }
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
         stop_movement(false);
+
+        // double tap to zoom in/out
+        if (double_tap_zoom && count == 2) {
+            zoom_to(get_next_zoom_level());
+            move_to(x, y);  // x and y must be in stage coordinates!
+        }
+
         return true;
+    }
+
+    private float get_next_zoom_level() {
+        ZoomLevel zoom_level = ZoomLevel.get(camera.zoom);
+        if (zoom_level == ZoomLevel.MAX) {
+            // if not completely at max zoom, zoom to max
+            if (MathUtils.isEqual(camera.zoom, ZoomLevel.MAX.get_amount(), 0.05f)) {
+                return ZoomLevel.LEVEL2.get_amount();
+            } else {
+                return ZoomLevel.MAX.get_amount();
+            }
+        } else if (zoom_level == ZoomLevel.MIN) {
+            return ZoomLevel.LEVEL1.get_amount();
+        } else {
+            return zoom_level.get_next().get_amount();
+        }
     }
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        if (!continuous_rendering)
-            Gdx.graphics.setContinuousRendering(false);
         velocity.setZero();
         is_moving_to_target = false;
+
+        restore_rendering();
 
         move_by(deltaX, deltaY);
 
@@ -186,8 +258,6 @@ class CameraController extends GestureDetector.GestureAdapter {
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        Gdx.graphics.setContinuousRendering(true);
-
         float new_zoom_distance = distance - initialDistance;
         if (Math.abs(new_zoom_distance) < 3f)  // ignore very small zoom
             return true;
@@ -201,30 +271,32 @@ class CameraController extends GestureDetector.GestureAdapter {
     }
 
     private void zoom_to(float target_val) {
-        if (target_val == camera.zoom) {
+        if (MathUtils.isEqual(target_val, camera.zoom, 0.01f)) {
             is_zooming = false;
+            restore_rendering();
             return;
         }
+        Gdx.graphics.setContinuousRendering(true);
 
         zoom_target_val = target_val;
         is_zooming = true;
 
         camera.zoom += (zoom_target_val - camera.zoom) * 0.1f;
 
-        if (camera.zoom < MAX_ZOOM)
-            camera.zoom = MAX_ZOOM;
-        else if (camera.zoom > MIN_ZOOM)
-            camera.zoom = MIN_ZOOM;
+        if (camera.zoom < ZoomLevel.MAX.get_amount())
+            camera.zoom = ZoomLevel.MAX.get_amount();
+        else if (camera.zoom > ZoomLevel.MIN.get_amount())
+            camera.zoom = ZoomLevel.MIN.get_amount();
     }
 
     @Override
     public void pinchStop() {
         prev_zoom_distance = 0;
-        Gdx.graphics.setContinuousRendering(continuous_rendering);
+        restore_rendering();
     }
 
     boolean is_moving() {
-        return is_moving_to_target || is_stopping || is_zooming;
+        return is_moving_to_target || is_stopping || is_zooming || !velocity.isZero();
     }
 
     static int get_grid_line_spacing(float zoom) {

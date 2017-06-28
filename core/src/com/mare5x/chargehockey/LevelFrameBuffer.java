@@ -142,6 +142,8 @@ class LevelFrameBuffer {
         batch.end();
 
         fbo.end();
+
+        Gdx.graphics.requestRendering();
     }
 
     /** Draws the pucks without clearing the buffer. */
