@@ -135,7 +135,7 @@ class EditorScreen implements Screen {
 
         hud_stage.addActor(hud_table);
 
-        camera_controller = new EditCameraController(camera);
+        camera_controller = new EditCameraController(camera, edit_stage);
         InputAdapter back_key_processor = new InputAdapter() {  // same as menu_button
             @Override
             public boolean keyUp(int keycode) {
@@ -215,8 +215,8 @@ class EditorScreen implements Screen {
     private class EditCameraController extends CameraController {
         final Vector2 tmp_coords = new Vector2();
 
-        EditCameraController(OrthographicCamera camera) {
-            super(camera);
+        EditCameraController(OrthographicCamera camera, Stage stage) {
+            super(camera, stage);
         }
 
         @Override
@@ -229,7 +229,7 @@ class EditorScreen implements Screen {
                 return false;
             }
 
-            super.tap(tmp_coords.x, tmp_coords.y, count, button);
+            super.tap(x, y, count, button);
 
             // finish moving
             if (is_moving()) return false;
@@ -254,7 +254,7 @@ class EditorScreen implements Screen {
 
         @Override
         public boolean zoom(float initialDistance, float distance) {
-            super.zoom(initialDistance, distance);
+            // this is called right after pinch()
 
             if (!show_grid)
                 return true;

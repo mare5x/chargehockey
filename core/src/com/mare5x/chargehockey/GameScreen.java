@@ -131,7 +131,7 @@ class GameScreen implements Screen {
 
         hud_stage.addActor(hud_table);
 
-        camera_controller = new GameCameraController(camera);
+        camera_controller = new GameCameraController(camera, game_stage);
         InputAdapter back_key_processor = new InputAdapter() {  // same as menu_button
             @Override
             public boolean keyUp(int keycode) {
@@ -259,22 +259,10 @@ class GameScreen implements Screen {
     }
 
     private class GameCameraController extends CameraController {
-        final Vector2 tmp_coords = new Vector2();
-
-        GameCameraController(OrthographicCamera camera) {
-            super(camera);
+        GameCameraController(OrthographicCamera camera, Stage stage) {
+            super(camera, stage);
 
             set_double_tap_zoom(true);
-        }
-
-        @Override
-        public boolean tap(float x, float y, int count, int button) {
-            game_stage.screenToStageCoordinates(tmp_coords.set(x, y));
-            System.out.printf("%f, %f, %d, %d\n", tmp_coords.x, tmp_coords.y, count, button);
-
-            super.tap(tmp_coords.x, tmp_coords.y, count, button);
-
-            return false;
         }
     }
 
