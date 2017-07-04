@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.TimeUtils;
 
 
 class CameraController extends GestureDetector.GestureAdapter {
@@ -67,15 +68,20 @@ class CameraController extends GestureDetector.GestureAdapter {
     private float time_passed = 0;
     private Interpolation move_to_interpolator = null;
 
+    private static float px_to_zoom;  // conversion factor
+
     private boolean double_tap_zoom = false;
     private boolean zoom_started = false;
     private boolean is_zooming = false;
     private float zoom_target_val = -1;
     private float prev_zoom_distance = 0;
+    private long zoom_stop_time = 0;
 
     CameraController(OrthographicCamera camera, Stage stage) {
         this.camera = camera;
         this.stage = stage;
+
+        resize(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
     }
 
     Rectangle get_camera_rect() {
@@ -89,9 +95,8 @@ class CameraController extends GestureDetector.GestureAdapter {
     }
 
     void update(float delta) {
-        if (is_zooming) {
+        if (is_zooming)
             zoom_to(zoom_target_val);
-        }
 
         if (is_moving_to_target) {
             move_to(target_pos.x, target_pos.y, move_to_interpolator, delta);
@@ -104,6 +109,12 @@ class CameraController extends GestureDetector.GestureAdapter {
         }
 
         camera.update();
+    }
+
+    void resize(float screen_width, float screen_height) {
+        float diagonal = (float) Math.sqrt(screen_width * screen_width + screen_height * screen_height);
+        float zoom_range = ZoomLevel.MIN.get_amount() - ZoomLevel.MAX.get_amount();
+        px_to_zoom = zoom_range / diagonal;  // 1 px = px_to_zoom camera.zoom units
     }
 
     /** Move the camera based on the current velocity. */
@@ -141,7 +152,7 @@ class CameraController extends GestureDetector.GestureAdapter {
 
         float target_x = camera.position.x, target_y = camera.position.y;
         if (xw < -BORDER * camera.zoom) {
-            target_x += -(BORDER / 2) - xw;
+            target_x += -((BORDER / 2) * camera.zoom) - xw;
             velocity.x = 0;
         }
         else if (xe > ChargeHockeyGame.WORLD_WIDTH + BORDER * camera.zoom) {
@@ -149,7 +160,7 @@ class CameraController extends GestureDetector.GestureAdapter {
             velocity.x = 0;
         }
         if (ys < -BORDER * camera.zoom) {
-            target_y += -(BORDER / 2) - ys;
+            target_y += -((BORDER / 2) * camera.zoom) - ys;
             velocity.y = 0;
         }
         else if (yn > ChargeHockeyGame.WORLD_HEIGHT + BORDER * camera.zoom) {
@@ -280,6 +291,10 @@ class CameraController extends GestureDetector.GestureAdapter {
 
     @Override
     public boolean fling(float velocityX, float velocityY, int button) {
+        // ignore flings just after pinching
+        if (TimeUtils.nanoTime() - zoom_stop_time < 2e7)  // 0.02 seconds
+            return true;
+
         Gdx.graphics.setContinuousRendering(true);
         is_moving_to_target = false;
 
@@ -294,13 +309,14 @@ class CameraController extends GestureDetector.GestureAdapter {
         float dst = pointer1.dst(pointer2);
 
         float new_zoom_distance = dst - initial_dst;
-        if (Math.abs(new_zoom_distance) < 3f)  // ignore very small zoom
+        if (Math.abs(new_zoom_distance) < 2f)  // ignore very small zoom
             return true;
 
-        float amount = (new_zoom_distance - prev_zoom_distance) / camera.viewportHeight;
+        float px_delta = new_zoom_distance - prev_zoom_distance;
         prev_zoom_distance = new_zoom_distance;
 
-        zoom_to(camera.zoom - (amount * 0.285f));
+        // use the px_to_zoom conversion factor to determine the right zoom from the pixel delta value
+        camera.zoom = MathUtils.clamp(camera.zoom - px_delta * px_to_zoom, ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount());
 
         // move to center of pinch at the start of pinching
         if (!zoom_started) {
@@ -319,6 +335,7 @@ class CameraController extends GestureDetector.GestureAdapter {
 
     @Override
     public void pinchStop() {
+        zoom_stop_time = TimeUtils.nanoTime();
         zoom_started = false;
         prev_zoom_distance = 0;
         restore_rendering();
@@ -337,10 +354,7 @@ class CameraController extends GestureDetector.GestureAdapter {
 
         camera.zoom += (zoom_target_val - camera.zoom) * 0.1f;
 
-        if (camera.zoom < ZoomLevel.MAX.get_amount())
-            camera.zoom = ZoomLevel.MAX.get_amount();
-        else if (camera.zoom > ZoomLevel.MIN.get_amount())
-            camera.zoom = ZoomLevel.MIN.get_amount();
+        camera.zoom = MathUtils.clamp(camera.zoom, ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount());
     }
 
     boolean is_moving() {

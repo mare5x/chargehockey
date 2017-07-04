@@ -183,6 +183,8 @@ class EditorScreen implements Screen {
 
         hud_stage.getViewport().setScreenBounds(0, 0, width, height);
 
+        camera_controller.resize(edit_stage.getViewport().getScreenWidth(), edit_stage.getViewport().getScreenHeight());
+
         Gdx.graphics.requestRendering();
     }
 
