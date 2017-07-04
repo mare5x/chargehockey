@@ -55,27 +55,33 @@ class CameraController extends GestureDetector.GestureAdapter {
     private final Stage stage;
 
     private boolean continuous_rendering = Gdx.graphics.isContinuousRendering();  // continuous rendering as defined by external code
+    private boolean double_tap_zoom = false;
 
     private final Vector2 tmp_coords = new Vector2();
     private final Vector2 velocity = new Vector2();
 
     private boolean is_stopping = false;
-
     private boolean is_moving_to_target = false;
+    private boolean is_zooming = false;
+
     private final Vector2 target_pos = new Vector2();
     private final Vector2 start_pos = new Vector2();
-    private static final float move_to_duration = 0.6f;  // in seconds
-    private float time_passed = 0;
+
     private Interpolation move_to_interpolator = null;
+    private static final float move_to_duration = 0.6f;  // in seconds
+    private float move_to_time = 0;
+
+    private Interpolation zoom_to_interpolator = null;
+    private static final float zoom_to_duration = 0.6f;  // in seconds
+    private float zoom_to_time = 0;
 
     private static float px_to_zoom;  // conversion factor
 
-    private boolean double_tap_zoom = false;
     private boolean zoom_started = false;
-    private boolean is_zooming = false;
     private float zoom_target_val = -1;
     private float prev_zoom_distance = 0;
     private long zoom_stop_time = 0;
+    private float zoom_start_value = 0;
 
     CameraController(OrthographicCamera camera, Stage stage) {
         this.camera = camera;
@@ -96,7 +102,7 @@ class CameraController extends GestureDetector.GestureAdapter {
 
     void update(float delta) {
         if (is_zooming)
-            zoom_to(zoom_target_val);
+            zoom_to(zoom_target_val, zoom_to_interpolator, delta);
 
         if (is_moving_to_target) {
             move_to(target_pos.x, target_pos.y, move_to_interpolator, delta);
@@ -194,16 +200,16 @@ class CameraController extends GestureDetector.GestureAdapter {
         if (target_pos.x != x || target_pos.y != y) {
             start_pos.set(camera.position.x, camera.position.y);
             target_pos.set(x, y);
-            time_passed = 0;
+            move_to_time = 0;
         }
 
         if (interpolator == null) {
             camera.position.x += (x - camera.position.x) * 0.125f;
             camera.position.y += (y - camera.position.y) * 0.125f;
         } else {
-            time_passed += delta;
-            time_passed = Math.min(time_passed, move_to_duration);
-            float alpha = interpolator.apply(time_passed / move_to_duration);
+            move_to_time += delta;
+            move_to_time = Math.min(move_to_time, move_to_duration);
+            float alpha = interpolator.apply(move_to_time / move_to_duration);
 
             tmp_coords.set(target_pos).sub(start_pos).scl(alpha);
 
@@ -247,8 +253,8 @@ class CameraController extends GestureDetector.GestureAdapter {
 
         // double tap to zoom in/out
         if (double_tap_zoom && count == 2) {
-            zoom_to(get_next_zoom_level());
-            move_to(tmp_coords.x, tmp_coords.y);  // x and y must be in stage coordinates!
+            zoom_to(get_next_zoom_level(), Interpolation.pow2Out);
+            move_to(tmp_coords.x, tmp_coords.y, Interpolation.pow2Out);  // x and y must be in stage coordinates!
         }
 
         return true;
@@ -315,6 +321,8 @@ class CameraController extends GestureDetector.GestureAdapter {
         float px_delta = new_zoom_distance - prev_zoom_distance;
         prev_zoom_distance = new_zoom_distance;
 
+        Gdx.graphics.setContinuousRendering(true);
+
         // use the px_to_zoom conversion factor to determine the right zoom from the pixel delta value
         camera.zoom = MathUtils.clamp(camera.zoom - px_delta * px_to_zoom, ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount());
 
@@ -342,19 +350,37 @@ class CameraController extends GestureDetector.GestureAdapter {
     }
 
     private void zoom_to(float target_val) {
+        zoom_to(target_val, null, 0);
+    }
+
+    private void zoom_to(float target_val, Interpolation interpolator) {
+        zoom_to(target_val, interpolator, 0);
+    }
+
+    private void zoom_to(float target_val, Interpolation interpolator, float delta) {
         if (MathUtils.isEqual(target_val, camera.zoom, 0.01f)) {
             is_zooming = false;
             restore_rendering();
             return;
         }
         Gdx.graphics.setContinuousRendering(true);
-
-        zoom_target_val = target_val;
         is_zooming = true;
 
-        camera.zoom += (zoom_target_val - camera.zoom) * 0.1f;
+        if (zoom_target_val != target_val) {
+            zoom_target_val = target_val;
+            zoom_start_value = camera.zoom;
+            zoom_to_time = 0;
+            zoom_to_interpolator = interpolator;
+        }
 
-        camera.zoom = MathUtils.clamp(camera.zoom, ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount());
+        if (interpolator == null)
+            camera.zoom += (zoom_target_val - camera.zoom) * 0.1f;
+        else {
+            zoom_to_time += delta;
+            zoom_to_time = Math.min(zoom_to_time, zoom_to_duration);
+            float alpha = interpolator.apply(zoom_to_time / zoom_to_duration);
+            camera.zoom = zoom_start_value + (target_val - zoom_start_value) * alpha;
+        }
     }
 
     boolean is_moving() {
