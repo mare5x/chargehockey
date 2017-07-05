@@ -79,9 +79,9 @@ class CameraController extends GestureDetector.GestureAdapter {
 
     private boolean zoom_started = false;
     private float zoom_target_val = -1;
-    private float prev_zoom_distance = 0;
     private long zoom_stop_time = 0;
-    private float zoom_start_value = 0;
+    private float pinch_start_zoom = 0;
+    private float zoom_to_start_value = 0;
 
     CameraController(OrthographicCamera camera, Stage stage) {
         this.camera = camera;
@@ -192,15 +192,15 @@ class CameraController extends GestureDetector.GestureAdapter {
             restore_rendering();
             return;
         }
-        Gdx.graphics.setContinuousRendering(true);
+        if (!Gdx.graphics.isContinuousRendering())
+            Gdx.graphics.setContinuousRendering(true);
 
-        is_moving_to_target = true;
-        move_to_interpolator = interpolator;
-
-        if (target_pos.x != x || target_pos.y != y) {
+        if (!is_moving_to_target || target_pos.x != x || target_pos.y != y || move_to_interpolator != interpolator) {
+            is_moving_to_target = true;
             start_pos.set(camera.position.x, camera.position.y);
             target_pos.set(x, y);
             move_to_time = 0;
+            move_to_interpolator = interpolator;
         }
 
         if (interpolator == null) {
@@ -301,7 +301,8 @@ class CameraController extends GestureDetector.GestureAdapter {
         if (TimeUtils.nanoTime() - zoom_stop_time < 2e7)  // 0.02 seconds
             return true;
 
-        Gdx.graphics.setContinuousRendering(true);
+        if (!Gdx.graphics.isContinuousRendering())
+            Gdx.graphics.setContinuousRendering(true);
         is_moving_to_target = false;
 
         velocity.set(velocityX, velocityY);
@@ -313,21 +314,17 @@ class CameraController extends GestureDetector.GestureAdapter {
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
         float initial_dst = initialPointer1.dst(initialPointer2);
         float dst = pointer1.dst(pointer2);
-
         float new_zoom_distance = dst - initial_dst;
-        if (Math.abs(new_zoom_distance) < 2f)  // ignore very small zoom
-            return true;
 
-        float px_delta = new_zoom_distance - prev_zoom_distance;
-        prev_zoom_distance = new_zoom_distance;
-
-        Gdx.graphics.setContinuousRendering(true);
-
-        // use the px_to_zoom conversion factor to determine the right zoom from the pixel delta value
-        camera.zoom = MathUtils.clamp(camera.zoom - px_delta * px_to_zoom, ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount());
+        if (!Gdx.graphics.isContinuousRendering())
+            Gdx.graphics.setContinuousRendering(true);
 
         // move to center of pinch at the start of pinching
         if (!zoom_started) {
+            zoom_started = true;
+
+            pinch_start_zoom = camera.zoom;
+
             float center_x = (initialPointer1.x + initialPointer2.x) / 2;
             float center_y = (initialPointer1.y + initialPointer2.y) / 2;
 
@@ -336,7 +333,8 @@ class CameraController extends GestureDetector.GestureAdapter {
             move_to(tmp_coords.x, tmp_coords.y, Interpolation.pow3Out);
         }
 
-        zoom_started = true;
+        // use the px_to_zoom conversion factor to determine the right zoom from the pixel delta value
+        zoom_to(MathUtils.clamp(pinch_start_zoom - new_zoom_distance * px_to_zoom, ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount()), Interpolation.pow3Out);
 
         return true;
     }
@@ -345,7 +343,6 @@ class CameraController extends GestureDetector.GestureAdapter {
     public void pinchStop() {
         zoom_stop_time = TimeUtils.nanoTime();
         zoom_started = false;
-        prev_zoom_distance = 0;
         restore_rendering();
     }
 
@@ -363,12 +360,13 @@ class CameraController extends GestureDetector.GestureAdapter {
             restore_rendering();
             return;
         }
-        Gdx.graphics.setContinuousRendering(true);
-        is_zooming = true;
+        if (!Gdx.graphics.isContinuousRendering())
+            Gdx.graphics.setContinuousRendering(true);
 
-        if (zoom_target_val != target_val) {
+        if (!is_zooming || zoom_target_val != target_val || zoom_to_interpolator != interpolator) {
+            is_zooming = true;
             zoom_target_val = target_val;
-            zoom_start_value = camera.zoom;
+            zoom_to_start_value = camera.zoom;
             zoom_to_time = 0;
             zoom_to_interpolator = interpolator;
         }
@@ -379,7 +377,7 @@ class CameraController extends GestureDetector.GestureAdapter {
             zoom_to_time += delta;
             zoom_to_time = Math.min(zoom_to_time, zoom_to_duration);
             float alpha = interpolator.apply(zoom_to_time / zoom_to_duration);
-            camera.zoom = zoom_start_value + (target_val - zoom_start_value) * alpha;
+            camera.zoom = zoom_to_start_value + (target_val - zoom_to_start_value) * alpha;
         }
     }
 
