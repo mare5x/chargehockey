@@ -85,7 +85,7 @@ class EditorScreen implements Screen {
         menu_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(game.menu_screen);
+                game.setScreen(new EditorSubScreen(game, EditorScreen.this));
             }
         });
         menu_button.pad(10);
@@ -140,7 +140,7 @@ class EditorScreen implements Screen {
             @Override
             public boolean keyUp(int keycode) {
                 if (keycode == Input.Keys.BACK) {
-                    game.setScreen(game.menu_screen);
+                    game.setScreen(new EditorSubScreen(game, EditorScreen.this));
                 }
                 return true;
             }
@@ -201,10 +201,8 @@ class EditorScreen implements Screen {
 
     @Override
     public void hide() {
-//        level.save_grid();
         level.save_level(puck_actors);
         SettingsFile.set_setting(SETTINGS_KEY.GRID_LINES, show_grid);
-        dispose();
     }
 
     @Override
@@ -212,6 +210,10 @@ class EditorScreen implements Screen {
         fbo.dispose();
         edit_stage.dispose();
         hud_stage.dispose();
+    }
+
+    Level get_level() {
+        return level;
     }
 
     private class EditCameraController extends CameraController {
