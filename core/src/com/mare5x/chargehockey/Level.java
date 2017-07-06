@@ -40,6 +40,10 @@ class Level {
         }
     }
 
+    final LEVEL_TYPE get_type() {
+        return level_type;
+    }
+
     final String get_name() {
         return name;
     }

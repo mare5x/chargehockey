@@ -1,11 +1,5 @@
 package com.mare5x.chargehockey;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,27 +10,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
-class EditorMenuScreen implements Screen {
+class EditorMenuScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
 
     private final InputDialog input_dialog;
     private final LevelSelector level_selector;
-
-    private final Stage stage;
-    private final InputMultiplexer input_multiplexer;
 
     private enum DIALOG_BUTTON {
         CANCEL, CONFIRM
     }
 
     EditorMenuScreen(final ChargeHockeyGame game) {
-        this.game = game;
+        super(game);
 
-        stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
-//        stage.setDebugAll(true);
+        this.game = game;
 
         input_dialog = new InputDialog("ADD LEVEL", game.skin);
 
@@ -89,68 +78,21 @@ class EditorMenuScreen implements Screen {
         left_subtable.add(add_button).padBottom(30).size(twidth).expand().row();
         left_subtable.add(remove_button).size(twidth).expand();
 
-        Table table = new Table();
-        table.setFillParent(true);
-
         table.pad(50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY, 50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY);
 
         table.add(left_subtable).pad(15).width(Value.percentWidth(0.25f, table)).expandY().fillY();
         table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(play_button).pad(15).colspan(2).size(Value.percentWidth(0.3f, table));
-
-        stage.addActor(table);
-
-        InputAdapter back_key_processor = new InputAdapter() {
-            @Override
-            public boolean keyUp(int keycode) {
-                if (keycode == Input.Keys.BACK) {
-                    game.setScreen(game.menu_screen);
-                }
-                return true;
-            }
-        };
-        input_multiplexer = new InputMultiplexer(stage, back_key_processor);
     }
 
     @Override
-    public void show() {
-        Gdx.input.setInputProcessor(input_multiplexer);
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl20.glClearColor(0, 0, 0, 1);
-        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act();
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height);
-
-        Gdx.graphics.requestRendering();
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
+    protected void back_key_pressed() {
+        game.setScreen(game.menu_screen);
     }
 
     @Override
     public void hide() {
         dispose();
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
     }
 
     private class InputDialog extends Dialog {
@@ -207,7 +149,6 @@ class EditorMenuScreen implements Screen {
             name_input.getOnscreenKeyboard().show(false);
             hide();
         }
-
 
         private Value percent_width(final float percent) {
             return new Value() {

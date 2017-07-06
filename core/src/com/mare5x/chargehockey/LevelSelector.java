@@ -69,6 +69,8 @@ class LevelSelector {
         for (FileHandle child : dir.list()) {
             list.getItems().add(child.nameWithoutExtension());
         }
+
+        list.invalidateHierarchy();
     }
 
     private String get_selected_name() {

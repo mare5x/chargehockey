@@ -1,26 +1,20 @@
 package com.mare5x.chargehockey;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
-class GameMenuScreen implements Screen {
-    private final Stage stage;
-    private final InputMultiplexer input_multiplexer;
+class GameMenuScreen extends BaseMenuScreen {
+    private final ChargeHockeyGame game;
+    private final GameScreen parent_screen;
 
-    GameMenuScreen(final ChargeHockeyGame game, final Screen parent_screen) {
-        stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
+    GameMenuScreen(final ChargeHockeyGame game, final GameScreen parent_screen, final Level level) {
+        super(game);
+
+        this.game = game;
+        this.parent_screen = parent_screen;
 
         TextButton return_button = new TextButton("RETURN TO GAME", game.skin);
         return_button.pad(10);
@@ -36,7 +30,17 @@ class GameMenuScreen implements Screen {
         restart_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((GameScreen) (parent_screen)).restart_level();
+                parent_screen.restart_level();
+            }
+        });
+
+        TextButton edit_button = new TextButton("EDIT LEVEL", game.skin);
+        edit_button.pad(10);
+        edit_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new EditorScreen(game, level));
+                parent_screen.dispose();
             }
         });
 
@@ -59,66 +63,20 @@ class GameMenuScreen implements Screen {
             }
         });
 
-        Table table = new Table();
-        table.setFillParent(true);
-
         table.add(return_button).pad(15).width(Value.percentWidth(0.6f, table)).uniform().fillX().row();
         table.add(restart_button).pad(15).uniform().fillX().row();
+        if (level.get_type() == LEVEL_TYPE.CUSTOM) table.add(edit_button).pad(15).uniform().fillX().row();
         table.add(main_menu_button).pad(15).uniform().fillX().row();
         table.add(settings_button).pad(15).uniform().fillX();
-
-        stage.addActor(table);
-
-        InputAdapter back_key_processor = new InputAdapter() {  // same as return button
-            @Override
-            public boolean keyUp(int keycode) {
-                if (keycode == Input.Keys.BACK) {
-                    game.setScreen(parent_screen);
-                }
-                return true;
-            }
-        };
-        input_multiplexer = new InputMultiplexer(stage, back_key_processor);
     }
 
     @Override
-    public void show() {
-        Gdx.input.setInputProcessor(input_multiplexer);
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl20.glClearColor(0, 0, 0, 1);
-        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act();
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, false);
-
-        Gdx.graphics.requestRendering();
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
+    protected void back_key_pressed() {
+        game.setScreen(parent_screen);
     }
 
     @Override
     public void hide() {
         dispose();
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
     }
 }

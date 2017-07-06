@@ -8,7 +8,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -45,7 +44,7 @@ class GameScreen implements Screen {
 
     private final InputMultiplexer multiplexer;
 
-    GameScreen(final ChargeHockeyGame game, Level level) {
+    GameScreen(final ChargeHockeyGame game, final Level level) {
         this.game = game;
 
         camera = new OrthographicCamera();
@@ -84,7 +83,7 @@ class GameScreen implements Screen {
         menu_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameMenuScreen(game, GameScreen.this));
+                game.setScreen(new GameMenuScreen(game, GameScreen.this, level));
             }
         });
         menu_button.pad(10);
@@ -136,7 +135,7 @@ class GameScreen implements Screen {
             @Override
             public boolean keyUp(int keycode) {
                 if (keycode == Input.Keys.BACK) {
-                    game.setScreen(new GameMenuScreen(game, GameScreen.this));
+                    game.setScreen(new GameMenuScreen(game, GameScreen.this, level));
                 }
                 return true;
             }

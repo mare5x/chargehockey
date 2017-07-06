@@ -1,30 +1,16 @@
 package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
-class MenuScreen implements Screen {
-    private Stage stage;
-    private final InputMultiplexer input_multiplexer;
-
+class MenuScreen extends BaseMenuScreen {
     MenuScreen(final ChargeHockeyGame game) {
-        stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
-
-        Table table = new Table(game.skin);
-        table.setFillParent(true);
+        super(game);
 
         Button play_button = new Button(game.skin, "play");
         play_button.addListener(new ClickListener() {
@@ -55,60 +41,22 @@ class MenuScreen implements Screen {
         table.add(play_button).expandX().pad(15).size(Value.percentWidth(0.6f, table)).row();
         table.add(edit_button).pad(15).width(Value.percentWidth(0.6f, table)).fillX().row();
         table.add(settings_button).pad(15).width(Value.percentWidth(0.6f, table)).fillX();
+    }
 
-        stage.addActor(table);
-
-        InputAdapter back_key_processor = new InputAdapter() {  // same as return button
-            @Override
-            public boolean keyUp(int keycode) {
-                if (keycode == Input.Keys.BACK) {
-                    Gdx.app.exit();
-                }
-                return true;
-            }
-        };
-        input_multiplexer = new InputMultiplexer(stage, back_key_processor);
+    @Override
+    protected void back_key_pressed() {
+        Gdx.app.exit();
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(input_multiplexer);
+        super.show();
 
         SettingsFile.apply_global_settings();
     }
 
     @Override
-    public void render(float delta) {
-        Gdx.gl20.glClearColor(0, 0, 0, 1);
-        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act();
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, false);
-
-        Gdx.graphics.requestRendering();
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
     public void hide() {
-    }
 
-    @Override
-    public void dispose() {
-        stage.dispose();
     }
 }

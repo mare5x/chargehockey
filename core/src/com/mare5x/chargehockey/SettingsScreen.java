@@ -1,14 +1,9 @@
 package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -18,14 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import java.util.Locale;
 
 
-class SettingsScreen implements Screen {
-    private final Stage stage;
-    private final InputMultiplexer input_multiplexer;
+class SettingsScreen extends BaseMenuScreen {
+    private final ChargeHockeyGame game;
+    private final Screen parent_screen;
 
     private final SettingsFile settings_file;
 
@@ -33,9 +27,12 @@ class SettingsScreen implements Screen {
     private final Slider game_speed_slider;
 
     SettingsScreen(final ChargeHockeyGame game, final Screen parent_screen) {
-        settings_file = new SettingsFile();
+        super(game);
 
-        stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
+        this.game = game;
+        this.parent_screen = parent_screen;
+
+        settings_file = new SettingsFile();
 
         Button back_button = new Button(game.skin, "back");
         back_button.pad(10);
@@ -63,9 +60,6 @@ class SettingsScreen implements Screen {
         acceleration_checkbox = new SettingCheckBox(game, "SHOW ACCELERATION VECTOR", SETTINGS_KEY.SHOW_ACCELERATION_VECTOR);
         trace_path_checkbox = new SettingCheckBox(game, "TRACE PATH?", SETTINGS_KEY.TRACE_PATH);
 
-        Table table = new Table();
-        table.setFillParent(true);
-
         table.add(back_button).pad(15).size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).left().row();
 
         table.add().expand().colspan(2).row();
@@ -80,19 +74,11 @@ class SettingsScreen implements Screen {
         trace_path_checkbox.add_to_table(table);
 
         table.add().colspan(2).expand();
+    }
 
-        stage.addActor(table);
-
-        InputAdapter back_key_processor = new InputAdapter() {
-            @Override
-            public boolean keyUp(int keycode) {
-                if (keycode == Input.Keys.BACK) {
-                    game.setScreen(parent_screen);
-                }
-                return true;
-            }
-        };
-        input_multiplexer = new InputMultiplexer(stage, back_key_processor);
+    @Override
+    protected void back_key_pressed() {
+        game.setScreen(parent_screen);
     }
 
     private void save() {
@@ -105,22 +91,8 @@ class SettingsScreen implements Screen {
     }
 
     @Override
-    public void show() {
-        Gdx.input.setInputProcessor(input_multiplexer);
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl20.glClearColor(0, 0, 0, 1);
-        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act();
-        stage.draw();
-    }
-
-    @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, false);
+        super.resize(width, height);
 
         // work around knob size
         game_speed_slider.getStyle().knob.setMinHeight(width * 0.125f);
@@ -131,12 +103,9 @@ class SettingsScreen implements Screen {
 
     @Override
     public void pause() {
+        super.pause();
+
         save();
-    }
-
-    @Override
-    public void resume() {
-
     }
 
     @Override
@@ -144,11 +113,6 @@ class SettingsScreen implements Screen {
         save();
         SettingsFile.apply_global_settings(settings_file);
         dispose();
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
     }
 
     /** Encapsulates a unified checkbox. Use with add_to_table(). DO NOT use it as an Actor. */
