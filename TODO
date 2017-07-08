@@ -1,11 +1,5 @@
 SetCullingArea
 
-smooth camera
-
 better trace path
 
 fix camera movement and position
-
-add game win/loss message
-
-add logo

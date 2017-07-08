@@ -16,7 +16,7 @@ import java.util.Locale;
 
 
 enum LEVEL_TYPE {
-    EASY, NORMAL, HARD, CUSTOM
+    EASY, MEDIUM, HARD, CUSTOM
 }
 
 

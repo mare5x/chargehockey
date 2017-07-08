@@ -31,6 +31,7 @@ class GameScreen implements Screen {
     }
 
     private final ChargeHockeyGame game;
+    private final Level level;
 
     private final GameLogic game_logic;
 
@@ -46,6 +47,7 @@ class GameScreen implements Screen {
 
     GameScreen(final ChargeHockeyGame game, final Level level) {
         this.game = game;
+        this.level = level;
 
         camera = new OrthographicCamera();
 
@@ -246,7 +248,6 @@ class GameScreen implements Screen {
 
     @Override
     public void hide() {
-//        dispose();
         game_logic.save_charge_state();
         if (game_logic.is_playing())
             toggle_playing();
@@ -356,7 +357,7 @@ class GameScreen implements Screen {
                 Gdx.app.log("WinDialog", "NEXT");
 
                 dispose();
-                game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.CUSTOM));
+                game.setScreen(new LevelSelectorScreen(game, level.get_type()));
             }
         }
 

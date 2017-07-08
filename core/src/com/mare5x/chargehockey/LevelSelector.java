@@ -130,18 +130,25 @@ class LevelSelector {
     }
 
     static FileHandle get_level_grid_fhandle(LEVEL_TYPE level_type, String level_name) {
-        return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.grid", level_type.name(), level_name, level_name));
+        if (level_type == LEVEL_TYPE.CUSTOM)
+            return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.grid", level_type.name(), level_name, level_name));
+        return Gdx.files.internal(String.format(Locale.US, "LEVELS/%s/%s/%s.grid", level_type.name(), level_name, level_name));
     }
 
+    /* Gets the level's save file, which is always in Gdx.files.local, since it has to be writable. */
     static FileHandle get_level_save_fhandle(LEVEL_TYPE level_type, String name) {
         return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.save", level_type.name(), name, name));
     }
 
     static FileHandle get_level_dir_fhandle(LEVEL_TYPE level_type, String name) {
-        return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/", level_type.name(), name));
+        if (level_type == LEVEL_TYPE.CUSTOM)
+            return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/", level_type.name(), name));
+        return Gdx.files.internal(String.format(Locale.US, "LEVELS/%s/%s/", level_type.name(), name));
     }
 
     static FileHandle get_levels_dir_fhandle(LEVEL_TYPE level_type) {
-        return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/", level_type));
+        if (level_type == LEVEL_TYPE.CUSTOM)
+            return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/", level_type));
+        return Gdx.files.internal(String.format(Locale.US, "LEVELS/%s/", level_type));
     }
 }

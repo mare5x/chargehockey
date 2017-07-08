@@ -37,7 +37,7 @@ class LevelSelectorScreen extends BaseMenuScreen {
         });
         play_button.pad(10);
 
-//        table.pad(50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY, 50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY);
+        table.pad(10 * ChargeHockeyGame.DENSITY);;
 
         table.add(back_button).pad(15).expandX().size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).left().top().row();
         table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();

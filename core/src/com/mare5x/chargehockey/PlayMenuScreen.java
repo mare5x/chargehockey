@@ -1,6 +1,5 @@
 package com.mare5x.chargehockey;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -29,7 +28,7 @@ class PlayMenuScreen extends BaseMenuScreen {
         easy_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("easy_button", "clicked");
+                game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.EASY));
             }
         });
         easy_button.pad(10);
@@ -38,7 +37,7 @@ class PlayMenuScreen extends BaseMenuScreen {
         medium_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("medium_button", "clicked");
+                game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.MEDIUM));
             }
         });
         medium_button.pad(10);
@@ -47,7 +46,7 @@ class PlayMenuScreen extends BaseMenuScreen {
         hard_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("hard_button", "clicked");
+                game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.HARD));
             }
         });
         hard_button.pad(10);
