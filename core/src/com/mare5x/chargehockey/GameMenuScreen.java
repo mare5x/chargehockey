@@ -44,6 +44,16 @@ class GameMenuScreen extends BaseMenuScreen {
             }
         });
 
+        TextButton selector_button = new TextButton("SELECT LEVEL", game.skin);
+        selector_button.pad(10);
+        selector_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new LevelSelectorScreen(game, level.get_type()));
+                parent_screen.dispose();
+            }
+        });
+
         TextButton main_menu_button = new TextButton("MAIN MENU", game.skin);
         main_menu_button.pad(10);
         main_menu_button.addListener(new ClickListener() {
@@ -66,6 +76,7 @@ class GameMenuScreen extends BaseMenuScreen {
         table.add(return_button).pad(15).width(Value.percentWidth(0.6f, table)).uniform().fillX().row();
         if (level.get_type() == LEVEL_TYPE.CUSTOM) table.add(edit_button).pad(15).uniform().fillX().row();
         table.add(restart_button).pad(15).uniform().fillX().row();
+        table.add(selector_button).pad(15).uniform().fillX().row();
         table.add(main_menu_button).pad(15).uniform().fillX().row();
         table.add(settings_button).pad(15).uniform().fillX();
     }

@@ -19,7 +19,7 @@ class PlayMenuScreen extends BaseMenuScreen {
         back_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(game.menu_screen);
+                back_key_pressed();
             }
         });
         back_button.pad(10);

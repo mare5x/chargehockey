@@ -35,7 +35,7 @@ class EditorSubScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton selector_button = new TextButton("CHANGE LEVEL", game.skin);
+        TextButton selector_button = new TextButton("SELECT LEVEL", game.skin);
         selector_button.pad(10);
         selector_button.addListener(new ClickListener() {
             @Override

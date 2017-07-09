@@ -150,7 +150,7 @@ class PuckActor extends ChargeActor {
             force_sprite.setColor(POS_RED);
         else
             force_sprite.setColor(NEG_BLUE);
-        force_sprite.setAlpha(len / _MAX_LENGTH);
+        force_sprite.setAlpha(Math.min(len / _MAX_LENGTH, 0.8f));
         return force_sprite;
     }
 

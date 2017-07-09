@@ -39,7 +39,7 @@ class SettingsScreen extends BaseMenuScreen {
         back_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(parent_screen);
+                back_key_pressed();
             }
         });
 
