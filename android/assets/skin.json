@@ -1,6 +1,7 @@
 {
     "com.badlogic.gdx.graphics.Color": {
     	"green": { "a": 1, "r": 0.568, "g": 0.86, "b": 0.35 },
+    	"blue": { "a": 1, "r": 0, "g": 0.58, "b": 1 },
     	"dark_brown": { "a": 1, "r": 0.26, "g": 0.14, "b": 0.13 },
     	"purple": { "a": 1, "r": 0.698, "g": 0, "b": 1 },
     	"orange": {"a": 1, "r": 1, "g": 0.5, "b": 0 },

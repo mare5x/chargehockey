@@ -32,8 +32,7 @@ class GameLogic {
     private static final float dt = 0.01f;
     private float dt_accumulator = 0;  // http://gafferongames.com/game-physics/fix-your-timestep/
 
-    private final Vector2 force_vec = new Vector2(), puck_vec = new Vector2();
-    private final Vector2 tmp_vec = new Vector2();
+    private final Vector2 force_vec = new Vector2(), tmp_vec = new Vector2();
 
     private final Array<ChargeActor> charge_actors;
     private final Array<PuckActor> puck_actors;
@@ -66,14 +65,27 @@ class GameLogic {
     private ChargeActor add_charge(CHARGE charge_type, float x, float y) {
         ChargeActor charge = new ChargeActor(game, charge_type, new DragCallback() {
             @Override
-            public void out_of_bounds(ChargeActor charge) {
+            void out_of_bounds(ChargeActor charge) {
                 remove_charge(charge);
+            }
+
+            @Override
+            void drag(ChargeActor charge) {
+                if (PuckActor.get_draw_forces()) {
+                    for (PuckActor puck : puck_actors) {
+                        puck.set_force(charge, calc_force(puck, charge));
+                    }
+                }
             }
         });
         charge.setPosition(x, y);
 
         charge_actors.add(charge);
         game_stage.addActor(charge);
+
+        for (PuckActor puck : puck_actors) {
+            puck.set_force(charge, calc_force(puck, charge));
+        }
 
         return charge;
     }
@@ -85,6 +97,10 @@ class GameLogic {
         charge_actors.removeValue(charge, true);
         charge.clear();
         charge.remove();
+
+        for (PuckActor puck : puck_actors) {
+            puck.remove_force(charge);
+        }
     }
 
     void update(float delta) {
@@ -238,7 +254,6 @@ class GameLogic {
 
     private Vector2 calc_net_force(final PuckActor puck) {
         force_vec.setZero();
-        puck_vec.set(puck.getX(Align.center), puck.getY(Align.center));
         // calculate the net force on the puck
         for (ChargeActor charge : charge_actors) {
             apply_force(puck, charge);
@@ -246,13 +261,21 @@ class GameLogic {
         return force_vec;
     }
 
-    private void apply_force(PuckActor puck, ChargeActor charge) {
-        Vector2 vec = charge.get_vec(puck_vec);
+    /** Returns a force vector of the force between puck and charge. */
+    private Vector2 calc_force(PuckActor puck, ChargeActor charge) {
+        Vector2 vec = charge.get_vec(puck);
         float dist_squared = vec.len2();
         dist_squared = dist_squared < MIN_DIST * MIN_DIST ? MIN_DIST * MIN_DIST : dist_squared;
         float val = (puck.get_abs_charge() * charge.get_abs_charge()) / (dist_squared * E_CONST);
-        vec.scl(val);
+        return vec.scl(val);
+    }
+
+    /** Applies the force between puck and charge to the resultant force_vec. */
+    private void apply_force(PuckActor puck, ChargeActor charge) {
+        Vector2 vec = calc_force(puck, charge);
         force_vec.add(vec);
+        if (PuckActor.get_draw_forces())
+            puck.set_force(charge, vec);
     }
 
     void set_playing(boolean value) {
@@ -284,7 +307,6 @@ class GameLogic {
         }
         tmp_vec.setZero();
         force_vec.setZero();
-        puck_vec.setZero();
     }
 
     // Resets the state of the loaded level to its initial state.

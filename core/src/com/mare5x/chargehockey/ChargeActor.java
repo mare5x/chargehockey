@@ -27,19 +27,20 @@ class ChargeState {
 }
 
 
-interface DragCallback {
-    void out_of_bounds(ChargeActor charge);
+abstract class DragCallback {
+    abstract void out_of_bounds(ChargeActor charge);
+    void drag(ChargeActor charge) {}
 }
 
 
 class ChargeActor extends Actor {
     private final CHARGE charge_type;
-    protected final Sprite sprite;
+    final Sprite sprite;
 
     static final byte SIZE = 1;  // width = height = size
     private static final float RADIUS = SIZE / 2f;
-    static final float WEIGHT = 9.1e-31f;  // kg
-    static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
+    private static final float WEIGHT = 9.1e-31f;  // kg
+    private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
     ChargeActor(final ChargeHockeyGame game, CHARGE charge_type, final DragCallback drag_callback) {
         super();
@@ -68,6 +69,7 @@ class ChargeActor extends Actor {
             @Override
             public void drag(InputEvent event, float dx, float dy, int pointer) {
                 moveBy(dx - getTouchDownX(), dy - getTouchDownY());
+                drag_callback.drag(ChargeActor.this);
             }
 
             @Override
@@ -132,8 +134,9 @@ class ChargeActor extends Actor {
         return WEIGHT;
     }
 
-    Vector2 get_vec(Vector2 puck_vec) {
-        return new Vector2(puck_vec).sub(getX(Align.center), getY(Align.center)).scl(get_direction());
+    /** Returns the vector from puck to this charge, taking the charge's polarity into account. */
+    Vector2 get_vec(PuckActor puck) {
+        return new Vector2(puck.getX(Align.center), puck.getY(Align.center)).sub(getX(Align.center), getY(Align.center)).scl(get_direction());
     }
 
     ChargeState get_state() {

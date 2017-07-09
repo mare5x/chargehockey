@@ -23,7 +23,7 @@ class SettingsScreen extends BaseMenuScreen {
 
     private final SettingsFile settings_file;
 
-    private final SettingCheckBox acceleration_checkbox, velocity_checkbox, trace_path_checkbox;
+    private final SettingCheckBox acceleration_checkbox, velocity_checkbox, trace_path_checkbox, forces_checkbox;
     private final Slider game_speed_slider;
 
     SettingsScreen(final ChargeHockeyGame game, final Screen parent_screen) {
@@ -58,6 +58,7 @@ class SettingsScreen extends BaseMenuScreen {
 
         velocity_checkbox = new SettingCheckBox(game, "SHOW VELOCITY VECTOR", SETTINGS_KEY.SHOW_VELOCITY_VECTOR);
         acceleration_checkbox = new SettingCheckBox(game, "SHOW ACCELERATION VECTOR", SETTINGS_KEY.SHOW_ACCELERATION_VECTOR);
+        forces_checkbox = new SettingCheckBox(game, "SHOW FORCE VECTORS", SETTINGS_KEY.SHOW_FORCE_VECTORS);
         trace_path_checkbox = new SettingCheckBox(game, "TRACE PATH?", SETTINGS_KEY.TRACE_PATH);
 
         table.add(back_button).pad(15).size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).left().row();
@@ -71,6 +72,7 @@ class SettingsScreen extends BaseMenuScreen {
 
         velocity_checkbox.add_to_table(table);
         acceleration_checkbox.add_to_table(table);
+        forces_checkbox.add_to_table(table);
         trace_path_checkbox.add_to_table(table);
 
         table.add().colspan(2).expand();
@@ -86,6 +88,7 @@ class SettingsScreen extends BaseMenuScreen {
         settings_file.put(SETTINGS_KEY.GAME_SPEED, game_speed_slider.getValue());
         settings_file.put(SETTINGS_KEY.SHOW_VELOCITY_VECTOR, velocity_checkbox.is_checked());
         settings_file.put(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR, acceleration_checkbox.is_checked());
+        settings_file.put(SETTINGS_KEY.SHOW_FORCE_VECTORS, forces_checkbox.is_checked());
         settings_file.put(SETTINGS_KEY.TRACE_PATH, trace_path_checkbox.is_checked());
         settings_file.save();
     }

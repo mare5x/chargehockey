@@ -8,6 +8,7 @@ import com.badlogic.gdx.Preferences;
 enum SETTINGS_KEY {
     SHOW_VELOCITY_VECTOR,
     SHOW_ACCELERATION_VECTOR,
+    SHOW_FORCE_VECTORS,
     GAME_SPEED,
     TRACE_PATH,
     GRID_LINES
@@ -31,8 +32,9 @@ class SettingsFile {
             return;
         prefs.putBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR.name(), false);
         prefs.putBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR.name(), false);
+        prefs.putBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS.name(), true);
         prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
-        prefs.putBoolean(SETTINGS_KEY.TRACE_PATH.name(), false);
+        prefs.putBoolean(SETTINGS_KEY.TRACE_PATH.name(), true);
         prefs.putBoolean(SETTINGS_KEY.GRID_LINES.name(), false);
         prefs.flush();
     }
@@ -82,6 +84,7 @@ class SettingsFile {
     static void apply_global_settings(SettingsFile settings) {
         PuckActor.set_draw_velocity(settings.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         PuckActor.set_draw_acceleration(settings.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
+        PuckActor.set_draw_forces(settings.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));
         PuckActor.set_trace_path(settings.getBoolean(SETTINGS_KEY.TRACE_PATH));
         GameLogic.set_game_speed(settings.getFloat(SETTINGS_KEY.GAME_SPEED));
         LevelFrameBuffer.set_grid_lines_setting(settings.getBoolean(SETTINGS_KEY.GRID_LINES));
