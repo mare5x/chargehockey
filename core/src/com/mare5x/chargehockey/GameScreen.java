@@ -7,7 +7,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -37,7 +36,7 @@ class GameScreen implements Screen {
 
     private final Stage game_stage, hud_stage;
     private final OrthographicCamera camera;
-    private final GameCameraController camera_controller;
+    private final CameraController camera_controller;
 
     private final LevelFrameBuffer fbo;
 
@@ -132,7 +131,8 @@ class GameScreen implements Screen {
 
         hud_stage.addActor(hud_table);
 
-        camera_controller = new GameCameraController(camera, game_stage);
+        camera_controller = new CameraController(camera, game_stage);
+        camera_controller.set_double_tap_zoom(true);
         InputAdapter back_key_processor = new InputAdapter() {  // same as menu_button
             @Override
             public boolean keyUp(int keycode) {
@@ -142,7 +142,7 @@ class GameScreen implements Screen {
                 return true;
             }
         };
-        multiplexer = new InputMultiplexer(hud_stage, game_stage, new GestureDetector(camera_controller), back_key_processor);
+        multiplexer = new InputMultiplexer(hud_stage, game_stage, camera_controller.get_gesture_detector(), back_key_processor);
     }
 
     private void toggle_playing() {
@@ -258,14 +258,6 @@ class GameScreen implements Screen {
         fbo.dispose();
         game_stage.dispose();
         hud_stage.dispose();
-    }
-
-    private class GameCameraController extends CameraController {
-        GameCameraController(OrthographicCamera camera, Stage stage) {
-            super(camera, stage);
-
-            set_double_tap_zoom(true);
-        }
     }
 
     private class PlayButton extends Button {

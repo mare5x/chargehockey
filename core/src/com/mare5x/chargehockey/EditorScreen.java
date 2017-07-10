@@ -7,7 +7,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -145,7 +144,7 @@ class EditorScreen implements Screen {
                 return true;
             }
         };
-        multiplexer = new InputMultiplexer(hud_stage, edit_stage, new GestureDetector(camera_controller), back_key_processor);
+        multiplexer = new InputMultiplexer(hud_stage, edit_stage, camera_controller.get_gesture_detector(), back_key_processor);
     }
 
     @Override
@@ -217,26 +216,23 @@ class EditorScreen implements Screen {
     }
 
     private class EditCameraController extends CameraController {
-        final Vector2 tmp_coords = new Vector2();
+        private final Vector2 tmp_coords = new Vector2();
 
         EditCameraController(OrthographicCamera camera, Stage stage) {
             super(camera, stage);
         }
 
         @Override
-        public boolean tap(float x, float y, int count, int button) {
-            edit_stage.screenToStageCoordinates(tmp_coords.set(x, y));
-            System.out.printf("%f, %f, %d, %d\n", tmp_coords.x, tmp_coords.y, count, button);
-
+        boolean on_tap(float x, float y, int count, int button) {
             // ignore taps outside of edit_stage's camera and outside the world
-            if (!point_in_view(tmp_coords.x, tmp_coords.y) || !ChargeHockeyGame.WORLD_RECT.contains(tmp_coords)) {
-                return false;
+            if (!point_in_view(x, y) || !ChargeHockeyGame.WORLD_RECT.contains(tmp_coords.set(x, y))) {
+                return true;
             }
 
-            super.tap(x, y, count, button);
+            super.on_tap(x, y, count, button);
 
             // finish moving
-            if (is_moving()) return false;
+            if (is_moving()) return true;
 
             int row = (int) tmp_coords.y;
             int col = (int) tmp_coords.x;
@@ -253,22 +249,19 @@ class EditorScreen implements Screen {
             // update the background every tap
             fbo.update(game.batch);
 
-            return false;
+            return true;
         }
 
         @Override
-        public boolean zoom(float initialDistance, float distance) {
-            // this is called right after pinch()
-
+        void on_zoom_change() {
             if (!show_grid)
-                return true;
+                return;
 
             int grid_line_spacing = get_grid_line_spacing(camera.zoom);
             if (fbo.get_grid_line_spacing() != grid_line_spacing) {
                 fbo.set_grid_line_spacing(grid_line_spacing);
                 fbo.update(game.batch);
             }
-            return true;
         }
     }
 
