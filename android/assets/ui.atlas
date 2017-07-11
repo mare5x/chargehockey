@@ -1,26 +1,26 @@
 
 ui.png
-size: 512,512
+size: 1024,512
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 add_green64
   rotate: false
-  xy: 136, 12
+  xy: 136, 136
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 back_arrow_green128
   rotate: false
-  xy: 4, 12
+  xy: 4, 4
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 button_up
   rotate: false
-  xy: 396, 404
+  xy: 924, 396
   size: 64, 64
   split: 8, 54, 8, 54
   pad: 11, 11, 11, 11
@@ -29,105 +29,119 @@ button_up
   index: -1
 cancel_green64
   rotate: false
-  xy: 396, 336
+  xy: 396, 264
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 check_off
   rotate: false
-  xy: 204, 12
+  xy: 136, 68
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 check_on
   rotate: false
-  xy: 272, 72
+  xy: 464, 264
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 confirm_green64
   rotate: false
-  xy: 272, 4
+  xy: 532, 264
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
+edit_off
+  rotate: false
+  xy: 4, 72
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+edit_on
+  rotate: false
+  xy: 264, 332
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
 forward
   rotate: false
-  xy: 264, 272
+  xy: 264, 264
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 grid_off
   rotate: false
-  xy: 4, 80
+  xy: 396, 332
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 grid_on
   rotate: false
-  xy: 264, 340
+  xy: 528, 332
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 menu_green64
   rotate: false
-  xy: 340, 72
+  xy: 600, 264
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 play_green256
   rotate: false
-  xy: 4, 212
+  xy: 4, 204
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
 remove_green64
   rotate: false
-  xy: 340, 4
+  xy: 668, 264
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 share
   rotate: false
-  xy: 136, 80
+  xy: 660, 332
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 slider_knob
   rotate: false
-  xy: 400, 268
+  xy: 736, 264
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 star
   rotate: false
-  xy: 268, 140
+  xy: 792, 332
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 stop_green64
   rotate: false
-  xy: 400, 200
+  xy: 804, 264
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 undo_green64
   rotate: false
-  xy: 408, 132
+  xy: 924, 328
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.TimeUtils;
 
 
+// TODO rewrite the whole class using InputAdapter
 class CameraController {
     private enum ZoomLevel {
         MIN(1.6f),
@@ -60,18 +61,20 @@ class CameraController {
 
     CameraController(OrthographicCamera camera, Stage stage) {
         controller = new CameraControllerImpl(camera, stage);
-        detector = new GestureDetector(controller);
+        detector = new GestureDetector(controller) {
+            @Override
+            public boolean touchUp(int x, int y, int pointer, int button) {
+                if (long_press_started && pointer == 0)
+                    on_long_press_end();
+                return super.touchUp(x, y, pointer, button);
+            }
+        };
     }
 
     void update(float delta) {
         if (long_press_started) {
-            if (detector.isLongPressed()) {
-                Vector2 touch_coordinates = controller.get_stage_coordinates(Gdx.input.getX(), Gdx.input.getY());
-                on_long_press_held(touch_coordinates.x, touch_coordinates.y);
-            }
-            else {
-                on_long_press_end();
-            }
+            Vector2 touch_coordinates = controller.get_stage_coordinates(Gdx.input.getX(), Gdx.input.getY());
+            on_long_press_held(touch_coordinates.x, touch_coordinates.y);
         }
         controller.update(delta);
     }

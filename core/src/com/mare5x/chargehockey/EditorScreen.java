@@ -8,9 +8,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -40,6 +43,7 @@ class EditorScreen implements Screen {
 
     private final GridItemSelectorButton grid_item_button;
     private final Button puck_button;
+    private final EditIcon edit_icon;
 
     private Array<ChargeActor> puck_actors;
 
@@ -119,6 +123,8 @@ class EditorScreen implements Screen {
         puck_button.setStyle(new Button.ButtonStyle(puck_drawable_off, puck_drawable_off, puck_drawable_on));
         puck_button.pad(10);
 
+        edit_icon = new EditIcon();
+
         Table hud_table = new Table();
         hud_table.setFillParent(true);
 
@@ -128,9 +134,10 @@ class EditorScreen implements Screen {
         button_table.add(puck_button).pad(15).fill().uniform();
         button_table.add(show_grid_button).pad(15).fill().uniform();
 
+        hud_table.add(edit_icon).pad(15).expandX().left().size(Value.percentWidth(0.15f, hud_table));
         hud_table.add(menu_button).pad(15).expandX().right().size(Value.percentWidth(0.15f, hud_table)).row();
-        hud_table.add().expand().fill().row();
-        hud_table.add(button_table).height(Value.percentHeight(0.2f, hud_table)).expandX().fill();
+        hud_table.add().colspan(2).expand().fill().row();
+        hud_table.add(button_table).colspan(2).height(Value.percentHeight(0.2f, hud_table)).expandX().fill();
 
         hud_stage.addActor(hud_table);
 
@@ -234,12 +241,12 @@ class EditorScreen implements Screen {
             // finish moving
             if (is_moving()) return true;
 
-            int row = (int) tmp_coords.y;
-            int col = (int) tmp_coords.x;
+            int row = (int) y;
+            int col = (int) x;
 
             if (puck_button.isChecked()) {
                 ChargeActor charge = new ChargeActor(game, CHARGE.PUCK, drag_callback);
-                charge.setPosition(tmp_coords.x, tmp_coords.y, Align.center);
+                charge.setPosition(x, y, Align.center);
                 edit_stage.addActor(charge);
                 puck_actors.add(charge);
             }
@@ -262,6 +269,31 @@ class EditorScreen implements Screen {
                 fbo.set_grid_line_spacing(grid_line_spacing);
                 fbo.update(game.batch);
             }
+        }
+
+        @Override
+        void on_long_press_start() {
+            super.on_long_press_start();
+            edit_icon.show_on();
+        }
+
+        @Override
+        void on_long_press_held(float x, float y) {
+            int row = (int) y;
+            int col = (int) x;
+
+            // only update the fbo if a new tile was just placed
+            GRID_ITEM new_item = grid_item_button.get_selected_item();
+            if (level.get_grid_item(row, col) != new_item) {
+                level.set_item(row, col, new_item);
+                fbo.update(game.batch);
+            }
+        }
+
+        @Override
+        void on_long_press_end() {
+            super.on_long_press_end();
+            edit_icon.show_off();
         }
     }
 
@@ -302,6 +334,36 @@ class EditorScreen implements Screen {
 
         final GRID_ITEM get_selected_item() {
             return GRID_ITEM.values[current_item_idx];
+        }
+    }
+
+    private class EditIcon extends Image {
+        EditIcon() {
+            super(game.skin, "edit_on");
+            setVisible(false);
+        }
+
+        private Action get_action() {
+            return Actions.sequence(
+                Actions.alpha(0.2f),
+                Actions.show(),
+                Actions.fadeIn(0.6f),
+                Actions.delay(1),
+                Actions.fadeOut(0.6f),
+                Actions.hide()
+            );
+        }
+
+        void show_on() {
+            setDrawable(game.skin, "edit_on");
+            clearActions();
+            addAction(get_action());
+        }
+
+        void show_off() {
+            setDrawable(game.skin, "edit_off");
+            clearActions();
+            addAction(get_action());
         }
     }
 }

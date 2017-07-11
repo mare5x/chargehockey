@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 
@@ -215,7 +214,7 @@ class GameLogic {
 
     void blink_collided_pucks() {
         for (PuckActor puck : puck_actors) {
-            if (puck.get_collision() == GRID_ITEM.WALL) {
+            if (puck.get_collision() == GRID_ITEM.WALL || check_out_of_bounds(puck)) {
                 puck.start_blinking();
             }
         }
