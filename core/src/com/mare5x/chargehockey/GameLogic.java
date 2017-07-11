@@ -33,8 +33,10 @@ class GameLogic {
 
     private final Vector2 force_vec = new Vector2(), tmp_vec = new Vector2();
 
-    private final Array<ChargeActor> charge_actors;
-    private final Array<PuckActor> puck_actors;
+    private final Array<ChargeActor> charge_actors = new Array<ChargeActor>();
+    private final Array<PuckActor> puck_actors = new Array<PuckActor>();
+    
+    private final Array<ForcePuckActor> initial_pucks = new Array<ForcePuckActor>(); 
 
     GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, ResultCallback result_callback) {
         this.game = game;
@@ -42,15 +44,19 @@ class GameLogic {
         this.level = level;
         this.result_callback = result_callback;
 
-        charge_actors = new Array<ChargeActor>();
-        puck_actors = new Array<PuckActor>();
-
         for (Vector2 pos : level.get_puck_positions()) {
-            PuckActor puck = new PuckActor(game, CHARGE.PUCK, null);
+            PuckActor puck = new PuckActor(game);
             puck.setPosition(pos.x, pos.y);
 
             puck_actors.add(puck);
             game_stage.addActor(puck);
+
+            ForcePuckActor initial_puck = new ForcePuckActor(game);
+            initial_puck.setPosition(pos.x, pos.y);
+            initial_puck.set_alpha(0.35f);
+            initial_puck.setVisible(false);
+            initial_pucks.add(initial_puck);
+            game_stage.addActor(initial_puck);
         }
 
         load_charge_state();
@@ -71,9 +77,10 @@ class GameLogic {
             @Override
             void drag(ChargeActor charge) {
                 if (PuckActor.get_draw_forces()) {
-                    for (PuckActor puck : puck_actors) {
+                    for (PuckActor puck : puck_actors)
                         puck.set_force(charge, calc_force(puck, charge));
-                    }
+                    for (ForcePuckActor puck : initial_pucks)
+                        puck.set_force(charge, calc_force(puck, charge));
                 }
             }
         });
@@ -82,9 +89,10 @@ class GameLogic {
         charge_actors.add(charge);
         game_stage.addActor(charge);
 
-        for (PuckActor puck : puck_actors) {
+        for (PuckActor puck : puck_actors)
             puck.set_force(charge, calc_force(puck, charge));
-        }
+        for (ForcePuckActor puck : initial_pucks)
+            puck.set_force(charge, calc_force(puck, charge));
 
         return charge;
     }
@@ -98,6 +106,9 @@ class GameLogic {
         charge.remove();
 
         for (PuckActor puck : puck_actors) {
+            puck.remove_force(charge);
+        }
+        for (ForcePuckActor puck : initial_pucks) {
             puck.remove_force(charge);
         }
     }
@@ -261,7 +272,7 @@ class GameLogic {
     }
 
     /** Returns a force vector of the force between puck and charge. */
-    private Vector2 calc_force(PuckActor puck, ChargeActor charge) {
+    private Vector2 calc_force(ChargeActor puck, ChargeActor charge) {
         Vector2 vec = charge.get_vec(puck);
         float dist_squared = vec.len2();
         dist_squared = dist_squared < MIN_DIST * MIN_DIST ? MIN_DIST * MIN_DIST : dist_squared;
@@ -276,12 +287,24 @@ class GameLogic {
         if (PuckActor.get_draw_forces())
             puck.set_force(charge, vec);
     }
+    
+    private void show_initial_pucks(boolean visibility) {
+        for (ForcePuckActor puck : initial_pucks) {
+            puck.setVisible(visibility);
+        }
+    }
 
     void set_playing(boolean value) {
         // reset positions if changing to playing from not playing
         if (value && !is_playing) {
             reset_pucks();
         }
+        
+        if (!value)
+            show_initial_pucks(true);
+        else
+            show_initial_pucks(false);
+        
         dt_accumulator = 0;
         is_playing = value;
         if (is_playing) {

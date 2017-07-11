@@ -155,12 +155,7 @@ class GameScreen implements Screen {
 
         // render if going from pause to playing
         if (update_background) {
-            fbo.set_draw_pucks(!game_logic.is_playing());
             fbo.update(game.batch);
-        }
-        if (!game_logic.is_playing()) {
-            // if not playing draw pucks on the background without clearing it, so the trace path remains
-            fbo.draw_pucks(game.batch);
         }
 
         Gdx.graphics.setContinuousRendering(game_logic.is_playing());

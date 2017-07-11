@@ -65,24 +65,26 @@ class ChargeActor extends Actor {
         sprite.setOriginCenter();
         setOrigin(Align.center);
 
-        DragListener drag_listener = new DragListener() {
-            @Override
-            public void drag(InputEvent event, float dx, float dy, int pointer) {
-                moveBy(dx - getTouchDownX(), dy - getTouchDownY());
-                drag_callback.drag(ChargeActor.this);
-            }
-
-            @Override
-            public void dragStop(InputEvent event, float x, float y, int pointer) {
-                // if the actor was dragged out the stage, remove it
-                if (!getStage().getCamera().frustum.pointInFrustum(getX(), getY(), 0) || !ChargeHockeyGame.WORLD_RECT.contains(getX(), getY())) {
-                    drag_callback.out_of_bounds(ChargeActor.this);
+        if (drag_callback != null) {
+            DragListener drag_listener = new DragListener() {
+                @Override
+                public void drag(InputEvent event, float dx, float dy, int pointer) {
+                    moveBy(dx - getTouchDownX(), dy - getTouchDownY());
+                    drag_callback.drag(ChargeActor.this);
                 }
-            }
-        };
-        drag_listener.setTapSquareSize(getWidth() / 8);
 
-        addListener(drag_listener);
+                @Override
+                public void dragStop(InputEvent event, float x, float y, int pointer) {
+                    // if the actor was dragged out the stage, remove it
+                    if (!getStage().getCamera().frustum.pointInFrustum(getX(), getY(), 0) || !ChargeHockeyGame.WORLD_RECT.contains(getX(), getY())) {
+                        drag_callback.out_of_bounds(ChargeActor.this);
+                    }
+                }
+            };
+            drag_listener.setTapSquareSize(getWidth() / 8);
+
+            addListener(drag_listener);
+        }
     }
 
     @Override
@@ -111,7 +113,7 @@ class ChargeActor extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        sprite.draw(batch);
+        sprite.draw(batch, parentAlpha);
     }
 
     float get_charge() {
@@ -135,7 +137,7 @@ class ChargeActor extends Actor {
     }
 
     /** Returns the vector from puck to this charge, taking the charge's polarity into account. */
-    Vector2 get_vec(PuckActor puck) {
+    Vector2 get_vec(ChargeActor puck) {
         return new Vector2(puck.getX(Align.center), puck.getY(Align.center)).sub(getX(Align.center), getY(Align.center)).scl(get_direction());
     }
 
