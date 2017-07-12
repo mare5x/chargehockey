@@ -71,6 +71,10 @@ class ForcePuckActor extends ChargeActor {
             force_sprite.setSize(0, 0);
     }
 
+    void clear_sprites() {
+        force_sprites.clear();
+    }
+
     private Sprite get_force_sprite(ChargeActor charge, Vector2 force) {
         Sprite force_sprite = force_sprites.get(charge, new Sprite(vector_region));
         float len = Math.min(force.scl(1 / get_weight()).len(), _MAX_LENGTH);

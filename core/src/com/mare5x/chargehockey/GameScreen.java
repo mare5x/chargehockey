@@ -150,6 +150,12 @@ class GameScreen implements Screen {
     }
 
     private void toggle_playing(boolean update_background) {
+        if (!game_logic.has_charges()) {
+            NoChargesNotification notification = new NoChargesNotification(game, hud_stage);
+            notification.show();
+            return;
+        }
+
         play_button.cycle_style();
         game_logic.set_playing(!game_logic.is_playing());
 

@@ -307,12 +307,7 @@ class GameLogic {
         
         dt_accumulator = 0;
         is_playing = value;
-        if (is_playing) {
-            Gdx.graphics.setContinuousRendering(true);
-        }
-        else {
-            Gdx.graphics.setContinuousRendering(false);
-        }
+        Gdx.graphics.setContinuousRendering(value);
         Gdx.graphics.requestRendering();
     }
 
@@ -331,9 +326,12 @@ class GameLogic {
         force_vec.setZero();
     }
 
-    // Resets the state of the loaded level to its initial state.
+    /** Resets the state of the loaded level to its initial state. */
     void reset() {
         reset_pucks();
+        for (ForcePuckActor puck : initial_pucks)
+            puck.clear_sprites();
+
         for (ChargeActor charge : charge_actors) {
             charge.clear();
             charge.remove();
@@ -358,6 +356,10 @@ class GameLogic {
         for (ChargeState charge_state : charge_states) {
             add_charge(charge_state.type, charge_state.x, charge_state.y);
         }
+    }
+
+    boolean has_charges() {
+        return charge_actors.size > 0;
     }
 
     private static boolean is_collision(final GRID_ITEM collision) {
