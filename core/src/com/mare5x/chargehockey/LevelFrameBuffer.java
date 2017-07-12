@@ -30,7 +30,7 @@ class LevelFrameBuffer {
     private final Sprite grid_line_sprite;
     private static boolean DRAW_GRID_LINES_SETTING = false;
     private boolean draw_grid_lines = DRAW_GRID_LINES_SETTING;  // ability to override the setting
-    private static float grid_line_sprite_size = 1f / 16f;  // 1 px
+    private static float grid_line_sprite_size = 1f / (1024f / ChargeHockeyGame.WORLD_WIDTH);  // 1 px
     private int grid_line_spacing = 1;  // determines after how many grid tiles a line is drawn
 
     private Level level;
@@ -100,6 +100,7 @@ class LevelFrameBuffer {
         if (draw_grid_lines) {
             // vertical lines
             grid_line_sprite.setSize(grid_line_sprite_size, ChargeHockeyGame.WORLD_HEIGHT);
+            grid_line_sprite.setAlpha(0.5f);
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col += grid_line_spacing) {
                 grid_line_sprite.setPosition(col, 0);
                 grid_line_sprite.draw(batch);
@@ -108,8 +109,30 @@ class LevelFrameBuffer {
             grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH - grid_line_sprite_size, 0);
             grid_line_sprite.draw(batch);
 
+            grid_line_sprite.setAlpha(1f);  // center vertical ilne
+            grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH / 2, 0);
+            grid_line_sprite.draw(batch);
+
+            grid_line_sprite.setAlpha(0.8f);  // quarter vertical lines
+            grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH / 4f, 0);
+            grid_line_sprite.draw(batch);
+            grid_line_sprite.setPosition(3 * ChargeHockeyGame.WORLD_WIDTH / 4f, 0);
+            grid_line_sprite.draw(batch);
+
             // horizontal lines
             grid_line_sprite.setSize(ChargeHockeyGame.WORLD_WIDTH, grid_line_sprite_size);
+
+            grid_line_sprite.setAlpha(1);  // center horizontal line
+            grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT / 2);
+            grid_line_sprite.draw(batch);
+
+            grid_line_sprite.setAlpha(0.8f);  // quarter horizontal lines
+            grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT / 4f);
+            grid_line_sprite.draw(batch);
+            grid_line_sprite.setPosition(0, 3 * ChargeHockeyGame.WORLD_HEIGHT / 4f);
+            grid_line_sprite.draw(batch);
+
+            grid_line_sprite.setAlpha(0.5f);
             for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row += grid_line_spacing) {
                 grid_line_sprite.setPosition(0, row);
                 grid_line_sprite.draw(batch);
