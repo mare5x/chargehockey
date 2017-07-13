@@ -22,9 +22,23 @@ abstract class Notification extends Actor {
         setBounds(stage.getWidth() / 2 - width / 2, stage.getHeight() * 0.95f - height, width, height);
 
         border = game.skin.getSprite("pixels/px_green");
-        border.setBounds(getX(), getY(), width, height);
+        border.setAlpha(0.8f);
         background = game.skin.getSprite("pixels/px_black");
-        background.setBounds(getX() + 2, getY() + 2, width - 4, height - 4);
+        layout_background();
+    }
+
+    @Override
+    public void setSize(float width, float height) {
+        super.setSize(width, height);
+
+        setPosition(stage.getWidth() / 2 - width / 2, stage.getHeight() * 0.95f - height);
+        layout_background();
+    }
+
+    private void layout_background() {
+        float w = getWidth(), h = getHeight();
+        border.setBounds(getX(), getY(), w, h);
+        background.setBounds(getX() + 2, getY() + 2, w - 4, h - 4);
     }
 
     /** Returns a default fade in/out action. */

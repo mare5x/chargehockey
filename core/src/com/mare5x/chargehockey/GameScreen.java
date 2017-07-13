@@ -8,6 +8,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -93,7 +94,8 @@ class GameScreen implements Screen {
         charge_pos_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game_logic.add_charge(CHARGE.POSITIVE);
+                if (!game_logic.is_playing())
+                    game_logic.add_charge(CHARGE.POSITIVE);
             }
         });
         charge_pos_button.pad(10);
@@ -102,7 +104,8 @@ class GameScreen implements Screen {
         charge_neg_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game_logic.add_charge(CHARGE.NEGATIVE);
+                if (!game_logic.is_playing())
+                    game_logic.add_charge(CHARGE.NEGATIVE);
             }
         });
         charge_neg_button.pad(10);
@@ -142,6 +145,16 @@ class GameScreen implements Screen {
                 return true;
             }
         };
+
+        // ignore all stage events when the game is playing. this prevents charges from being dragged around midgame.
+        game_stage.addCaptureListener(new InputListener() {
+            @Override
+            public boolean handle(Event e) {
+                if (game_logic.is_playing())
+                    e.stop();
+                return super.handle(e);
+            }
+        });
         multiplexer = new InputMultiplexer(hud_stage, game_stage, camera_controller.get_gesture_detector(), back_key_processor);
     }
 

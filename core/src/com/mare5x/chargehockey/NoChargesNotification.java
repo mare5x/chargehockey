@@ -14,11 +14,16 @@ class NoChargesNotification extends Notification {
     NoChargesNotification(ChargeHockeyGame game, Stage stage) {
         super(game, stage);
 
-        text_label = new Label("ADD SOME  ", game.skin, "borderless");
+        text_label = new Label("FIRST, ADD SOME  ", game.skin, "borderless");
 
         float charge_size = text_label.getHeight();
         float charge_total_width = 2 * charge_size + charge_size / 2;
 
+        // pack the notification
+        setSize(text_label.getWidth() + charge_total_width + 15 * ChargeHockeyGame.DENSITY,
+                text_label.getHeight() + 15 * ChargeHockeyGame.DENSITY);
+
+        // center the text
         text_label.setPosition(getX() + getWidth() / 2 - text_label.getWidth() / 2 - charge_total_width / 2,
                                getY() + getHeight() / 2 - text_label.getHeight() / 2);
 
