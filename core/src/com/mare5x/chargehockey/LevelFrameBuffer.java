@@ -169,6 +169,16 @@ class LevelFrameBuffer {
         Gdx.graphics.requestRendering();
     }
 
+    /** Clears the FBO to black. */
+    void clear() {
+        fbo.begin();
+
+        Gdx.gl20.glClearColor(0, 0, 0, 1);
+        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        fbo.end();
+    }
+
     /** Draws the pucks without clearing the buffer. */
     void draw_pucks(final SpriteBatch batch) {
         if (level == null) return;

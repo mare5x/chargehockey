@@ -20,6 +20,7 @@ class LevelSelector {
     private final LEVEL_TYPE level_type;
 
     private final List<String> list;
+    private final ScrollPane scroll_pane;
 
     private final LevelFrameBuffer preview_fbo;
 
@@ -42,15 +43,15 @@ class LevelSelector {
         });
         init_list();
 
+        scroll_pane = new ScrollPane(list, game.skin);
+        scroll_pane.setVariableSizeKnobs(true);
+
         preview_fbo = new LevelFrameBuffer(game, null);
         preview_fbo.set_puck_alpha(1);
         preview_fbo.set_draw_grid_lines(false);
     }
 
     Table get_selector_table() {
-        ScrollPane scroll_pane = new ScrollPane(list, game.skin);
-        scroll_pane.setVariableSizeKnobs(true);
-
         Image preview_image = new Image(preview_fbo.get_texture_region());
         preview_image.setScaling(Scaling.fit);
 
@@ -89,6 +90,9 @@ class LevelSelector {
                 dir.deleteDirectory();
 
             list.getItems().removeIndex(selected_idx);
+            list.invalidateHierarchy();
+
+            preview_fbo.clear();
         }
     }
 
@@ -99,9 +103,16 @@ class LevelSelector {
     }
 
     void add_level(String level_name) {
-        if (!level_name.isEmpty() && !level_exists(level_name)) {
-            list.getItems().add(level_name);
-            list.invalidateHierarchy();  // reset the layout (add scroll bars to scroll pane)
+        if (!level_name.isEmpty()) {
+            if (!level_exists(level_name)) {
+                list.getItems().add(level_name);
+                list.invalidateHierarchy();  // reset the layout (add scroll bars to scroll pane)
+            }
+            list.setSelected(level_name);
+
+            // necessary to actually scroll to the bottom
+            scroll_pane.validate();
+            scroll_pane.setScrollPercentY(list.getSelectedIndex() / (float) (list.getItems().size));  // scroll to the selected item
         }
     }
 
