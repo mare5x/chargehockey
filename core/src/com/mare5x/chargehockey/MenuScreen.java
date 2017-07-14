@@ -25,7 +25,7 @@ class MenuScreen extends BaseMenuScreen {
         edit_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new EditorMenuScreen(game));
+                game.setScreen(new CustomMenuScreen(game));
             }
         });
 

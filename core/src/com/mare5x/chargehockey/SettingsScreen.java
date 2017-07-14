@@ -34,15 +34,6 @@ class SettingsScreen extends BaseMenuScreen {
 
         settings_file = new SettingsFile();
 
-        Button back_button = new Button(game.skin, "back");
-        back_button.pad(10);
-        back_button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                back_key_pressed();
-            }
-        });
-
         final Label game_speed_label = new Label("GAME SPEED: ", game.skin);
         game_speed_label.setWrap(true);
         game_speed_label.setAlignment(Align.center);
@@ -61,8 +52,7 @@ class SettingsScreen extends BaseMenuScreen {
         forces_checkbox = new SettingCheckBox(game, "SHOW FORCE VECTORS", SETTINGS_KEY.SHOW_FORCE_VECTORS);
         trace_path_checkbox = new SettingCheckBox(game, "TRACE PATH?", SETTINGS_KEY.TRACE_PATH);
 
-        table.add(back_button).pad(15).size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).left().row();
-
+        add_back_button(game.skin);
         table.add().expand().colspan(2).row();
 
         Table slider_table = new Table();

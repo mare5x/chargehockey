@@ -16,15 +16,6 @@ class LevelSelectorScreen extends BaseMenuScreen {
 
         final LevelSelector level_selector = new LevelSelector(game, level_type);
 
-        Button back_button = new Button(game.skin, "back");
-        back_button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                back_key_pressed();
-            }
-        });
-        back_button.pad(10);
-
         Button play_button = new Button(game.skin, "play");
         play_button.addListener(new ClickListener() {
             @Override
@@ -39,7 +30,7 @@ class LevelSelectorScreen extends BaseMenuScreen {
 
         table.pad(10 * ChargeHockeyGame.DENSITY);
 
-        table.add(back_button).pad(15).expandX().size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).left().top().row();
+        add_back_button(game.skin);
         table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));
     }

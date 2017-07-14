@@ -1,7 +1,6 @@
 package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -14,15 +13,6 @@ class PlayMenuScreen extends BaseMenuScreen {
         super(game);
 
         this.game = game;
-
-        Button back_button = new Button(game.skin, "back");
-        back_button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                back_key_pressed();
-            }
-        });
-        back_button.pad(10);
 
         TextButton easy_button = new TextButton("EASY", game.skin);
         easy_button.addListener(new ClickListener() {
@@ -62,13 +52,13 @@ class PlayMenuScreen extends BaseMenuScreen {
 
         table.pad(10 * ChargeHockeyGame.DENSITY);
 
-        Value twidth = Value.percentWidth(0.5f, table);
-        table.add(back_button).pad(15).size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).expandX().left().top().row();
+        Value twidth = Value.percentWidth(0.6f, table);
+        add_back_button(game.skin);
         table.add().expand().row();
-        table.add(easy_button).pad(15).uniform().width(twidth).fillY().row();
-        table.add(medium_button).pad(15).uniform().width(twidth).fillY().row();
-        table.add(hard_button).pad(15).uniform().width(twidth).fillY().row();
-        table.add(custom_button).pad(15).uniform().width(twidth).fillY().row();
+        table.add(easy_button).pad(15).uniform().width(twidth).row();
+        table.add(medium_button).pad(15).uniform().width(twidth).row();
+        table.add(hard_button).pad(15).uniform().width(twidth).row();
+        table.add(custom_button).pad(15).uniform().width(twidth).row();
         table.add().expand();
     }
 

@@ -87,7 +87,7 @@ class EditorMenuScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        game.setScreen(game.menu_screen);
+        game.setScreen(new CustomMenuScreen(game));
     }
 
     @Override
