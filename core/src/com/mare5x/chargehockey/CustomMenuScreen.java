@@ -1,7 +1,7 @@
 package com.mare5x.chargehockey;
 
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
@@ -10,10 +10,30 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 class CustomMenuScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
 
+    private final FilePickerScreen.FilePickerCallback callback;
+    private static final FilePicker.FileFilter import_filter = new FilePicker.FileFilter() {
+            @Override
+            public boolean is_valid(FileHandle path) {
+                return path.isDirectory() || path.extension().equals("grid");
+            }
+        };
+
     CustomMenuScreen(final ChargeHockeyGame game) {
         super(game);
 
         this.game = game;
+
+        callback = new FilePickerScreen.FilePickerCallback() {
+            @Override
+            public void on_back() {
+                game.setScreen(new CustomMenuScreen(game));
+            }
+
+            @Override
+            public void on_result(FileHandle path) {
+                System.out.println(path.path());
+            }
+        };
 
         TextButton edit_button = new TextButton("EDIT", game.skin);
         edit_button.pad(10);
@@ -29,7 +49,7 @@ class CustomMenuScreen extends BaseMenuScreen {
         import_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("CHG", "importing");
+                game.setScreen(new FilePickerScreen(game, callback, import_filter));
             }
         });
 

@@ -140,6 +140,11 @@ class LevelSelector {
         return null;
     }
 
+    /** Returns whether any level is currently selected. */
+    boolean is_selected() {
+        return list.getSelectedIndex() != -1;
+    }
+
     static FileHandle get_level_grid_fhandle(LEVEL_TYPE level_type, String level_name) {
         if (level_type == LEVEL_TYPE.CUSTOM)
             return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.grid", level_type.name(), level_name, level_name));
