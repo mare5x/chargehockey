@@ -74,7 +74,7 @@ class LevelSelector {
         list.invalidateHierarchy();
     }
 
-    private String get_selected_name() {
+    String get_selected_name() {
         int selected_idx = list.getSelectedIndex();
         if (selected_idx != -1)
             return list.getItems().get(selected_idx);

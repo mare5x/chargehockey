@@ -1,6 +1,7 @@
 package com.mare5x.chargehockey;
 
 
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -10,20 +11,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 class FilePickerScreen extends BaseMenuScreen {
     interface FilePickerCallback {
-        void on_back();
         void on_result(FileHandle path);
     }
 
-    private final FilePickerCallback callback;
+    private final ChargeHockeyGame game;
+    private final Screen parent_screen;
 
-    FilePickerScreen(ChargeHockeyGame game, final FilePickerCallback callback) {
-        this(game, callback, null);
+    FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback) {
+        this(game, parent_screen, callback, null);
     }
 
-    FilePickerScreen(ChargeHockeyGame game, final FilePickerCallback callback, FilePicker.FileFilter filter) {
+    FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback, FilePicker.FileFilter filter) {
         super(game);
 
-        this.callback = callback;
+        this.game = game;
+        this.parent_screen = parent_screen;
 
         final Label path_label = new Label("", game.skin);
         path_label.setFontScale(0.75f);
@@ -70,7 +72,7 @@ class FilePickerScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        callback.on_back();
+        game.setScreen(parent_screen);
     }
 
     @Override

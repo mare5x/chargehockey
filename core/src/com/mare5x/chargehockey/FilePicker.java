@@ -79,13 +79,13 @@ class FilePicker {
     }
 
     private void show_dir(FileHandle dir) {
-        Array<String> dir_list_items = dir_list.getItems();
-        dir_list_items.clear();  // even if dir isn't a directory, the dir_list must get cleared
+        dir_list.clearItems();  // even if dir isn't a directory, the dir_list must get cleared
 
         if (!dir.isDirectory()) return;
 
         current_dir = dir;
 
+        Array<String> dir_list_items = dir_list.getItems();
         for (FileHandle path : dir.list()) {
             if (filter.is_valid(path))
                 dir_list_items.add(path.name());

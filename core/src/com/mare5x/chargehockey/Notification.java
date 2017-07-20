@@ -2,29 +2,26 @@ package com.mare5x.chargehockey;
 
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-abstract class Notification extends Actor {
+abstract class Notification extends Table {
     final Stage stage;
-    private final Sprite border, background;
 
     // NOTE: stage must use screen coordinates.
     Notification(ChargeHockeyGame game, Stage stage) {
+        super(game.skin);
+
         this.stage = stage;
+
+        setBackground(game.skin.getDrawable("button_up"));
 
         // the default position and size is at the top of the screen
         float width = stage.getWidth() * 0.8f;
         float height = stage.getHeight() * 0.25f;
         setBounds(stage.getWidth() / 2 - width / 2, stage.getHeight() * 0.95f - height, width, height);
-
-        border = game.skin.getSprite("pixels/px_green");
-        border.setAlpha(0.8f);
-        background = game.skin.getSprite("pixels/px_black");
-        layout_background();
     }
 
     @Override
@@ -32,13 +29,6 @@ abstract class Notification extends Actor {
         super.setSize(width, height);
 
         setPosition(stage.getWidth() / 2 - width / 2, stage.getHeight() * 0.95f - height);
-        layout_background();
-    }
-
-    private void layout_background() {
-        float w = getWidth(), h = getHeight();
-        border.setBounds(getX(), getY(), w, h);
-        background.setBounds(getX() + 2, getY() + 2, w - 4, h - 4);
     }
 
     /** Returns a default fade in/out action. */
@@ -54,11 +44,16 @@ abstract class Notification extends Actor {
         );
     }
 
+    float get_padding() {
+        return 15 * ChargeHockeyGame.DENSITY;
+    }
+
     @Override
     /* The default implementation draws the notification border. Override and call super. */
     public void draw(Batch batch, float parentAlpha) {
-        border.draw(batch, parentAlpha);
-        background.draw(batch);
+        float alpha = getColor().a;  // the action changes alpha through getColor
+
+        super.draw(batch, parentAlpha * alpha);
     }
 
     /** Adds the notification content to the stage for a brief duration, then removes itself. */

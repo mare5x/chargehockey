@@ -25,11 +25,6 @@ class CustomMenuScreen extends BaseMenuScreen {
 
         callback = new FilePickerScreen.FilePickerCallback() {
             @Override
-            public void on_back() {
-                game.setScreen(new CustomMenuScreen(game));
-            }
-
-            @Override
             public void on_result(FileHandle path) {
                 System.out.println(path.path());
             }
@@ -41,6 +36,7 @@ class CustomMenuScreen extends BaseMenuScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new EditorMenuScreen(game));
+                dispose();
             }
         });
 
@@ -49,7 +45,7 @@ class CustomMenuScreen extends BaseMenuScreen {
         import_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new FilePickerScreen(game, callback, import_filter));
+                game.setScreen(new FilePickerScreen(game, CustomMenuScreen.this, callback, import_filter));
             }
         });
 
@@ -59,6 +55,7 @@ class CustomMenuScreen extends BaseMenuScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new ExportScreen(game));
+                dispose();
             }
         });
 
@@ -74,10 +71,10 @@ class CustomMenuScreen extends BaseMenuScreen {
     @Override
     protected void back_key_pressed() {
         game.setScreen(game.menu_screen);
+        dispose();
     }
 
     @Override
     public void hide() {
-        dispose();
     }
 }

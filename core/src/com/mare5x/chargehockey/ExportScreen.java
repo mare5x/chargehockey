@@ -7,10 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import java.util.Locale;
+
 class ExportScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
+    private final LevelSelector selector ;
 
-    private final FilePickerScreen.FilePickerCallback callback;
+    private final FilePickerScreen.FilePickerCallback export_all_callback;
+    private final FilePickerScreen.FilePickerCallback export_selected_callback;
     private static final FilePicker.FileFilter filter = new FilePicker.FileFilter() {
         @Override
         public boolean is_valid(FileHandle path) {
@@ -22,17 +26,19 @@ class ExportScreen extends BaseMenuScreen {
         super(game);
 
         this.game = game;
-        final LevelSelector selector = new LevelSelector(game, LEVEL_TYPE.CUSTOM);
+        selector = new LevelSelector(game, LEVEL_TYPE.CUSTOM);
 
-        callback = new FilePickerScreen.FilePickerCallback() {
-            @Override
-            public void on_back() {
-                game.setScreen(new ExportScreen(game));
-            }
-
+        export_all_callback = new FilePickerScreen.FilePickerCallback() {
             @Override
             public void on_result(FileHandle path) {
+                export_all(path);
+            }
+        };
 
+        export_selected_callback = new FilePickerScreen.FilePickerCallback() {
+            @Override
+            public void on_result(FileHandle path) {
+                export_selected(path);
             }
         };
 
@@ -41,10 +47,12 @@ class ExportScreen extends BaseMenuScreen {
         export_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!selector.is_selected())  // something has to be selected
-                    return;  // todo add a notification explanation
+                if (!selector.is_selected()) { // something has to be selected
+                    show_notification("FIRST, SELECT A LEVEL");
+                    return;
+                }
 
-                game.setScreen(new FilePickerScreen(game, callback, filter));
+                game.setScreen(new FilePickerScreen(game, ExportScreen.this, export_selected_callback, filter));
             }
         });
 
@@ -53,7 +61,7 @@ class ExportScreen extends BaseMenuScreen {
         export_all_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new FilePickerScreen(game, callback, filter));
+                game.setScreen(new FilePickerScreen(game, ExportScreen.this, export_all_callback, filter));
             }
         });
 
@@ -63,13 +71,31 @@ class ExportScreen extends BaseMenuScreen {
         table.add(export_all_button).pad(15).width(Value.percentWidth(0.6f, table));
     }
 
+    private void show_notification(String message) {
+        TextNotification notification = new TextNotification(game, stage, message);
+        notification.show();
+    }
+
+    private void export_all(FileHandle target) {
+        LevelSelector.get_levels_dir_fhandle(LEVEL_TYPE.CUSTOM).copyTo(target);
+        show_notification(String.format(Locale.US, "EXPORTED TO: %s", target.file().getAbsolutePath()));
+    }
+
+    /** NOTE: Assumes that a level is currently selected. */
+    private void export_selected(FileHandle target) {
+        String level_name = selector.get_selected_name();
+        target = target.child(level_name);
+        LevelSelector.get_level_dir_fhandle(LEVEL_TYPE.CUSTOM, level_name).copyTo(target);
+        show_notification(String.format(Locale.US, "EXPORTED TO: %s", target.file().getAbsolutePath()));
+    }
+
     @Override
     protected void back_key_pressed() {
         game.setScreen(new CustomMenuScreen(game));
+        dispose();
     }
 
     @Override
     public void hide() {
-        dispose();
     }
 }
