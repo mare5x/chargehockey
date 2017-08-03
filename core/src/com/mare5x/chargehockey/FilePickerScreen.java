@@ -42,11 +42,11 @@ class FilePickerScreen extends BaseMenuScreen {
                 path_label.setText(path.file().getAbsolutePath());
             }
         });
-        path_label.setText(file_picker.get_selected_path().file().getAbsolutePath());
+        path_label.setText(file_picker.get_current_path().file().getAbsolutePath());
 
-        TextButton up_button = new TextButton("UP", game.skin);
-        up_button.pad(10);
-        up_button.addListener(new ClickListener() {
+        TextButton back_button = new TextButton("BACK", game.skin);
+        back_button.pad(10);
+        back_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 file_picker.show_parent_dir();
@@ -58,7 +58,11 @@ class FilePickerScreen extends BaseMenuScreen {
         result_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                callback.on_result(file_picker.get_selected_path());
+                FileHandle selected_path = file_picker.get_selected_path();
+                if (selected_path.file().isFile() && file_picker.is_valid(selected_path))
+                    callback.on_result(selected_path);
+                else
+                    callback.on_result(file_picker.get_current_path());
                 back_key_pressed();
             }
         });
@@ -66,7 +70,7 @@ class FilePickerScreen extends BaseMenuScreen {
         add_back_button(game.skin, 2);
         table.add(path_label).colspan(2).pad(15).width(Value.percentWidth(1, table)).row();
         table.add(file_picker.get_display()).colspan(2).pad(15).expand().fill().row();
-        table.add(up_button).pad(15).width(Value.percentWidth(0.15f, table)).fill();
+        table.add(back_button).pad(15).width(Value.percentWidth(0.15f, table)).fill();
         table.add(result_button).pad(15).expandX().fill();
     }
 

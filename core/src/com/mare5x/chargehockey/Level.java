@@ -2,11 +2,9 @@ package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.StreamUtils;
 
 import java.io.BufferedReader;
@@ -35,9 +33,8 @@ class Level {
 
         if (LevelSelector.level_file_exists(level_type, level_name))
             load_level();
-        else {
+        else
             save_level();  // this will create an empty/default valid level file
-        }
     }
 
     final LEVEL_TYPE get_type() {
@@ -71,7 +68,7 @@ class Level {
     }
 
     /** Save the grid and puck positions of the currently loaded level. */
-    void save_level() {
+    private void save_level() {
         Gdx.app.log("Level", "saving level data");
 
         FileHandle file = LevelSelector.get_level_grid_fhandle(level_type, name);

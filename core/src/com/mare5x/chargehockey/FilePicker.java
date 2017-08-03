@@ -56,6 +56,14 @@ class FilePicker {
         this.event_listener = event_listener;
     }
 
+    boolean is_valid(FileHandle path) {
+        return filter.is_valid(path);
+    }
+
+    FileHandle get_current_path() {
+        return current_dir;
+    }
+
     FileHandle get_selected_path() {
         FileHandle path = get_selected_child();
         if (path != null) return path;

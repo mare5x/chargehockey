@@ -7,26 +7,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+
 class CustomMenuScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
 
-    private final FilePickerScreen.FilePickerCallback callback;
-    private static final FilePicker.FileFilter import_filter = new FilePicker.FileFilter() {
-            @Override
-            public boolean is_valid(FileHandle path) {
-                return path.isDirectory() || path.extension().equals("grid");
-            }
-        };
+    private final FilePickerScreen.FilePickerCallback import_callback;
+    private final Importer importer;
 
     CustomMenuScreen(final ChargeHockeyGame game) {
         super(game);
 
         this.game = game;
+        importer = new Importer(game, stage);
 
-        callback = new FilePickerScreen.FilePickerCallback() {
+        import_callback = new FilePickerScreen.FilePickerCallback() {
             @Override
             public void on_result(FileHandle path) {
-                System.out.println(path.path());
+                importer.handle_import(path);
             }
         };
 
@@ -45,7 +42,7 @@ class CustomMenuScreen extends BaseMenuScreen {
         import_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new FilePickerScreen(game, CustomMenuScreen.this, callback, import_filter));
+                game.setScreen(new FilePickerScreen(game, CustomMenuScreen.this, import_callback, Importer.get_filter()));
             }
         });
 
