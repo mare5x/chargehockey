@@ -28,13 +28,17 @@ public class ChargeHockeyGame extends Game {
 
     static final Rectangle WORLD_RECT = new Rectangle(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
-	public SpriteBatch batch;
-    public Skin skin;
+	SpriteBatch batch;
+    Skin skin;
     TextureAtlas sprites;
+    Screen menu_screen;
+    PermissionTools permission_tools;
 
     private AssetManager manager;
 
-    Screen menu_screen;
+    public ChargeHockeyGame(PermissionTools permission_tools) {
+        this.permission_tools = permission_tools;
+    }
 
 	@Override
 	public void create () {

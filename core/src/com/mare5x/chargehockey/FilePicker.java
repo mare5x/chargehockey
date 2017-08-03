@@ -105,6 +105,10 @@ class FilePicker {
             event_listener.dir_changed(dir);
     }
 
+    void refresh() {
+        show_dir(current_dir);
+    }
+
     ScrollPane get_display() {
         return scroll_pane;
     }

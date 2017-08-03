@@ -44,6 +44,19 @@ class FilePickerScreen extends BaseMenuScreen {
         });
         path_label.setText(file_picker.get_current_path().file().getAbsolutePath());
 
+        // get file storage access permission on android
+        if (!game.permission_tools.check_storage_permission()) {
+            game.permission_tools.request_storage_permission(new PermissionTools.RequestCallback() {
+                public void granted() {
+                    file_picker.refresh();
+                }
+
+                public void denied() {
+                    back_key_pressed();
+                }
+            });
+        }
+
         TextButton back_button = new TextButton("BACK", game.skin);
         back_button.pad(10);
         back_button.addListener(new ClickListener() {
@@ -70,7 +83,7 @@ class FilePickerScreen extends BaseMenuScreen {
         add_back_button(game.skin, 2);
         table.add(path_label).colspan(2).pad(15).width(Value.percentWidth(1, table)).row();
         table.add(file_picker.get_display()).colspan(2).pad(15).expand().fill().row();
-        table.add(back_button).pad(15).width(Value.percentWidth(0.15f, table)).fill();
+        table.add(back_button).pad(15).fill();
         table.add(result_button).pad(15).expandX().fill();
     }
 

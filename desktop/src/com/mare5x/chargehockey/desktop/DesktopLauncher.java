@@ -9,6 +9,7 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 450;
         config.height = 800;
-		new LwjglApplication(new ChargeHockeyGame(), config);
+
+		new LwjglApplication(new ChargeHockeyGame(new DesktopPermissionTools()), config);
 	}
 }
