@@ -142,6 +142,7 @@ class GameLogic {
 
         if (result == GAME_RESULT.WIN) {
             result_callback.win();
+            level.set_level_finished(true);
         } else {  // LOSS
             result_callback.loss();
         }
@@ -344,11 +345,11 @@ class GameLogic {
     }
 
     void save_charge_state() {
-        level.save_charge_state(charge_actors);
+        level.write_save_file(charge_actors);
     }
 
     private void load_charge_state() {
-        Array<ChargeState> charge_states = level.load_charge_state();
+        Array<ChargeState> charge_states = level.load_save_file();
         if (charge_states == null)
             return;
 

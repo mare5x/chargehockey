@@ -1,9 +1,14 @@
 package com.mare5x.chargehockey;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.StreamUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Locale;
 
 
@@ -88,7 +93,28 @@ class Importer {
     private boolean import_save(FileHandle path) {
         String name = path.nameWithoutExtension();
         if (LevelSelector.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name).exists()) {  // a save file without a grid would be useless
-            path.copyTo(LevelSelector.get_level_save_fhandle(LEVEL_TYPE.CUSTOM, name));
+            FileHandle save_path = LevelSelector.get_level_save_fhandle(LEVEL_TYPE.CUSTOM, name);
+
+            // manually copy the save file, but first reset the save file header, so that the
+            // level completion flag gets reset. this is necessary because once the flag is set, it's 'permanent'
+
+            BufferedReader reader = path.reader(256, "UTF-8");
+            Writer writer = save_path.writer(false, "UTF-8");
+            try {
+                writer.write(Level.DEFAULT_HEADER);
+                reader.readLine();  // skip first header line
+                String line = reader.readLine();
+                while (line != null) {
+                    writer.write(line + "\n");
+                    line = reader.readLine();
+                }
+            } catch (IOException e) {
+                Gdx.app.error("IMPORTER", "ERROR IMPORTING SAVE FILE!", e);
+            } finally {
+                StreamUtils.closeQuietly(writer);
+                StreamUtils.closeQuietly(reader);
+            }
+
             return true;
         }
         return false;

@@ -19,11 +19,15 @@ enum LEVEL_TYPE {
 
 
 class Level {
+    static final String DEFAULT_HEADER = "0\n";
+
     private final String name;
     private final LEVEL_TYPE level_type;
 
     private final Grid grid;
     private Array<Vector2> puck_positions = new Array<Vector2>();
+
+    private boolean level_finished = false;
 
     Level(final String level_name, final LEVEL_TYPE level_type) {
         this.name = level_name;
@@ -45,6 +49,10 @@ class Level {
         return name;
     }
 
+    void set_level_finished(boolean finished) {
+        level_finished = finished;
+    }
+
     void set_item(int row, int col, GRID_ITEM item) {
         grid.set_item(row, col, item);
     }
@@ -53,7 +61,7 @@ class Level {
         return grid.get_item(row, col);
     }
 
-    /** LEVEL SAVE STRUCTURE
+    /** LEVEL GRID SAVE STRUCTURE
      * WIDTH HEIGHT
      * WIDTH * HEIGHT GRID ITEM CODES (ONE LINE STRING)
      * N PUCKS
@@ -122,17 +130,20 @@ class Level {
         }
     }
 
-    /** Charge save data structure:
+    /** .save structure:
+     * HEADER 0/1 FLAG if level finished
      * N (number of charges (lines))
      * CHARGE_TYPE X Y
      */
-    void save_charge_state(Array<ChargeActor> charge_actors) {
+    void write_save_file(Array<ChargeActor> charge_actors) {
         Gdx.app.log("Level", "saving charge state");
 
         FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name);
         Writer writer = file.writer(false, "UTF-8");
 
         try {
+            writer.write(level_finished ? "1\n" : "0\n");
+
             writer.write(String.valueOf(charge_actors.size) + "\n");
             for (ChargeActor charge : charge_actors) {
                 ChargeState state = charge.get_state();
@@ -147,7 +158,7 @@ class Level {
         }
     }
 
-    Array<ChargeState> load_charge_state() {
+    Array<ChargeState> load_save_file() {
         Gdx.app.log("Level", "loading charge state");
 
         FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name);
@@ -157,6 +168,8 @@ class Level {
 
         BufferedReader reader = file.reader(256, "UTF-8");
         try {
+            level_finished = reader.readLine().equals("1");
+
             int n = Integer.parseInt(reader.readLine());
             Array<ChargeState> states = new Array<ChargeState>(n);
 
@@ -171,6 +184,40 @@ class Level {
         } finally {
             StreamUtils.closeQuietly(reader);
         }
+    }
+
+    /** NOTE: use this only when you want to write the header without changing the rest of
+     * the .save file because this method is SLOW and inefficient. */
+    void write_header() {
+        FileHandle save_file = LevelSelector.get_level_save_fhandle(level_type, name);
+        if (!save_file.exists())
+            return;
+
+        // writes the new header and copies the old save file to the new temp file, then replaces
+        // the old save file
+
+        FileHandle tmp_file = save_file.sibling("tmp");
+
+        BufferedReader reader = save_file.reader(256, "UTF-8");
+        Writer writer = tmp_file.writer(false, "UTF-8");
+        try {
+            // write the header
+            writer.write(level_finished ? "1\n" : "0\n");
+
+            reader.readLine();  // skip the header
+            String line = reader.readLine();
+            while (line != null) {
+                writer.write(line + "\n");  // readline trims \n
+                line = reader.readLine();
+            }
+        } catch (IOException e) {
+            throw new GdxRuntimeException("Error writing header", e);
+        } finally {
+            StreamUtils.closeQuietly(writer);
+            StreamUtils.closeQuietly(reader);
+        }
+
+        tmp_file.moveTo(save_file);  // replace the save file
     }
 
     final Array<Vector2> get_puck_positions() {

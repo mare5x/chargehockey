@@ -108,6 +108,16 @@
             "unpressedOffsetY": 0,
             "font": "font",
             "fontColor": "white"
+        },
+
+        "checked": {
+            "up": "button_up",
+            "down": "button_down",
+            "checked": "button_down",
+            "pressedOffsetY": -2,
+            "unpressedOffsetY": 0,
+            "font": "font",
+            "fontColor": "white"
         }
     },
 

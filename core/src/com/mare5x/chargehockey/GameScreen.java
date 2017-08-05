@@ -362,6 +362,7 @@ class GameScreen implements Screen {
             } else if (object == WinDialogBUTTON.NEXT) {
                 Gdx.app.log("WinDialog", "NEXT");
 
+                GameScreen.this.hide();
                 dispose();
                 game.setScreen(new LevelSelectorScreen(game, level.get_type()));
             }

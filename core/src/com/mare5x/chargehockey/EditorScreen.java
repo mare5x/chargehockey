@@ -194,10 +194,17 @@ class EditorScreen implements Screen {
         Gdx.graphics.requestRendering();
     }
 
+    private void save_changes() {
+        // TODO save only when something changed.
+        level.set_level_finished(false);  // reset the flag
+        level.save_level(puck_actors);
+        level.write_header();
+        SettingsFile.set_setting(SETTINGS_KEY.GRID_LINES, show_grid);
+    }
+
     @Override
     public void pause() {
-        level.save_level(puck_actors);
-        SettingsFile.set_setting(SETTINGS_KEY.GRID_LINES, show_grid);
+        save_changes();
     }
 
     @Override
@@ -207,8 +214,7 @@ class EditorScreen implements Screen {
 
     @Override
     public void hide() {
-        level.save_level(puck_actors);
-        SettingsFile.set_setting(SETTINGS_KEY.GRID_LINES, show_grid);
+        save_changes();
     }
 
     @Override
