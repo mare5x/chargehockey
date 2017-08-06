@@ -37,8 +37,8 @@ class ChargeActor extends Actor {
     private final CHARGE charge_type;
     final Sprite sprite;
 
-    static final byte SIZE = 1;  // width = height = size
-    private static final float RADIUS = SIZE / 2f;
+    private static final float SIZE = 1.33f;  // TODO make this adjustable in settings
+    private float radius = 0.5f;
     private static final float WEIGHT = 9.1e-31f;  // kg
     private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
@@ -60,10 +60,7 @@ class ChargeActor extends Actor {
                 break;
         }
 
-        sprite.setSize(SIZE, SIZE);
-        setBounds(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
-        sprite.setOriginCenter();
-        setOrigin(Align.center);
+        set_size(SIZE);
 
         if (drag_callback != null) {
             DragListener drag_listener = new DragListener() {
@@ -76,7 +73,7 @@ class ChargeActor extends Actor {
                 @Override
                 public void dragStop(InputEvent event, float x, float y, int pointer) {
                     // if the actor was dragged out the stage, remove it
-                    if (!getStage().getCamera().frustum.pointInFrustum(getX(), getY(), 0) || !ChargeHockeyGame.WORLD_RECT.contains(getX(), getY())) {
+                    if (!getStage().getCamera().frustum.pointInFrustum(get_x(), get_y(), 0) || !ChargeHockeyGame.WORLD_RECT.contains(get_x(), get_y())) {
                         drag_callback.out_of_bounds(ChargeActor.this);
                     }
                 }
@@ -85,6 +82,27 @@ class ChargeActor extends Actor {
 
             addListener(drag_listener);
         }
+    }
+
+    void set_size(float size) {
+        radius = size / 2f;
+
+        sprite.setSize(size, size);
+        setBounds(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+        sprite.setOriginCenter();
+        setOrigin(Align.center);
+    }
+
+    float get_x() {
+        return getX() + radius;
+    }
+
+    float get_y() {
+        return getY() + radius;
+    }
+
+    void set_position(float center_x, float center_y) {
+        setPosition(center_x - radius, center_y - radius);
     }
 
     @Override
@@ -138,17 +156,17 @@ class ChargeActor extends Actor {
 
     /** Returns the vector from puck to this charge, taking the charge's polarity into account. */
     Vector2 get_vec(ChargeActor puck) {
-        return new Vector2(puck.getX(Align.center), puck.getY(Align.center)).sub(getX(Align.center), getY(Align.center)).scl(get_direction());
+        return new Vector2(puck.get_x(), puck.get_y()).sub(get_x(), get_y()).scl(get_direction());
     }
 
     ChargeState get_state() {
-        return new ChargeState(charge_type, getX(), getY());
+        return new ChargeState(charge_type, get_x(), get_y());
     }
 
     /** Circular collision detection with a rectangle. */
     boolean intersects(Rectangle rectangle) {
-        float center_x = getX(Align.center);
-        float center_y = getY(Align.center);
+        float center_x = get_x();
+        float center_y = get_y();
 
         // find the closest rectangle point to the circle (charge)
         float closest_x = MathUtils.clamp(center_x, rectangle.x, rectangle.x + rectangle.width);
@@ -158,6 +176,6 @@ class ChargeActor extends Actor {
         float dy = center_y - closest_y;
 
         // if the distance from circle to rectangle is less than the circle's radius, there is an intersection
-        return (dx * dx + dy * dy) < (RADIUS * RADIUS);
+        return (dx * dx + dy * dy) < (radius * radius);
     }
 }

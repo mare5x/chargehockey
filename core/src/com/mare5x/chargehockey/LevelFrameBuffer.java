@@ -157,7 +157,7 @@ class LevelFrameBuffer {
         if (draw_pucks) {
             puck_sprite.setAlpha(puck_alpha);
             for (Vector2 pos : level.get_puck_positions()) {
-                puck_sprite.setPosition(pos.x, pos.y);
+                puck_sprite.setPosition(pos.x - PuckActor.RADIUS, pos.y - PuckActor.RADIUS);
                 puck_sprite.draw(batch);
             }
         }
@@ -190,7 +190,7 @@ class LevelFrameBuffer {
 
         puck_sprite.setAlpha(puck_alpha);
         for (Vector2 pos : level.get_puck_positions()) {
-            puck_sprite.setPosition(pos.x, pos.y);
+            puck_sprite.setPosition(pos.x - PuckActor.RADIUS, pos.y - PuckActor.RADIUS);
             puck_sprite.draw(batch);
         }
 

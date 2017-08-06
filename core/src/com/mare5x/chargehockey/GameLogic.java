@@ -25,7 +25,7 @@ class GameLogic {
 
     private boolean is_playing = false;
 
-    private static final float MIN_DIST = PuckActor.SIZE;  // how many units apart can two charges be when calculating the force? (avoids infinite forces)
+    private static final float MIN_DIST = PuckActor.RADIUS;  // how many units apart can two charges be when calculating the force? (avoids infinite forces)
     private static final float E_CONST = 1.1e-10f;
     private static float GAME_SPEED = 1;  // game speed (force scalar) set by the user in settings
     private static final float dt = 0.01f;
@@ -46,13 +46,13 @@ class GameLogic {
 
         for (Vector2 pos : level.get_puck_positions()) {
             PuckActor puck = new PuckActor(game);
-            puck.setPosition(pos.x, pos.y);
+            puck.set_position(pos.x, pos.y);
 
             puck_actors.add(puck);
             game_stage.addActor(puck);
 
             ForcePuckActor initial_puck = new ForcePuckActor(game);
-            initial_puck.setPosition(pos.x, pos.y);
+            initial_puck.set_position(pos.x, pos.y);
             initial_puck.set_alpha(0.35f);
             initial_puck.setVisible(false);
             initial_pucks.add(initial_puck);
@@ -84,7 +84,7 @@ class GameLogic {
                 }
             }
         });
-        charge.setPosition(x, y);
+        charge.set_position(x, y);
 
         charge_actors.add(charge);
         game_stage.addActor(charge);
@@ -173,9 +173,9 @@ class GameLogic {
     }
 
     private boolean check_out_of_bounds(PuckActor puck) {
-        float x = puck.getX();
-        float y = puck.getY();
-        return x < 0 || x + puck.getWidth() > ChargeHockeyGame.WORLD_WIDTH || y < 0 || y + puck.getHeight() > ChargeHockeyGame.WORLD_HEIGHT;
+        float x = puck.get_x();  // center
+        float y = puck.get_y();
+        return x < 0 || x > ChargeHockeyGame.WORLD_WIDTH || y < 0 || y > ChargeHockeyGame.WORLD_HEIGHT;
     }
 
     /** Priority: wall > goal > ... */
@@ -320,7 +320,7 @@ class GameLogic {
         for (int i = 0; i < level.get_puck_positions().size; i++) {
             final Vector2 pos = level.get_puck_positions().get(i);
             PuckActor puck = puck_actors.get(i);
-            puck.setPosition(pos.x, pos.y);
+            puck.set_position(pos.x, pos.y);
             puck.reset();
         }
         tmp_vec.setZero();

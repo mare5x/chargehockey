@@ -25,7 +25,7 @@ class Level {
     private final LEVEL_TYPE level_type;
 
     private final Grid grid;
-    private Array<Vector2> puck_positions = new Array<Vector2>();
+    private Array<Vector2> puck_positions = new Array<Vector2>();  // (x, y) of the puck's center
 
     private boolean level_finished = false;
 
@@ -70,7 +70,7 @@ class Level {
     void save_level(Array<ChargeActor> puck_actors) {
         puck_positions.clear();
         for (ChargeActor puck : puck_actors) {
-            puck_positions.add(new Vector2(puck.getX(), puck.getY()));
+            puck_positions.add(new Vector2(puck.get_x(), puck.get_y()));
         }
         save_level();
     }

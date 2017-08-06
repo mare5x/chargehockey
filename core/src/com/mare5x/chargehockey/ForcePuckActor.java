@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ObjectMap;
 
 /** Puck sprite that can show (force) vectors. */
@@ -29,8 +28,13 @@ class ForcePuckActor extends ChargeActor {
 
     private static boolean DRAW_FORCES = true;
 
+    private static final float SIZE = 1;
+    static float RADIUS = SIZE / 2f;
+
     ForcePuckActor(ChargeHockeyGame game, CHARGE type, DragCallback callback) {
         super(game, type, callback);
+
+        set_size(SIZE);
 
         vector_region = game.sprites.findRegion("blank_vector");
     }
@@ -61,7 +65,7 @@ class ForcePuckActor extends ChargeActor {
         }
         float height = Math.max(length / (_MAX_LENGTH), _MIN_VEC_HEIGHT);  // sprite width
         height *= _VEC_HEIGHT_SCL;
-        sprite.setBounds(getX(Align.center), getY(Align.center) - height / 2, length, height);
+        sprite.setBounds(get_x(), get_y() - height / 2, length, height);
         sprite.setOrigin(0, height / 2);  // rotate around the center of the puck
         sprite.setRotation(vector.angle());
     }

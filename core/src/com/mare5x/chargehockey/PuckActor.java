@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 
@@ -29,7 +28,7 @@ class PuckActor extends ForcePuckActor {
         this(game, CHARGE.PUCK, null);
     }
 
-    PuckActor(ChargeHockeyGame game, CHARGE charge_type, DragCallback drag_callback) {
+    private PuckActor(ChargeHockeyGame game, CHARGE charge_type, DragCallback drag_callback) {
         super(game, charge_type, drag_callback);
 
         velocity_sprite = new Sprite(vector_region);
@@ -57,7 +56,7 @@ class PuckActor extends ForcePuckActor {
 
     void draw_trace_path_history(Batch batch) {
         for (Vector2 point : trace_path_history) {
-            path_px.setPosition(point.x, point.y);
+            path_px.setPosition(point.x - path_px.getWidth() / 2, point.y - path_px.getHeight() / 2);
             path_px.draw(batch);
         }
     }
@@ -67,7 +66,7 @@ class PuckActor extends ForcePuckActor {
     }
 
     void save_path_position() {
-        trace_path_history.add(new Vector2(getX(Align.center), getY(Align.center)));
+        trace_path_history.add(new Vector2(get_x(), get_y()));
     }
 
     private void reset_vectors() {

@@ -19,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.FillViewport;
@@ -77,7 +76,7 @@ class EditorScreen implements Screen {
         puck_actors = new Array<ChargeActor>(level.get_puck_positions().size * 2);
         for (Vector2 puck_pos : level.get_puck_positions()) {
             ChargeActor puck = new ChargeActor(game, CHARGE.PUCK, drag_callback);
-            puck.setPosition(puck_pos.x, puck_pos.y);
+            puck.set_position(puck_pos.x, puck_pos.y);
             puck_actors.add(puck);
             edit_stage.addActor(puck);
         }
@@ -252,7 +251,7 @@ class EditorScreen implements Screen {
 
             if (puck_button.isChecked()) {
                 ChargeActor charge = new ChargeActor(game, CHARGE.PUCK, drag_callback);
-                charge.setPosition(x, y, Align.center);
+                charge.set_position(x, y);
                 edit_stage.addActor(charge);
                 puck_actors.add(charge);
             }
