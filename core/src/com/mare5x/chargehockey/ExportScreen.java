@@ -69,6 +69,11 @@ class ExportScreen extends BaseMenuScreen {
         table.add(selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(export_button).pad(15).width(Value.percentWidth(0.6f, table)).row();
         table.add(export_all_button).pad(15).width(Value.percentWidth(0.6f, table));
+
+        if (selector.is_empty()) {
+            TextNotification notification = new TextNotification(game, stage, "NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.");
+            notification.show(3);
+        }
     }
 
     private void show_notification(String message) {

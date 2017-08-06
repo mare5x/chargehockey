@@ -35,7 +35,7 @@ class LevelSelectorScreen extends BaseMenuScreen {
         table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));
 
         if (level_selector.is_empty()) {
-            TextNotification notification = new TextNotification(game, stage, "NO CUSTOM LEVELS YET CREATED.\nCREATE CUSTOM LEVELS USING THE CUSTOM EDITOR.");
+            TextNotification notification = new TextNotification(game, stage, "NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.");
             notification.show(3);
         }
     }

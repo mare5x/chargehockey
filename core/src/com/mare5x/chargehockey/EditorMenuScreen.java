@@ -47,6 +47,12 @@ class EditorMenuScreen extends BaseMenuScreen {
                 final Level level = level_selector.load_selected_level();
                 if (level != null) {
                     game.setScreen(new EditorScreen(game, level));
+                } else if (level_selector.is_empty()) {
+                    EditorNoLevelsNotification notification = new EditorNoLevelsNotification(game, stage);
+                    notification.show();
+                } else {
+                    TextNotification notification = new TextNotification(game, stage, "FIRST, SELECT THE LEVEL YOU WISH TO EDIT");
+                    notification.show(3);
                 }
             }
         });
@@ -83,6 +89,11 @@ class EditorMenuScreen extends BaseMenuScreen {
         table.add(left_subtable).pad(15).width(Value.percentWidth(0.25f, table)).expandY().fillY();
         table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(play_button).pad(15).colspan(2).size(Value.percentWidth(0.3f, table));
+
+        if (level_selector.is_empty()) {
+            EditorNoLevelsNotification notification = new EditorNoLevelsNotification(game, stage);
+            notification.show();
+        }
     }
 
     @Override
