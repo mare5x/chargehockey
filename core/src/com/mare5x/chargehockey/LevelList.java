@@ -166,4 +166,8 @@ class LevelList extends VerticalGroup {
             return selected_index / (float) (level_list.size - 1);
         return 0;
     }
+
+    int get_level_list_size() {
+        return level_list.size;
+    }
 }

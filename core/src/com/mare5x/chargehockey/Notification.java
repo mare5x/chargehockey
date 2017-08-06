@@ -33,11 +33,15 @@ abstract class Notification extends Table {
 
     /** Returns a default fade in/out action. */
     Action get_action() {
+        return get_action(1.5f);
+    }
+
+    Action get_action(float time) {
         return Actions.sequence(
                 Actions.alpha(0.4f),
                 Actions.show(),
                 Actions.fadeIn(0.4f),
-                Actions.delay(1.5f),
+                Actions.delay(time),
                 Actions.fadeOut(0.6f),
                 Actions.hide(),
                 Actions.removeActor()

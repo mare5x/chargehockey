@@ -27,8 +27,12 @@ class TextNotification extends Notification {
 
     @Override
     void show() {
+        show(1.5f);
+    }
+
+    void show(float time) {
         stage.addActor(this);
-        addAction(get_action());
+        addAction(get_action(time));
         pack();
     }
 }

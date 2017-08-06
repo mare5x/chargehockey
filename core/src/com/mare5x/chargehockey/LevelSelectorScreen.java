@@ -33,6 +33,11 @@ class LevelSelectorScreen extends BaseMenuScreen {
         add_back_button(game.skin);
         table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));
+
+        if (level_selector.is_empty()) {
+            TextNotification notification = new TextNotification(game, stage, "NO CUSTOM LEVELS YET CREATED.\nCREATE CUSTOM LEVELS USING THE CUSTOM EDITOR.");
+            notification.show(3);
+        }
     }
 
     @Override
