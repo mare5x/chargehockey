@@ -8,8 +8,9 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
 
 import com.mare5x.chargehockey.Grid.GRID_ITEM;
-import com.mare5x.chargehockey.ChargeActor.ChargeState;
-import com.mare5x.chargehockey.ChargeActor.CHARGE;
+import com.mare5x.chargehockey.actors.ChargeActor;
+import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
+import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 
 import java.io.BufferedReader;
 import java.io.IOException;

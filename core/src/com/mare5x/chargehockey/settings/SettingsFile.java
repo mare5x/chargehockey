@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.mare5x.chargehockey.GameLogic;
 import com.mare5x.chargehockey.LevelFrameBuffer;
-import com.mare5x.chargehockey.PuckActor;
+import com.mare5x.chargehockey.actors.PuckActor;
 
 
 public class SettingsFile {
@@ -22,7 +22,7 @@ public class SettingsFile {
 
     private final Preferences prefs;
 
-    public SettingsFile() {
+    SettingsFile() {
         prefs = Gdx.app.getPreferences(FILE_NAME);
     }
 

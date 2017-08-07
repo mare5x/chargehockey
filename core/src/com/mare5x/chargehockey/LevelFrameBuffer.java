@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 
 import com.mare5x.chargehockey.Grid.GRID_ITEM;
+import com.mare5x.chargehockey.actors.PuckActor;
 
 
 // Wrapper for a FrameBuffer

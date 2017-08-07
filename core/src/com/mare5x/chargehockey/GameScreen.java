@@ -25,7 +25,8 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import com.mare5x.chargehockey.notifications.NoChargesNotification;
-import com.mare5x.chargehockey.ChargeActor.CHARGE;
+import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
+import com.mare5x.chargehockey.actors.PuckActor;
 
 
 public class GameScreen implements Screen {

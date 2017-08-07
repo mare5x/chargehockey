@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.actors;
 
 
 import com.badlogic.gdx.graphics.Color;
@@ -8,9 +8,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.mare5x.chargehockey.ChargeHockeyGame;
 
 /** Puck sprite that can show (force) vectors. */
-class ForcePuckActor extends ChargeActor {
+public class ForcePuckActor extends ChargeActor {
     final TextureAtlas.AtlasRegion vector_region;
 
     private final ObjectMap<ChargeActor, Sprite> force_sprites = new ObjectMap<ChargeActor, Sprite>();
@@ -29,7 +30,7 @@ class ForcePuckActor extends ChargeActor {
     private static boolean DRAW_FORCES = true;
 
     private static final float SIZE = 1;
-    static float RADIUS = SIZE / 2f;
+    public static float RADIUS = SIZE / 2f;
 
     ForcePuckActor(ChargeHockeyGame game, CHARGE type, DragCallback callback) {
         super(game, type, callback);
@@ -39,7 +40,7 @@ class ForcePuckActor extends ChargeActor {
         vector_region = game.sprites.findRegion("blank_vector");
     }
 
-    ForcePuckActor(ChargeHockeyGame game) {
+    public ForcePuckActor(ChargeHockeyGame game) {
         this(game, CHARGE.PUCK, null);
     }
 
@@ -54,7 +55,7 @@ class ForcePuckActor extends ChargeActor {
         super.draw(batch, parentAlpha * alpha);
     }
 
-    void set_alpha(float value) {
+    public void set_alpha(float value) {
         alpha = value;
     }
 
@@ -75,7 +76,7 @@ class ForcePuckActor extends ChargeActor {
             force_sprite.setSize(0, 0);
     }
 
-    void clear_sprites() {
+    public void clear_sprites() {
         force_sprites.clear();
     }
 
@@ -91,11 +92,11 @@ class ForcePuckActor extends ChargeActor {
         return force_sprite;
     }
 
-    void set_force(ChargeActor charge, Vector2 force_vec) {
+    public void set_force(ChargeActor charge, Vector2 force_vec) {
         force_sprites.put(charge, get_force_sprite(charge, force_vec));
     }
 
-    void remove_force(ChargeActor charge) {
+    public void remove_force(ChargeActor charge) {
         force_sprites.remove(charge);
     }
 
@@ -103,7 +104,7 @@ class ForcePuckActor extends ChargeActor {
         DRAW_FORCES = draw;
     }
 
-    static boolean get_draw_forces() {
+    public static boolean get_draw_forces() {
         return DRAW_FORCES;
     }
 }

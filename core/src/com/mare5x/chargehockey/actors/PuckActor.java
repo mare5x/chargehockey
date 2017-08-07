@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.actors;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.utils.Array;
 
+import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.Grid.GRID_ITEM;
 
 
@@ -26,7 +27,7 @@ public class PuckActor extends ForcePuckActor {
 
     private RepeatAction blink_collision_action = null;
 
-    PuckActor(ChargeHockeyGame game) {
+    public PuckActor(ChargeHockeyGame game) {
         this(game, CHARGE.PUCK, null);
     }
 
@@ -56,18 +57,18 @@ public class PuckActor extends ForcePuckActor {
         super.draw(batch, parentAlpha);
     }
 
-    void draw_trace_path_history(Batch batch) {
+    public void draw_trace_path_history(Batch batch) {
         for (Vector2 point : trace_path_history) {
             path_px.setPosition(point.x - path_px.getWidth() / 2, point.y - path_px.getHeight() / 2);
             path_px.draw(batch);
         }
     }
 
-    void reset_trace_path_history() {
+    public void reset_trace_path_history() {
         trace_path_history.clear();
     }
 
-    void save_path_position() {
+    public void save_path_position() {
         trace_path_history.add(new Vector2(get_x(), get_y()));
     }
 
@@ -81,22 +82,22 @@ public class PuckActor extends ForcePuckActor {
         super.reset_sprites();
     }
 
-    void reset() {
+    public void reset() {
         stop_blinking();
         reset_trace_path_history();
         reset_vectors();
         set_collision(GRID_ITEM.NULL);
     }
 
-    Vector2 get_velocity() {
+    public Vector2 get_velocity() {
         return velocity_vec;
     }
 
-    Vector2 get_acceleration() {
+    public Vector2 get_acceleration() {
         return acceleration_vec;
     }
 
-    void set_velocity(float x, float y) {
+    public void set_velocity(float x, float y) {
         velocity_vec.set(x, y);
         if (draw_velocity) {
             float len = Math.min(velocity_vec.len() / 2, _MAX_LENGTH);
@@ -104,7 +105,7 @@ public class PuckActor extends ForcePuckActor {
         }
     }
 
-    void set_acceleration(float x, float y) {
+    public void set_acceleration(float x, float y) {
         acceleration_vec.set(x, y);
         if (draw_acceleration) {
             float len = Math.min(acceleration_vec.len() / 4, _MAX_LENGTH);
@@ -124,19 +125,19 @@ public class PuckActor extends ForcePuckActor {
         trace_path = val;
     }
 
-    static boolean get_trace_path() {
+    public static boolean get_trace_path() {
         return trace_path;
     }
 
-    GRID_ITEM get_collision() {
+    public GRID_ITEM get_collision() {
         return collision;
     }
 
-    void set_collision(GRID_ITEM collision) {
+    public void set_collision(GRID_ITEM collision) {
         this.collision = collision;
     }
 
-    void start_blinking() {
+    public void start_blinking() {
         blink_collision_action = Actions.forever(Actions.sequence(Actions.color(Color.RED, 0.5f), Actions.color(Color.WHITE, 0.5f)));
         addAction(blink_collision_action);
     }

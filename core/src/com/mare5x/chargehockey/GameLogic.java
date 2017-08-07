@@ -6,9 +6,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
-import com.mare5x.chargehockey.ChargeActor.CHARGE;
-import com.mare5x.chargehockey.ChargeActor.ChargeState;
+import com.mare5x.chargehockey.actors.ChargeActor;
+import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
+import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
 import com.mare5x.chargehockey.Grid.GRID_ITEM;
+import com.mare5x.chargehockey.actors.PuckActor;
+import com.mare5x.chargehockey.actors.ForcePuckActor;
 
 
 public class GameLogic {
@@ -40,7 +43,7 @@ public class GameLogic {
     private final Array<ChargeActor> charge_actors = new Array<ChargeActor>();
     private final Array<PuckActor> puck_actors = new Array<PuckActor>();
     
-    private final Array<ForcePuckActor> initial_pucks = new Array<ForcePuckActor>(); 
+    private final Array<ForcePuckActor> initial_pucks = new Array<ForcePuckActor>();
 
     GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, ResultCallback result_callback) {
         this.game = game;
@@ -79,7 +82,7 @@ public class GameLogic {
             }
 
             @Override
-            void drag(ChargeActor charge) {
+            public void drag(ChargeActor charge) {
                 if (PuckActor.get_draw_forces()) {
                     for (PuckActor puck : puck_actors)
                         puck.set_force(charge, calc_force(puck, charge));

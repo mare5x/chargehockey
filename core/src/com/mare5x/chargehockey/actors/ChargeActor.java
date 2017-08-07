@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.actors;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Align;
+import com.mare5x.chargehockey.ChargeHockeyGame;
 
 
 public class ChargeActor extends Actor {
@@ -29,7 +30,7 @@ public class ChargeActor extends Actor {
 
     public abstract static class DragCallback {
         public abstract void out_of_bounds(ChargeActor charge);
-        void drag(ChargeActor charge) {}
+        public void drag(ChargeActor charge) {}
     }
 
     private final CHARGE charge_type;
@@ -91,11 +92,11 @@ public class ChargeActor extends Actor {
         setOrigin(Align.center);
     }
 
-    float get_x() {
+    public float get_x() {
         return getX() + radius;
     }
 
-    float get_y() {
+    public float get_y() {
         return getY() + radius;
     }
 
@@ -132,11 +133,11 @@ public class ChargeActor extends Actor {
         sprite.draw(batch, parentAlpha);
     }
 
-    float get_charge() {
+    public float get_charge() {
         return ABS_CHARGE * get_direction();
     }
 
-    float get_abs_charge() {
+    public float get_abs_charge() {
         return ABS_CHARGE;
     }
 
@@ -148,21 +149,21 @@ public class ChargeActor extends Actor {
         return charge_type;
     }
 
-    float get_weight() {
+    public float get_weight() {
         return WEIGHT;
     }
 
     /** Returns the vector from puck to this charge, taking the charge's polarity into account. */
-    Vector2 get_vec(ChargeActor puck) {
+    public Vector2 get_vec(ChargeActor puck) {
         return new Vector2(puck.get_x(), puck.get_y()).sub(get_x(), get_y()).scl(get_direction());
     }
 
-    ChargeState get_state() {
+    public ChargeState get_state() {
         return new ChargeState(charge_type, get_x(), get_y());
     }
 
     /** Circular collision detection with a rectangle. */
-    boolean intersects(Rectangle rectangle) {
+    public boolean intersects(Rectangle rectangle) {
         float center_x = get_x();
         float center_y = get_y();
 

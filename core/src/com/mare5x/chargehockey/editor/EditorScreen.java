@@ -24,9 +24,9 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
-import com.mare5x.chargehockey.ChargeActor.CHARGE;
+import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.CameraController;
-import com.mare5x.chargehockey.ChargeActor;
+import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.Level;
@@ -233,7 +233,7 @@ public class EditorScreen implements Screen {
         hud_stage.dispose();
     }
 
-    public Level get_level() {
+    Level get_level() {
         return level;
     }
 
