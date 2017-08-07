@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
+import com.mare5x.chargehockey.editor.PermissionTools;
 
 // https://developer.android.com/training/permissions/requesting.html
 class AndroidPermissionTools implements PermissionTools {

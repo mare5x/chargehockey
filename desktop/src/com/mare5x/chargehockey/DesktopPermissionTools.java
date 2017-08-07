@@ -1,7 +1,7 @@
 package com.mare5x.chargehockey;
 
 
-class DesktopPermissionTools implements PermissionTools {
+class DesktopPermissionTools implements com.mare5x.chargehockey.editor.PermissionTools {
     @Override
     public boolean check_storage_permission() {
         return true;

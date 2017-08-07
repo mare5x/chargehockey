@@ -2,6 +2,7 @@ package com.mare5x.chargehockey;
 
 
 import com.mare5x.chargehockey.editor.FilePicker;
+import com.mare5x.chargehockey.editor.PermissionTools;
 
 class DesktopChargeHockeyGame extends ChargeHockeyGame {
     @Override
