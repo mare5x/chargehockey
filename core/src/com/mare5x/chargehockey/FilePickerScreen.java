@@ -9,8 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-class FilePickerScreen extends BaseMenuScreen {
-    interface FilePickerCallback {
+public class FilePickerScreen extends BaseMenuScreen {
+    public interface FilePickerCallback {
         void on_result(FileHandle path);
     }
 
@@ -21,7 +21,7 @@ class FilePickerScreen extends BaseMenuScreen {
         this(game, parent_screen, callback, null);
     }
 
-    FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback, FilePicker.FileFilter filter) {
+    public FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback, FilePicker.FileFilter filter) {
         super(game);
 
         this.game = game;

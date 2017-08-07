@@ -1,16 +1,19 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.editor;
 
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mare5x.chargehockey.BaseMenuScreen;
+import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.GameScreen;
 
-class EditorSubScreen extends BaseMenuScreen {
+public class EditorSubScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
     private final EditorScreen parent_screen;
 
-    EditorSubScreen(final ChargeHockeyGame game, final EditorScreen parent_screen) {
+    public EditorSubScreen(final ChargeHockeyGame game, final EditorScreen parent_screen) {
         super(game);
 
         this.game = game;

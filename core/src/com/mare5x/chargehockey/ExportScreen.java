@@ -8,11 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import com.mare5x.chargehockey.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.notifications.TextNotification;
+import com.mare5x.chargehockey.editor.CustomMenuScreen;
 
 import java.util.Locale;
 
-class ExportScreen extends BaseMenuScreen {
+public class ExportScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
     private final LevelSelector selector ;
 
@@ -25,7 +27,7 @@ class ExportScreen extends BaseMenuScreen {
         }
     };
 
-    ExportScreen(final ChargeHockeyGame game) {
+    public ExportScreen(final ChargeHockeyGame game) {
         super(game);
 
         this.game = game;

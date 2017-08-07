@@ -14,6 +14,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 
+import com.mare5x.chargehockey.Grid.GRID_ITEM;
+
+
 // Wrapper for a FrameBuffer
 // TODO fix camera rounding errors
 public class LevelFrameBuffer {
@@ -35,7 +38,7 @@ public class LevelFrameBuffer {
 
     private Level level;
 
-    LevelFrameBuffer(final ChargeHockeyGame game, final Level level) {
+    public LevelFrameBuffer(final ChargeHockeyGame game, final Level level) {
         this.level = level;
 
         Sprite null_sprite = game.sprites.createSprite("grid/grid_null");
@@ -84,7 +87,7 @@ public class LevelFrameBuffer {
     }
 
     /* Update the FBO with the level data. **/
-    void update(final SpriteBatch batch) {
+    public void update(final SpriteBatch batch) {
         if (level == null) return;
 
         fbo.begin();
@@ -204,11 +207,11 @@ public class LevelFrameBuffer {
         level = new_level;
     }
 
-    void render(Batch batch, float x, float y, float w, float h) {
+    public void render(Batch batch, float x, float y, float w, float h) {
         batch.draw(fbo_region, x, y, w, h);
     }
 
-    void dispose() {
+    public void dispose() {
         fbo.dispose();  // this also disposes the bound texture
     }
 
@@ -220,19 +223,19 @@ public class LevelFrameBuffer {
         puck_alpha = alpha;
     }
 
-    void set_draw_pucks(boolean val) {
+    public void set_draw_pucks(boolean val) {
         draw_pucks = val;
     }
 
-    void set_grid_line_spacing(int spacing) {
+    public void set_grid_line_spacing(int spacing) {
         grid_line_spacing = MathUtils.clamp(spacing, 1, ChargeHockeyGame.WORLD_WIDTH / 2);
     }
 
-    int get_grid_line_spacing() {
+    public int get_grid_line_spacing() {
         return grid_line_spacing;
     }
 
-    void set_draw_grid_lines(boolean val) {
+    public void set_draw_grid_lines(boolean val) {
         draw_grid_lines = val;
     }
 
@@ -245,7 +248,7 @@ public class LevelFrameBuffer {
         DRAW_GRID_LINES_SETTING = val;
     }
 
-    static boolean get_grid_lines_setting() {
+    public static boolean get_grid_lines_setting() {
         return DRAW_GRID_LINES_SETTING;
     }
 }

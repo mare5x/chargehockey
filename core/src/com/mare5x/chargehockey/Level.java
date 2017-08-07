@@ -7,18 +7,21 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
 
+import com.mare5x.chargehockey.Grid.GRID_ITEM;
+import com.mare5x.chargehockey.ChargeActor.ChargeState;
+import com.mare5x.chargehockey.ChargeActor.CHARGE;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Locale;
 
 
-enum LEVEL_TYPE {
-    EASY, MEDIUM, HARD, CUSTOM
-}
+public class Level {
+    public enum LEVEL_TYPE {
+        EASY, MEDIUM, HARD, CUSTOM
+    }
 
-
-class Level {
     static final String DEFAULT_HEADER = "0\n";
 
     private final String name;
@@ -49,15 +52,15 @@ class Level {
         return name;
     }
 
-    void set_level_finished(boolean finished) {
+    public void set_level_finished(boolean finished) {
         level_finished = finished;
     }
 
-    void set_item(int row, int col, GRID_ITEM item) {
+    public void set_item(int row, int col, GRID_ITEM item) {
         grid.set_item(row, col, item);
     }
 
-    final GRID_ITEM get_grid_item(int row, int col) {
+    public final GRID_ITEM get_grid_item(int row, int col) {
         return grid.get_item(row, col);
     }
 
@@ -67,7 +70,7 @@ class Level {
      * N PUCKS
      * X Y
      * */
-    void save_level(Array<ChargeActor> puck_actors) {
+    public void save_level(Array<ChargeActor> puck_actors) {
         puck_positions.clear();
         for (ChargeActor puck : puck_actors) {
             puck_positions.add(new Vector2(puck.get_x(), puck.get_y()));
@@ -188,7 +191,7 @@ class Level {
 
     /** NOTE: use this only when you want to write the header without changing the rest of
      * the .save file because this method is SLOW and inefficient. */
-    void write_header() {
+    public void write_header() {
         FileHandle save_file = LevelSelector.get_level_save_fhandle(level_type, name);
         if (!save_file.exists())
             return;
@@ -220,7 +223,7 @@ class Level {
         tmp_file.moveTo(save_file);  // replace the save file
     }
 
-    final Array<Vector2> get_puck_positions() {
+    public final Array<Vector2> get_puck_positions() {
         return puck_positions;
     }
 }

@@ -12,6 +12,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
 
+import com.mare5x.chargehockey.Level.LEVEL_TYPE;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 

@@ -23,10 +23,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+
 import com.mare5x.chargehockey.notifications.NoChargesNotification;
+import com.mare5x.chargehockey.ChargeActor.CHARGE;
 
 
-class GameScreen implements Screen {
+public class GameScreen implements Screen {
     private enum WinDialogBUTTON {
         BACK, SHARE, NEXT
     }
@@ -46,7 +48,7 @@ class GameScreen implements Screen {
 
     private final InputMultiplexer multiplexer;
 
-    GameScreen(final ChargeHockeyGame game, final Level level) {
+    public GameScreen(final ChargeHockeyGame game, final Level level) {
         this.game = game;
         this.level = level;
 

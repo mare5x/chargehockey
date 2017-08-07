@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.editor;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,11 +11,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import com.mare5x.chargehockey.BaseMenuScreen;
+import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.Level.LEVEL_TYPE;
+import com.mare5x.chargehockey.Level;
+import com.mare5x.chargehockey.LevelSelector;
 import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
 import com.mare5x.chargehockey.notifications.TextNotification;
 
 
-class EditorMenuScreen extends BaseMenuScreen {
+public class EditorMenuScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
 
     private final InputDialog input_dialog;
@@ -25,7 +30,7 @@ class EditorMenuScreen extends BaseMenuScreen {
         CANCEL, CONFIRM
     }
 
-    EditorMenuScreen(final ChargeHockeyGame game) {
+    public EditorMenuScreen(final ChargeHockeyGame game) {
         super(game);
 
         this.game = game;

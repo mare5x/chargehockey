@@ -8,10 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.Scaling;
 
+import com.mare5x.chargehockey.Level.LEVEL_TYPE;
+
 import java.util.Locale;
 
 
-class LevelSelector {
+public class LevelSelector {
     private final ChargeHockeyGame game;
 
     private final LEVEL_TYPE level_type;
@@ -23,7 +25,7 @@ class LevelSelector {
 
     private Level selected_level = null;
 
-    LevelSelector(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
+    public LevelSelector(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
         this.game = game;
         this.level_type = level_type;
 
@@ -48,7 +50,7 @@ class LevelSelector {
         preview_fbo.set_draw_grid_lines(false);
     }
 
-    Table get_selector_table() {
+    public Table get_selector_table() {
         Image preview_image = new Image(preview_fbo.get_texture_region());
         preview_image.setScaling(Scaling.fit);
 
@@ -63,7 +65,7 @@ class LevelSelector {
         return list.get_selected_name();
     }
 
-    void remove_selected_level() {
+    public void remove_selected_level() {
         String name = get_selected_name();
         if (name != null) {
             FileHandle dir = get_level_dir_fhandle(level_type, name);
@@ -81,7 +83,7 @@ class LevelSelector {
             file.delete();
     }
 
-    void add_level(String level_name) {
+    public void add_level(String level_name) {
         if (!level_name.isEmpty()) {
             if (!list.contains(level_name)) {
                 list.add_level(level_name, false);
@@ -104,7 +106,7 @@ class LevelSelector {
         return load_selected_level();
     }
 
-    Level load_selected_level() {
+    public Level load_selected_level() {
         if (selected_level != null)
             return selected_level;
 
@@ -121,7 +123,7 @@ class LevelSelector {
     }
 
     /** Returns whether there are any levels in the level list. */
-    boolean is_empty() {
+    public boolean is_empty() {
         return list.get_level_list_size() == 0;
     }
 

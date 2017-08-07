@@ -5,7 +5,9 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StreamUtils;
+
 import com.mare5x.chargehockey.notifications.TextNotification;
+import com.mare5x.chargehockey.Level.LEVEL_TYPE;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +16,7 @@ import java.util.Locale;
 
 
 /** Class that handles importing custom levels. */
-class Importer {
+public class Importer {
     private final ChargeHockeyGame game;
     private final Stage stage;
 
@@ -27,16 +29,16 @@ class Importer {
         }
     };
 
-    Importer(ChargeHockeyGame game, Stage stage) {
+    public Importer(ChargeHockeyGame game, Stage stage) {
         this.game = game;
         this.stage = stage;
     }
 
-    static FilePicker.FileFilter get_filter() {
+    public static FilePicker.FileFilter get_filter() {
         return import_filter;
     }
 
-    void handle_import(FileHandle path) {
+    public void handle_import(FileHandle path) {
         if (path.isDirectory()) {
             Array<String> import_list = new Array<String>();
             for (FileHandle child : path.list()) {

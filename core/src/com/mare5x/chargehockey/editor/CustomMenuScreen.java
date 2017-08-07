@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.editor;
 
 
 import com.badlogic.gdx.files.FileHandle;
@@ -6,15 +6,20 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mare5x.chargehockey.BaseMenuScreen;
+import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.ExportScreen;
+import com.mare5x.chargehockey.FilePickerScreen;
+import com.mare5x.chargehockey.Importer;
 
 
-class CustomMenuScreen extends BaseMenuScreen {
+public class CustomMenuScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
 
     private final FilePickerScreen.FilePickerCallback import_callback;
     private final Importer importer;
 
-    CustomMenuScreen(final ChargeHockeyGame game) {
+    public CustomMenuScreen(final ChargeHockeyGame game) {
         super(game);
 
         this.game = game;

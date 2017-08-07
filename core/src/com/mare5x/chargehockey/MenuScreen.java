@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsScreen;
+import com.mare5x.chargehockey.editor.CustomMenuScreen;
 
 
 class MenuScreen extends BaseMenuScreen {

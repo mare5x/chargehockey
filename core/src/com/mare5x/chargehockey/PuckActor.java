@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.utils.Array;
 
+import com.mare5x.chargehockey.Grid.GRID_ITEM;
+
 
 public class PuckActor extends ForcePuckActor {
     private final Sprite velocity_sprite, acceleration_sprite;

@@ -6,6 +6,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
+import com.mare5x.chargehockey.ChargeActor.CHARGE;
+import com.mare5x.chargehockey.ChargeActor.ChargeState;
+import com.mare5x.chargehockey.Grid.GRID_ITEM;
+
 
 public class GameLogic {
     private enum GAME_RESULT {
@@ -68,9 +72,9 @@ public class GameLogic {
     }
 
     private ChargeActor add_charge(CHARGE charge_type, float x, float y) {
-        ChargeActor charge = new ChargeActor(game, charge_type, new DragCallback() {
+        ChargeActor charge = new ChargeActor(game, charge_type, new ChargeActor.DragCallback() {
             @Override
-            void out_of_bounds(ChargeActor charge) {
+            public void out_of_bounds(ChargeActor charge) {
                 remove_charge(charge);
             }
 

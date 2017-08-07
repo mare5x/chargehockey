@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.mare5x.chargehockey.settings.SettingsScreen;
+import com.mare5x.chargehockey.editor.EditorScreen;
+import com.mare5x.chargehockey.Level.LEVEL_TYPE;
 
 
 class GameMenuScreen extends BaseMenuScreen {

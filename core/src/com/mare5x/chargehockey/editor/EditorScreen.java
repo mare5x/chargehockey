@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -24,11 +24,18 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+import com.mare5x.chargehockey.ChargeActor.CHARGE;
+import com.mare5x.chargehockey.CameraController;
+import com.mare5x.chargehockey.ChargeActor;
+import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.Grid.GRID_ITEM;
+import com.mare5x.chargehockey.Level;
+import com.mare5x.chargehockey.LevelFrameBuffer;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 
 
-class EditorScreen implements Screen {
+public class EditorScreen implements Screen {
     private final ChargeHockeyGame game;
 
     private final InputMultiplexer multiplexer;
@@ -50,7 +57,7 @@ class EditorScreen implements Screen {
     private Array<ChargeActor> puck_actors;
 
     // callback function for ChargeActor pucks
-    private final DragCallback drag_callback = new DragCallback() {
+    private final ChargeActor.DragCallback drag_callback = new ChargeActor.DragCallback() {
         @Override
         public void out_of_bounds(ChargeActor charge) {
             puck_actors.removeValue(charge, true);
@@ -59,7 +66,7 @@ class EditorScreen implements Screen {
         }
     };
 
-    EditorScreen(final ChargeHockeyGame game, Level level) {
+    public EditorScreen(final ChargeHockeyGame game, Level level) {
         this.game = game;
         this.level = level;
 
@@ -226,7 +233,7 @@ class EditorScreen implements Screen {
         hud_stage.dispose();
     }
 
-    Level get_level() {
+    public Level get_level() {
         return level;
     }
 
@@ -238,7 +245,7 @@ class EditorScreen implements Screen {
         }
 
         @Override
-        boolean on_tap(float x, float y, int count, int button) {
+        protected boolean on_tap(float x, float y, int count, int button) {
             // ignore taps outside of edit_stage's camera and outside the world
             if (!point_in_view(x, y) || !ChargeHockeyGame.WORLD_RECT.contains(tmp_coords.set(x, y))) {
                 return true;
@@ -268,7 +275,7 @@ class EditorScreen implements Screen {
         }
 
         @Override
-        void on_zoom_change() {
+        protected void on_zoom_change() {
             if (!show_grid)
                 return;
 
@@ -280,13 +287,13 @@ class EditorScreen implements Screen {
         }
 
         @Override
-        void on_long_press_start() {
+        protected void on_long_press_start() {
             super.on_long_press_start();
             edit_icon.show_on();
         }
 
         @Override
-        void on_long_press_held(float x, float y) {
+        protected void on_long_press_held(float x, float y) {
             int row = (int) y;
             int col = (int) x;
 
@@ -299,7 +306,7 @@ class EditorScreen implements Screen {
         }
 
         @Override
-        void on_long_press_end() {
+        protected void on_long_press_end() {
             super.on_long_press_end();
             edit_icon.show_off();
         }

@@ -3,38 +3,38 @@ package com.mare5x.chargehockey;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StringBuilder;
 
-enum GRID_ITEM {
-    NULL('n'),
-    WALL('w'),
-    GOAL('g');
+public class Grid {
+    public enum GRID_ITEM {
+        NULL('n'),
+        WALL('w'),
+        GOAL('g');
 
-    private char code;  // item abbreviation code used to save the items in the file (instead of using .ordinal())
-    GRID_ITEM(char code) {
-        this.code = code;
-    }
-
-    static public GRID_ITEM from_code(char code) {
-        switch (code) {
-            case 'n': return NULL;
-            case 'w': return WALL;
-            case 'g': return GOAL;
+        private char code;  // item abbreviation code used to save the items in the file (instead of using .ordinal())
+        GRID_ITEM(char code) {
+            this.code = code;
         }
-        return NULL;
+
+        static public GRID_ITEM from_code(char code) {
+            switch (code) {
+                case 'n': return NULL;
+                case 'w': return WALL;
+                case 'g': return GOAL;
+            }
+            return NULL;
+        }
+
+        public char code() {
+            return code;
+        }
+
+        public static final GRID_ITEM[] values = values();
+
+        // get the number of elements
+        public static int size() {
+            return GRID_ITEM.values.length;
+        }
     }
 
-    public char code() {
-        return code;
-    }
-
-    public static final GRID_ITEM[] values = values();
-
-    // get the number of elements
-    public static int size() {
-        return GRID_ITEM.values.length;
-    }
-}
-
-class Grid {
     private static int WIDTH = ChargeHockeyGame.WORLD_WIDTH, HEIGHT = ChargeHockeyGame.WORLD_HEIGHT;
 
     private final Array<GRID_ITEM> grid;

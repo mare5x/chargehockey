@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 
 // TODO rewrite the whole class using InputAdapter
-class CameraController {
+public class CameraController {
     private enum ZoomLevel {
         MIN(1.6f),
         LEVEL1(0.8f),
@@ -59,7 +59,7 @@ class CameraController {
 
     private boolean long_press_started = false;
 
-    CameraController(OrthographicCamera camera, Stage stage) {
+    public CameraController(OrthographicCamera camera, Stage stage) {
         controller = new CameraControllerImpl(camera, stage);
         detector = new GestureDetector(controller) {
             @Override
@@ -71,7 +71,7 @@ class CameraController {
         };
     }
 
-    void update(float delta) {
+    public void update(float delta) {
         if (long_press_started) {
             Vector2 touch_coordinates = controller.get_stage_coordinates(Gdx.input.getX(), Gdx.input.getY());
             on_long_press_held(touch_coordinates.x, touch_coordinates.y);
@@ -79,7 +79,7 @@ class CameraController {
         controller.update(delta);
     }
 
-    void resize(float width, float height) {
+    public void resize(float width, float height) {
         controller.resize(width, height);
     }
 
@@ -91,7 +91,7 @@ class CameraController {
         double_tap_zoom = val;
     }
 
-    GestureDetector get_gesture_detector() {
+    public GestureDetector get_gesture_detector() {
         return detector;
     }
 
@@ -101,27 +101,27 @@ class CameraController {
             Gdx.graphics.setContinuousRendering(render);
     }
 
-    boolean point_in_view(float x, float y) {
+    protected boolean point_in_view(float x, float y) {
         return controller.camera.frustum.pointInFrustum(x, y, 0);
     }
 
-    boolean is_moving() {
+    protected boolean is_moving() {
         return controller.is_moving();
     }
 
-    void on_long_press_start() {
+    protected void on_long_press_start() {
         long_press_started = true;
     }
 
-    void on_long_press_held(float x, float y) {
+    protected void on_long_press_held(float x, float y) {
 
     }
 
-    void on_long_press_end() {
+    protected void on_long_press_end() {
         long_press_started = false;
     }
 
-    boolean on_tap(float x, float y, int count, int button) {
+    protected boolean on_tap(float x, float y, int count, int button) {
         controller.stop_movement(false);
 
         // double tap to zoom in/out
@@ -133,9 +133,9 @@ class CameraController {
         return true;
     }
 
-    void on_zoom_change() { }
+    protected void on_zoom_change() { }
 
-    static int get_grid_line_spacing(float zoom) {
+    public static int get_grid_line_spacing(float zoom) {
         if (zoom <= 0.6f) return 1;
         else if (zoom <= 1f) return 2;
         else if (zoom <= 1.4f) return 4;

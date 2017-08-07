@@ -17,7 +17,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
 public abstract class BaseMenuScreen implements Screen {
-    final Stage stage;
+    protected final Stage stage;
     final InputMultiplexer input_multiplexer;
 
     protected final Table table;

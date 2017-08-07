@@ -25,15 +25,15 @@ import java.util.Locale;
 
 abstract public class ChargeHockeyGame extends Game {
     public static float DENSITY;
-    static final int WORLD_WIDTH = 64;
-    static final int WORLD_HEIGHT = 64;
+    public static final int WORLD_WIDTH = 64;
+    public static final int WORLD_HEIGHT = 64;
 
-    static final Rectangle WORLD_RECT = new Rectangle(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+    public static final Rectangle WORLD_RECT = new Rectangle(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
-	SpriteBatch batch;
+	public SpriteBatch batch;
     public Skin skin;
     public TextureAtlas sprites;
-    Screen menu_screen;
+    public Screen menu_screen;
 
     private AssetManager manager;
 

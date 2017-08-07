@@ -11,29 +11,27 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Align;
 
 
-enum CHARGE {
-    POSITIVE, NEGATIVE, PUCK
-}
-
-class ChargeState {
-    CHARGE type;
-    float x, y;
-
-    ChargeState(CHARGE type, float x, float y) {
-        this.type = type;
-        this.x = x;
-        this.y = y;
+public class ChargeActor extends Actor {
+    public enum CHARGE {
+        POSITIVE, NEGATIVE, PUCK
     }
-}
 
+    public static class ChargeState {
+        public CHARGE type;
+        public float x, y;
 
-abstract class DragCallback {
-    abstract void out_of_bounds(ChargeActor charge);
-    void drag(ChargeActor charge) {}
-}
+        public ChargeState(CHARGE type, float x, float y) {
+            this.type = type;
+            this.x = x;
+            this.y = y;
+        }
+    }
 
+    public abstract static class DragCallback {
+        public abstract void out_of_bounds(ChargeActor charge);
+        void drag(ChargeActor charge) {}
+    }
 
-class ChargeActor extends Actor {
     private final CHARGE charge_type;
     final Sprite sprite;
 
@@ -42,7 +40,7 @@ class ChargeActor extends Actor {
     private static final float WEIGHT = 9.1e-31f;  // kg
     private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
-    ChargeActor(final ChargeHockeyGame game, CHARGE charge_type, final DragCallback drag_callback) {
+    public ChargeActor(final ChargeHockeyGame game, CHARGE charge_type, final DragCallback drag_callback) {
         super();
 
         this.charge_type = charge_type;
@@ -101,7 +99,7 @@ class ChargeActor extends Actor {
         return getY() + radius;
     }
 
-    void set_position(float center_x, float center_y) {
+    public void set_position(float center_x, float center_y) {
         setPosition(center_x - radius, center_y - radius);
     }
 
