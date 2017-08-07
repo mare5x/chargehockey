@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.editor;
 
 
 import com.badlogic.gdx.files.FileHandle;
@@ -8,13 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import com.mare5x.chargehockey.BaseMenuScreen;
+import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.Level.LEVEL_TYPE;
+import com.mare5x.chargehockey.LevelSelector;
 import com.mare5x.chargehockey.notifications.TextNotification;
-import com.mare5x.chargehockey.editor.CustomMenuScreen;
 
 import java.util.Locale;
 
-public class ExportScreen extends BaseMenuScreen {
+class ExportScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
     private final LevelSelector selector ;
 
@@ -27,7 +29,7 @@ public class ExportScreen extends BaseMenuScreen {
         }
     };
 
-    public ExportScreen(final ChargeHockeyGame game) {
+    ExportScreen(final ChargeHockeyGame game) {
         super(game);
 
         this.game = game;

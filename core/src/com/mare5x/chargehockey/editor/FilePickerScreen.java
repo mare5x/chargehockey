@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.editor;
 
 
 import com.badlogic.gdx.Screen;
@@ -8,20 +8,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mare5x.chargehockey.BaseMenuScreen;
+import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.PermissionTools;
 
-public class FilePickerScreen extends BaseMenuScreen {
-    public interface FilePickerCallback {
+class FilePickerScreen extends BaseMenuScreen {
+    interface FilePickerCallback {
         void on_result(FileHandle path);
     }
 
     private final ChargeHockeyGame game;
     private final Screen parent_screen;
 
-    FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback) {
+    public FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback) {
         this(game, parent_screen, callback, null);
     }
 
-    public FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback, FilePicker.FileFilter filter) {
+    FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback, FilePicker.FileFilter filter) {
         super(game);
 
         this.game = game;

@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ObjectMap;
 
 import com.mare5x.chargehockey.settings.SettingsFile;
+import com.mare5x.chargehockey.editor.FilePicker;
 
 import java.util.Locale;
 
@@ -39,11 +40,11 @@ abstract public class ChargeHockeyGame extends Game {
 
     // platform specific abstract methods
 
-    abstract PermissionTools get_permission_tools();
+    public abstract PermissionTools get_permission_tools();
 
-    abstract FilePicker get_file_picker();
+    public abstract FilePicker get_file_picker();
 
-    abstract FilePicker get_file_picker(FilePicker.FileFilter filter);
+    public abstract FilePicker get_file_picker(FilePicker.FileFilter filter);
 
 	@Override
 	public void create () {

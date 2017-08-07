@@ -2,6 +2,7 @@ package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.mare5x.chargehockey.editor.FilePicker;
 
 
 class DesktopFilePicker extends FilePicker {
@@ -14,7 +15,7 @@ class DesktopFilePicker extends FilePicker {
     }
 
     @Override
-    FileHandle get_root_path() {
+    public FileHandle get_root_path() {
         return Gdx.files.external("");
     }
 }

@@ -22,7 +22,7 @@ public class Level {
         EASY, MEDIUM, HARD, CUSTOM
     }
 
-    static final String DEFAULT_HEADER = "0\n";
+    public static final String DEFAULT_HEADER = "0\n";
 
     private final String name;
     private final LEVEL_TYPE level_type;

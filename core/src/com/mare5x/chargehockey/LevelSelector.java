@@ -61,7 +61,7 @@ public class LevelSelector {
         return selector_table;
     }
 
-    String get_selected_name() {
+    public String get_selected_name() {
         return list.get_selected_name();
     }
 
@@ -118,7 +118,7 @@ public class LevelSelector {
     }
 
     /** Returns whether any level is currently selected. */
-    boolean is_selected() {
+    public boolean is_selected() {
         return list.get_selected_name() != null;
     }
 
@@ -127,24 +127,24 @@ public class LevelSelector {
         return list.get_level_list_size() == 0;
     }
 
-    static FileHandle get_level_grid_fhandle(LEVEL_TYPE level_type, String level_name) {
+    public static FileHandle get_level_grid_fhandle(LEVEL_TYPE level_type, String level_name) {
         if (level_type == LEVEL_TYPE.CUSTOM)
             return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.grid", level_type.name(), level_name, level_name));
         return Gdx.files.internal(String.format(Locale.US, "LEVELS/%s/%s/%s.grid", level_type.name(), level_name, level_name));
     }
 
     /* Gets the level's save file, which is always in Gdx.files.local, since it has to be writable. */
-    static FileHandle get_level_save_fhandle(LEVEL_TYPE level_type, String name) {
+    public static FileHandle get_level_save_fhandle(LEVEL_TYPE level_type, String name) {
         return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.save", level_type.name(), name, name));
     }
 
-    static FileHandle get_level_dir_fhandle(LEVEL_TYPE level_type, String name) {
+    public static FileHandle get_level_dir_fhandle(LEVEL_TYPE level_type, String name) {
         if (level_type == LEVEL_TYPE.CUSTOM)
             return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/", level_type.name(), name));
         return Gdx.files.internal(String.format(Locale.US, "LEVELS/%s/%s/", level_type.name(), name));
     }
 
-    static FileHandle get_levels_dir_fhandle(LEVEL_TYPE level_type) {
+    public static FileHandle get_levels_dir_fhandle(LEVEL_TYPE level_type) {
         if (level_type == LEVEL_TYPE.CUSTOM)
             return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/", level_type));
         return Gdx.files.internal(String.format(Locale.US, "LEVELS/%s/", level_type));

@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.editor;
 
 
 import com.badlogic.gdx.files.FileHandle;
@@ -7,10 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.mare5x.chargehockey.ChargeHockeyGame;
 
 
-abstract class FilePicker {
-    interface FileFilter {
+public abstract class FilePicker {
+    public interface FileFilter {
         boolean is_valid(FileHandle path);
     }
 
@@ -26,7 +27,7 @@ abstract class FilePicker {
 
     private FileHandle current_dir;
 
-    FilePicker(ChargeHockeyGame game) {
+    protected FilePicker(ChargeHockeyGame game) {
         this(game, new FileFilter() {
             @Override
             public boolean is_valid(FileHandle path) {
@@ -35,7 +36,7 @@ abstract class FilePicker {
         });
     }
 
-    FilePicker(ChargeHockeyGame game, FileFilter filter) {
+    protected FilePicker(ChargeHockeyGame game, FileFilter filter) {
         dir_list = new List<String>(game.skin);
         scroll_pane = new ScrollPane(dir_list, game.skin);
         this.filter = filter;
@@ -105,7 +106,7 @@ abstract class FilePicker {
             event_listener.dir_changed(dir);
     }
 
-    abstract FileHandle get_root_path();
+    public abstract FileHandle get_root_path();
 
     void refresh() {
         show_dir(current_dir);

@@ -3,6 +3,7 @@ package com.mare5x.chargehockey;
 import android.os.Environment;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.mare5x.chargehockey.editor.FilePicker;
 
 
 class AndroidFilePicker extends FilePicker {
@@ -15,7 +16,7 @@ class AndroidFilePicker extends FilePicker {
     }
 
     @Override
-    FileHandle get_root_path() {
+    public FileHandle get_root_path() {
         return new FileHandle(Environment.getRootDirectory().getParentFile());
     }
 }

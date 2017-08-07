@@ -46,7 +46,7 @@ public abstract class BaseMenuScreen implements Screen {
         add_back_button(skin, 1);
     }
 
-    void add_back_button(Skin skin, int colspan) {
+    protected void add_back_button(Skin skin, int colspan) {
         Button back_button = new Button(skin, "back");
         back_button.addListener(new ClickListener() {
             @Override
