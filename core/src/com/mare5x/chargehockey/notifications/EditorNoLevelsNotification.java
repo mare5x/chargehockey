@@ -1,14 +1,15 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.notifications;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
+import com.mare5x.chargehockey.ChargeHockeyGame;
 
 
 /** "ADD A NEW LEVEL USING '+'.\nREMOVE A LEVEL USING '-'. */
-class EditorNoLevelsNotification extends Notification {
-    EditorNoLevelsNotification(ChargeHockeyGame game, Stage stage) {
+public class EditorNoLevelsNotification extends Notification {
+    public EditorNoLevelsNotification(ChargeHockeyGame game, Stage stage) {
         super(game, stage);
 
         Label add_label = new Label("ADD A NEW LEVEL USING ", game.skin, "borderless");
@@ -25,7 +26,7 @@ class EditorNoLevelsNotification extends Notification {
     }
 
     @Override
-    void show() {
+    public void show() {
         stage.addActor(this);
         addAction(get_action(2.5f));
         pack();

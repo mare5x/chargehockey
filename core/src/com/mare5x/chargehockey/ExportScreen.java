@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import com.mare5x.chargehockey.notifications.TextNotification;
+
 import java.util.Locale;
 
 class ExportScreen extends BaseMenuScreen {

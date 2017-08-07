@@ -22,15 +22,15 @@ import com.badlogic.gdx.utils.ObjectMap;
 import java.util.Locale;
 
 abstract public class ChargeHockeyGame extends Game {
-    static float DENSITY;
+    public static float DENSITY;
     static final int WORLD_WIDTH = 64;
     static final int WORLD_HEIGHT = 64;
 
     static final Rectangle WORLD_RECT = new Rectangle(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
 	SpriteBatch batch;
-    Skin skin;
-    TextureAtlas sprites;
+    public Skin skin;
+    public TextureAtlas sprites;
     Screen menu_screen;
 
     private AssetManager manager;

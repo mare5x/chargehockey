@@ -11,6 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
+import com.mare5x.chargehockey.notifications.TextNotification;
+
 
 class EditorMenuScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
@@ -52,7 +55,7 @@ class EditorMenuScreen extends BaseMenuScreen {
                     notification.show();
                 } else {
                     TextNotification notification = new TextNotification(game, stage, "FIRST, SELECT THE LEVEL YOU WISH TO EDIT");
-                    notification.show(3);
+                    notification.show(2);
                 }
             }
         });

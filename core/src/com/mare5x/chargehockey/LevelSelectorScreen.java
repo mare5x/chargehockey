@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mare5x.chargehockey.notifications.TextNotification;
 
 
 class LevelSelectorScreen extends BaseMenuScreen {
@@ -23,6 +24,9 @@ class LevelSelectorScreen extends BaseMenuScreen {
                 final Level level = level_selector.load_selected_level();
                 if (level != null) {
                     game.setScreen(new GameScreen(game, level));
+                } else {
+                    TextNotification notification = new TextNotification(game, stage, "FIRST, SELECT THE LEVEL YOU WISH TO PLAY");
+                    notification.show(2);
                 }
             }
         });

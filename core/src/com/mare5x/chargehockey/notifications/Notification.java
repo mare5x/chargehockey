@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.notifications;
 
 
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.mare5x.chargehockey.ChargeHockeyGame;
 
 abstract class Notification extends Table {
     final Stage stage;
@@ -61,7 +62,7 @@ abstract class Notification extends Table {
     }
 
     /** Adds the notification content to the stage for a brief duration, then removes itself. */
-    abstract void show();
+    public abstract void show();
 
     /** Immediately removes this notification (actor) from the stage. */
     void hide() {

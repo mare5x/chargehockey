@@ -1,14 +1,15 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.notifications;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
+import com.mare5x.chargehockey.ChargeHockeyGame;
 
 
-class NoChargesNotification extends Notification {
+public class NoChargesNotification extends Notification {
 
-    NoChargesNotification(ChargeHockeyGame game, Stage stage) {
+    public NoChargesNotification(ChargeHockeyGame game, Stage stage) {
         super(game, stage);
 
         Label text_label = new Label("FIRST, ADD SOME  ", game.skin, "borderless");
@@ -22,7 +23,7 @@ class NoChargesNotification extends Notification {
     }
 
     @Override
-    void show() {
+    public void show() {
         stage.addActor(this);
         addAction(get_action());
         pack();
