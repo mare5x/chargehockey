@@ -1,7 +1,5 @@
-package com.mare5x.chargehockey.desktop;
+package com.mare5x.chargehockey;
 
-
-import com.mare5x.chargehockey.PermissionTools;
 
 class DesktopPermissionTools implements PermissionTools {
     @Override

@@ -33,9 +33,9 @@ class FilePickerScreen extends BaseMenuScreen {
 
         final FilePicker file_picker;
         if (filter != null)
-            file_picker = new FilePicker(game, filter);
+            file_picker = game.get_file_picker(filter);
         else
-            file_picker = new FilePicker(game);
+            file_picker = game.get_file_picker();
         file_picker.set_event_listener(new FilePicker.EventListener() {
             @Override
             public void dir_changed(FileHandle path) {
@@ -45,8 +45,9 @@ class FilePickerScreen extends BaseMenuScreen {
         path_label.setText(file_picker.get_current_path().file().getAbsolutePath());
 
         // get file storage access permission on android
-        if (!game.permission_tools.check_storage_permission()) {
-            game.permission_tools.request_storage_permission(new PermissionTools.RequestCallback() {
+        PermissionTools permission_tools = game.get_permission_tools();
+        if (!permission_tools.check_storage_permission()) {
+            permission_tools.request_storage_permission(new PermissionTools.RequestCallback() {
                 public void granted() {
                     file_picker.refresh();
                 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import java.util.Locale;
 
@@ -82,16 +83,27 @@ class ExportScreen extends BaseMenuScreen {
     }
 
     private void export_all(FileHandle target) {
-        LevelSelector.get_levels_dir_fhandle(LEVEL_TYPE.CUSTOM).copyTo(target);
-        show_notification(String.format(Locale.US, "EXPORTED TO: %s", target.file().getAbsolutePath()));
+        try {
+            LevelSelector.get_levels_dir_fhandle(LEVEL_TYPE.CUSTOM).copyTo(target);
+            show_notification(String.format(Locale.US, "EXPORTED TO: %s", target.file().getAbsolutePath()));
+        } catch (GdxRuntimeException e) {
+            e.printStackTrace();
+            show_notification("FAILED TO EXPORT");
+        }
     }
 
     /** NOTE: Assumes that a level is currently selected. */
     private void export_selected(FileHandle target) {
         String level_name = selector.get_selected_name();
         target = target.child(level_name);
-        LevelSelector.get_level_dir_fhandle(LEVEL_TYPE.CUSTOM, level_name).copyTo(target);
-        show_notification(String.format(Locale.US, "EXPORTED TO: %s", target.file().getAbsolutePath()));
+
+        try {
+            LevelSelector.get_level_dir_fhandle(LEVEL_TYPE.CUSTOM, level_name).copyTo(target);
+            show_notification(String.format(Locale.US, "EXPORTED TO: %s", target.file().getAbsolutePath()));
+        } catch (GdxRuntimeException e) {
+            e.printStackTrace();
+            show_notification("FAILED TO EXPORT");
+        }
     }
 
     @Override

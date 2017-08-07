@@ -21,7 +21,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 
 import java.util.Locale;
 
-public class ChargeHockeyGame extends Game {
+abstract public class ChargeHockeyGame extends Game {
     static float DENSITY;
     static final int WORLD_WIDTH = 64;
     static final int WORLD_HEIGHT = 64;
@@ -32,13 +32,16 @@ public class ChargeHockeyGame extends Game {
     Skin skin;
     TextureAtlas sprites;
     Screen menu_screen;
-    PermissionTools permission_tools;
 
     private AssetManager manager;
 
-    public ChargeHockeyGame(PermissionTools permission_tools) {
-        this.permission_tools = permission_tools;
-    }
+    // platform specific abstract methods
+
+    abstract PermissionTools get_permission_tools();
+
+    abstract FilePicker get_file_picker();
+
+    abstract FilePicker get_file_picker(FilePicker.FileFilter filter);
 
 	@Override
 	public void create () {

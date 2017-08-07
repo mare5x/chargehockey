@@ -1,8 +1,7 @@
-package com.mare5x.chargehockey.desktop;
+package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.mare5x.chargehockey.ChargeHockeyGame;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
@@ -10,6 +9,6 @@ public class DesktopLauncher {
 		config.width = 450;
         config.height = 800;
 
-		new LwjglApplication(new ChargeHockeyGame(new DesktopPermissionTools()), config);
+		new LwjglApplication(new DesktopChargeHockeyGame(), config);
 	}
 }

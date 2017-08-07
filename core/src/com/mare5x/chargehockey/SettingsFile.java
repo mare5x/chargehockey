@@ -35,7 +35,7 @@ class SettingsFile {
         prefs.putBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS.name(), true);
         prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
         prefs.putBoolean(SETTINGS_KEY.TRACE_PATH.name(), true);
-        prefs.putBoolean(SETTINGS_KEY.GRID_LINES.name(), false);
+        prefs.putBoolean(SETTINGS_KEY.GRID_LINES.name(), true);
         prefs.flush();
     }
 

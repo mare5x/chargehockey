@@ -29,7 +29,7 @@ class LevelFrameBuffer {
 
     private final Sprite grid_line_sprite;
     private static boolean DRAW_GRID_LINES_SETTING = false;
-    private boolean draw_grid_lines = DRAW_GRID_LINES_SETTING;  // ability to override the setting
+    private boolean draw_grid_lines = false;  // ability to override the setting
     private static float grid_line_sprite_size = 1f / (1024f / ChargeHockeyGame.WORLD_WIDTH);  // 1 px
     private int grid_line_spacing = 1;  // determines after how many grid tiles a line is drawn
 

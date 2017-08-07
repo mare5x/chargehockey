@@ -1,7 +1,6 @@
 package com.mare5x.chargehockey;
 
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
@@ -10,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 
 
-class FilePicker {
+abstract class FilePicker {
     interface FileFilter {
         boolean is_valid(FileHandle path);
     }
@@ -49,7 +48,8 @@ class FilePicker {
             }
         });
 
-        show_dir(Gdx.files.external(""));
+//        show_dir(Gdx.files.external(""));
+        show_dir(get_root_path());
     }
 
     void set_event_listener(EventListener event_listener) {
@@ -104,6 +104,8 @@ class FilePicker {
         if (event_listener != null)
             event_listener.dir_changed(dir);
     }
+
+    abstract FileHandle get_root_path();
 
     void refresh() {
         show_dir(current_dir);
