@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 
 // Wrapper for a FrameBuffer
 // TODO fix camera rounding errors
-class LevelFrameBuffer {
+public class LevelFrameBuffer {
     private final FrameBuffer fbo;
     private final TextureRegion fbo_region;
     private final OrthographicCamera fbo_camera;
@@ -241,7 +241,7 @@ class LevelFrameBuffer {
     }
 
     /** THIS IS JUST A 'SETTING', TO APPLY IT CALL set_draw_grid_lines(...)!!! */
-    static void set_grid_lines_setting(boolean val) {
+    public static void set_grid_lines_setting(boolean val) {
         DRAW_GRID_LINES_SETTING = val;
     }
 

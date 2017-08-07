@@ -99,7 +99,7 @@ class ForcePuckActor extends ChargeActor {
         force_sprites.remove(charge);
     }
 
-    static void set_draw_forces(boolean draw) {
+    public static void set_draw_forces(boolean draw) {
         DRAW_FORCES = draw;
     }
 

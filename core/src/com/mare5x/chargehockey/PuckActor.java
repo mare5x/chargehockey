@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.utils.Array;
 
 
-class PuckActor extends ForcePuckActor {
+public class PuckActor extends ForcePuckActor {
     private final Sprite velocity_sprite, acceleration_sprite;
     private final Sprite path_px;
 
@@ -110,15 +110,15 @@ class PuckActor extends ForcePuckActor {
         }
     }
 
-    static void set_draw_velocity(boolean draw) {
+    public static void set_draw_velocity(boolean draw) {
         draw_velocity = draw;
     }
 
-    static void set_draw_acceleration(boolean draw) {
+    public static void set_draw_acceleration(boolean draw) {
         draw_acceleration = draw;
     }
 
-    static void set_trace_path(boolean val) {
+    public static void set_trace_path(boolean val) {
         trace_path = val;
     }
 

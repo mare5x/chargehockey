@@ -16,13 +16,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
-abstract class BaseMenuScreen implements Screen {
+public abstract class BaseMenuScreen implements Screen {
     final Stage stage;
     final InputMultiplexer input_multiplexer;
 
     protected final Table table;
 
-    BaseMenuScreen(final ChargeHockeyGame game) {
+    protected BaseMenuScreen(final ChargeHockeyGame game) {
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
 
         table = new Table(game.skin);
@@ -42,7 +42,7 @@ abstract class BaseMenuScreen implements Screen {
         input_multiplexer = new InputMultiplexer(stage, back_key_processor);
     }
 
-    void add_back_button(Skin skin) {
+    protected void add_back_button(Skin skin) {
         add_back_button(skin, 1);
     }
 

@@ -5,6 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import com.mare5x.chargehockey.settings.SettingsScreen;
+
 
 class GameMenuScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;

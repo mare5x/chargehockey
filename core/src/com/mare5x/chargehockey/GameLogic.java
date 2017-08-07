@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
 
-class GameLogic {
+public class GameLogic {
     private enum GAME_RESULT {
         WIN, LOSS, IN_PROGRESS
     }
@@ -367,7 +367,7 @@ class GameLogic {
         return collision == GRID_ITEM.WALL || collision == GRID_ITEM.GOAL;
     }
 
-    static void set_game_speed(float value) {
+    public static void set_game_speed(float value) {
         GAME_SPEED = value;
     }
 }

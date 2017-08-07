@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -13,11 +13,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.mare5x.chargehockey.BaseMenuScreen;
+import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 
 import java.util.Locale;
 
 
-class SettingsScreen extends BaseMenuScreen {
+public class SettingsScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
     private final Screen parent_screen;
 
@@ -26,7 +29,7 @@ class SettingsScreen extends BaseMenuScreen {
     private final SettingCheckBox acceleration_checkbox, velocity_checkbox, trace_path_checkbox, forces_checkbox;
     private final Slider game_speed_slider;
 
-    SettingsScreen(final ChargeHockeyGame game, final Screen parent_screen) {
+    public SettingsScreen(final ChargeHockeyGame game, final Screen parent_screen) {
         super(game);
 
         this.game = game;

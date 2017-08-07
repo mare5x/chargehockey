@@ -24,6 +24,9 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+import com.mare5x.chargehockey.settings.SettingsFile;
+import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
+
 
 class EditorScreen implements Screen {
     private final ChargeHockeyGame game;

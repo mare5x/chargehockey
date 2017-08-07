@@ -1,32 +1,34 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.settings;
 
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.mare5x.chargehockey.GameLogic;
+import com.mare5x.chargehockey.LevelFrameBuffer;
+import com.mare5x.chargehockey.PuckActor;
 
 
-enum SETTINGS_KEY {
-    SHOW_VELOCITY_VECTOR,
-    SHOW_ACCELERATION_VECTOR,
-    SHOW_FORCE_VECTORS,
-    GAME_SPEED,
-    TRACE_PATH,
-    GRID_LINES
-}
+public class SettingsFile {
+    public enum SETTINGS_KEY {
+        SHOW_VELOCITY_VECTOR,
+        SHOW_ACCELERATION_VECTOR,
+        SHOW_FORCE_VECTORS,
+        GAME_SPEED,
+        TRACE_PATH,
+        GRID_LINES
+    }
 
-
-class SettingsFile {
     private static final String FILE_NAME = "mare5x.chargehockey.settings";
 
     private final Preferences prefs;
 
-    SettingsFile() {
+    public SettingsFile() {
         prefs = Gdx.app.getPreferences(FILE_NAME);
     }
 
     // Initialize the preferences file with the default key, value pairs.
     // NOTE: if the keys already exist, does nothing!
-    static void initialize() {
+    public static void initialize() {
         Preferences prefs = Gdx.app.getPreferences(FILE_NAME);
         if (prefs.contains(SETTINGS_KEY.values()[0].name()))
             return;
@@ -39,28 +41,28 @@ class SettingsFile {
         prefs.flush();
     }
 
-    boolean getBoolean(SETTINGS_KEY key) {
+    public boolean getBoolean(SETTINGS_KEY key) {
         return prefs.getBoolean(key.name());
     }
 
-    float getFloat(SETTINGS_KEY key) {
+    public float getFloat(SETTINGS_KEY key) {
         return prefs.getFloat(key.name());
     }
 
-    void put(SETTINGS_KEY key, boolean val) {
+    public void put(SETTINGS_KEY key, boolean val) {
         prefs.putBoolean(key.name(), val);
     }
 
-    void put(SETTINGS_KEY key, float val) {
+    public void put(SETTINGS_KEY key, float val) {
         prefs.putFloat(key.name(), val);
     }
 
-    void save() {
+    public void save() {
         prefs.flush();
     }
 
     /** Convenience method to set a single setting and apply the changes. */
-    static void set_setting(SETTINGS_KEY key, boolean val){
+    public static void set_setting(SETTINGS_KEY key, boolean val){
         SettingsFile settings = new SettingsFile();
         settings.put(key, val);
         settings.save();
@@ -68,7 +70,7 @@ class SettingsFile {
     }
 
     /** Convenience method to set a single setting and apply the changes. */
-    static void set_setting(SETTINGS_KEY key, float val){
+    public static void set_setting(SETTINGS_KEY key, float val){
         SettingsFile settings = new SettingsFile();
         settings.put(key, val);
         settings.save();
@@ -76,12 +78,12 @@ class SettingsFile {
     }
 
     /** Applies static/global-level settings. */
-    static void apply_global_settings() {
+    public static void apply_global_settings() {
         SettingsFile settings = new SettingsFile();
         apply_global_settings(settings);
     }
 
-    static void apply_global_settings(SettingsFile settings) {
+    public static void apply_global_settings(SettingsFile settings) {
         PuckActor.set_draw_velocity(settings.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         PuckActor.set_draw_acceleration(settings.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
         PuckActor.set_draw_forces(settings.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));

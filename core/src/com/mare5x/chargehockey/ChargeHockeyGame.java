@@ -19,6 +19,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ObjectMap;
 
+import com.mare5x.chargehockey.settings.SettingsFile;
+
 import java.util.Locale;
 
 abstract public class ChargeHockeyGame extends Game {
