@@ -22,7 +22,7 @@ class ForcePuckActor extends ChargeActor {
     private static final Color NEG_BLUE = new Color(0, 0.58f, 1, 1);
 
     // vector sprite settings
-    static final float _MAX_LENGTH = ChargeHockeyGame.WORLD_WIDTH;
+    static final float _MAX_LENGTH = ChargeHockeyGame.WORLD_WIDTH * 0.8f;
     private static final float _MIN_VEC_HEIGHT = 0.6f;
     private static final float _VEC_HEIGHT_SCL = 1.5f;  // manually check blank_vector.png arrow's tail height
 
@@ -81,13 +81,13 @@ class ForcePuckActor extends ChargeActor {
 
     private Sprite get_force_sprite(ChargeActor charge, Vector2 force) {
         Sprite force_sprite = force_sprites.get(charge, new Sprite(vector_region));
-        float len = Math.min(force.scl(1 / get_weight()).len(), _MAX_LENGTH);
+        float len = Math.min(force.scl(1 / get_weight() / 2).len(), _MAX_LENGTH);  // shorten the length
         prepare_vector_sprite(force_sprite, force, len);
         if (charge.get_type() == CHARGE.POSITIVE)
             force_sprite.setColor(POS_RED);
         else
             force_sprite.setColor(NEG_BLUE);
-        force_sprite.setAlpha(Math.min(len / _MAX_LENGTH, 0.8f));
+        force_sprite.setAlpha(Math.min(len * 2 / _MAX_LENGTH, 0.8f));
         return force_sprite;
     }
 
