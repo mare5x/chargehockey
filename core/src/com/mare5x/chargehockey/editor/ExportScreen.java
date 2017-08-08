@@ -10,8 +10,8 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import com.mare5x.chargehockey.BaseMenuScreen;
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.Level.LEVEL_TYPE;
-import com.mare5x.chargehockey.LevelSelector;
+import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
+import com.mare5x.chargehockey.level.LevelSelector;
 import com.mare5x.chargehockey.notifications.TextNotification;
 
 import java.util.Locale;

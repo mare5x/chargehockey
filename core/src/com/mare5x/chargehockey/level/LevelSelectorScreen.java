@@ -1,18 +1,21 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import com.mare5x.chargehockey.BaseMenuScreen;
+import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.GameScreen;
+import com.mare5x.chargehockey.PlayMenuScreen;
 import com.mare5x.chargehockey.notifications.TextNotification;
-import com.mare5x.chargehockey.Level.LEVEL_TYPE;
 
 
-class LevelSelectorScreen extends BaseMenuScreen {
+public class LevelSelectorScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
 
-    LevelSelectorScreen(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
+    public LevelSelectorScreen(final ChargeHockeyGame game, Level.LEVEL_TYPE level_type) {
         super(game);
 
         this.game = game;

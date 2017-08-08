@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -12,7 +12,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
 
-import com.mare5x.chargehockey.Level.LEVEL_TYPE;
+import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 
 import java.io.BufferedReader;
 import java.io.IOException;

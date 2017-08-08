@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,8 +14,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 
-import com.mare5x.chargehockey.Grid.GRID_ITEM;
+import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.PuckActor;
+import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 
 
 // Wrapper for a FrameBuffer
@@ -25,7 +26,7 @@ public class LevelFrameBuffer {
     private final TextureRegion fbo_region;
     private final OrthographicCamera fbo_camera;
 
-    private final ObjectMap<GRID_ITEM, Sprite> grid_sprites;
+    private final ObjectMap<Grid.GRID_ITEM, Sprite> grid_sprites;
 
     private final Sprite puck_sprite;
     private float puck_alpha = 0.5f;
@@ -75,15 +76,15 @@ public class LevelFrameBuffer {
     }
 
     // NOTE: Remember to call end().
-    void begin() {
+    public void begin() {
         fbo.begin();
     }
 
-    void end() {
+    public void end() {
         fbo.end();
     }
 
-    void set_projection_matrix(SpriteBatch batch) {
+    public void set_projection_matrix(SpriteBatch batch) {
         batch.setProjectionMatrix(fbo_camera.combined);
     }
 
@@ -174,7 +175,7 @@ public class LevelFrameBuffer {
     }
 
     /** Clears the FBO to black. */
-    void clear() {
+    public void clear() {
         fbo.begin();
 
         Gdx.gl20.glClearColor(0, 0, 0, 1);
@@ -184,7 +185,7 @@ public class LevelFrameBuffer {
     }
 
     /** Draws the pucks without clearing the buffer. */
-    void draw_pucks(final SpriteBatch batch) {
+    public void draw_pucks(final SpriteBatch batch) {
         if (level == null) return;
 
         fbo.begin();
@@ -240,7 +241,7 @@ public class LevelFrameBuffer {
         draw_grid_lines = val;
     }
 
-    boolean get_draw_grid_lines() {
+    public boolean get_draw_grid_lines() {
         return draw_grid_lines;
     }
 

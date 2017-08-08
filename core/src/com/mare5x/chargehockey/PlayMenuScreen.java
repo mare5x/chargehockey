@@ -5,13 +5,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-import com.mare5x.chargehockey.Level.LEVEL_TYPE;
+import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
+import com.mare5x.chargehockey.level.LevelSelectorScreen;
 
 
-class PlayMenuScreen extends BaseMenuScreen {
+public class PlayMenuScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
 
-    PlayMenuScreen(final ChargeHockeyGame game) {
+    public PlayMenuScreen(final ChargeHockeyGame game) {
         super(game);
 
         this.game = game;

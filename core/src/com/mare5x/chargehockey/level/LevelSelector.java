@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -8,7 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.Scaling;
 
-import com.mare5x.chargehockey.Level.LEVEL_TYPE;
+import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 
 import java.util.Locale;
 

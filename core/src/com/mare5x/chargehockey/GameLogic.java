@@ -9,7 +9,8 @@ import com.badlogic.gdx.utils.Array;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
-import com.mare5x.chargehockey.Grid.GRID_ITEM;
+import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
+import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.actors.ForcePuckActor;
 

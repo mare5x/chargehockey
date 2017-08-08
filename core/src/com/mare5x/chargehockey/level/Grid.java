@@ -1,7 +1,8 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StringBuilder;
+import com.mare5x.chargehockey.ChargeHockeyGame;
 
 public class Grid {
     public enum GRID_ITEM {

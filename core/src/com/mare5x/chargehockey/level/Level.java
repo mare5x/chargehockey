@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
 
-import com.mare5x.chargehockey.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
@@ -45,11 +44,11 @@ public class Level {
             save_level();  // this will create an empty/default valid level file
     }
 
-    final LEVEL_TYPE get_type() {
+    public final LEVEL_TYPE get_type() {
         return level_type;
     }
 
-    final String get_name() {
+    public final String get_name() {
         return name;
     }
 
@@ -57,11 +56,11 @@ public class Level {
         level_finished = finished;
     }
 
-    public void set_item(int row, int col, GRID_ITEM item) {
+    public void set_item(int row, int col, Grid.GRID_ITEM item) {
         grid.set_item(row, col, item);
     }
 
-    public final GRID_ITEM get_grid_item(int row, int col) {
+    public final Grid.GRID_ITEM get_grid_item(int row, int col) {
         return grid.get_item(row, col);
     }
 
@@ -139,7 +138,7 @@ public class Level {
      * N (number of charges (lines))
      * CHARGE_TYPE X Y
      */
-    void write_save_file(Array<ChargeActor> charge_actors) {
+    public void write_save_file(Array<ChargeActor> charge_actors) {
         Gdx.app.log("Level", "saving charge state");
 
         FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name);
@@ -162,7 +161,7 @@ public class Level {
         }
     }
 
-    Array<ChargeState> load_save_file() {
+    public Array<ChargeState> load_save_file() {
         Gdx.app.log("Level", "loading charge state");
 
         FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name);

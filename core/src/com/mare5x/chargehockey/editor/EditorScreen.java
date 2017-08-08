@@ -28,9 +28,9 @@ import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.CameraController;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.Grid.GRID_ITEM;
-import com.mare5x.chargehockey.Level;
-import com.mare5x.chargehockey.LevelFrameBuffer;
+import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
+import com.mare5x.chargehockey.level.Level;
+import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 

@@ -4,7 +4,7 @@ package com.mare5x.chargehockey.settings;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.mare5x.chargehockey.GameLogic;
-import com.mare5x.chargehockey.LevelFrameBuffer;
+import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.actors.PuckActor;
 
 

@@ -7,10 +7,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StreamUtils;
 
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.Level;
-import com.mare5x.chargehockey.LevelSelector;
+import com.mare5x.chargehockey.level.Level;
+import com.mare5x.chargehockey.level.LevelSelector;
 import com.mare5x.chargehockey.notifications.TextNotification;
-import com.mare5x.chargehockey.Level.LEVEL_TYPE;
+import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 
 import java.io.BufferedReader;
 import java.io.IOException;
