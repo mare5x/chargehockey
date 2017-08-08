@@ -39,6 +39,16 @@ public class SettingsScreen extends BaseMenuScreen {
 
         settings_file = new SettingsFile();
 
+        final TextButton defaults_button = new TextButton("RESET TO DEFAULT SETTINGS", game.skin);
+        defaults_button.pad(10);
+        defaults_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                load_defaults();
+            }
+        });
+        defaults_button.getLabel().setWrap(true);
+
         game_speed_slider = new SettingSlider(game, 0.1f, 1.5f, settings_file.getFloat(SETTINGS_KEY.GAME_SPEED));
         game_speed_slider.set_label_format("GAME SPEED: %.1f");
 
@@ -47,7 +57,7 @@ public class SettingsScreen extends BaseMenuScreen {
         velocity_checkbox = new SettingCheckBox(game, "SHOW VELOCITY VECTOR", settings_file.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         acceleration_checkbox = new SettingCheckBox(game, "SHOW ACCELERATION VECTOR", settings_file.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
         forces_checkbox = new SettingCheckBox(game, "SHOW FORCE VECTORS", settings_file.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));
-        trace_path_checkbox = new SettingCheckBox(game, "TRACE PATH?", settings_file.getBoolean(SETTINGS_KEY.TRACE_PATH));
+        trace_path_checkbox = new SettingCheckBox(game, "TRACE PUCK PATH", settings_file.getBoolean(SETTINGS_KEY.TRACE_PATH));
 
         add_back_button(game.skin);
         table.add().expand().colspan(2).row();
@@ -59,12 +69,25 @@ public class SettingsScreen extends BaseMenuScreen {
         forces_checkbox.add_to_table(table);
         trace_path_checkbox.add_to_table(table);
 
+        table.add(defaults_button).pad(15).colspan(2).center().fillX().row();
+
         table.add().colspan(2).expand();
     }
 
     @Override
     protected void back_key_pressed() {
         game.setScreen(parent_screen);
+    }
+
+    private void load_defaults() {
+        SettingsFile.initialize(settings_file.get_preferences(), true);
+
+        game_speed_slider.set_value(settings_file.getFloat(SETTINGS_KEY.GAME_SPEED));
+        charge_size_slider.set_value(settings_file.getFloat(SETTINGS_KEY.CHARGE_SIZE));
+        velocity_checkbox.set_checked(settings_file.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
+        acceleration_checkbox.set_checked(settings_file.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
+        forces_checkbox.set_checked(settings_file.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));
+        trace_path_checkbox.set_checked(settings_file.getBoolean(SETTINGS_KEY.TRACE_PATH));
     }
 
     private void save() {
@@ -125,8 +148,12 @@ public class SettingsScreen extends BaseMenuScreen {
         }
 
         void add_to_table(Table parent) {
-            parent.add(text_button).pad(15).width(Value.percentWidth(0.6f, parent)).fillX();
+            parent.add(text_button).pad(15).width(Value.percentWidth(0.6f, parent)).center();
             parent.add(checkbox).pad(15).size(Value.percentWidth(0.125f, parent)).expandX().center().row();
+        }
+
+        void set_checked(boolean checked) {
+            checkbox.setChecked(checked);
         }
 
         boolean is_checked() {
@@ -150,12 +177,16 @@ public class SettingsScreen extends BaseMenuScreen {
 
         void add_to_table(Table parent) {
             add(label).pad(15).width(Value.percentWidth(0.4f, parent)).fill().center();
-            add(slider).pad(15).width(Value.percentWidth(0.4f, parent)).expandX().fillX().row();
-            parent.add(this).colspan(2).row();
+            add(slider).pad(15).width(Value.percentWidth(0.4f, parent)).expandX().center();
+            parent.add(this).colspan(2).fillX().row();
         }
 
         void set_text(String text) {
             label.setText(text);
+        }
+
+        void set_value(float value) {
+            slider.setValue(value);
         }
 
         float get_value() {
@@ -222,9 +253,9 @@ public class SettingsScreen extends BaseMenuScreen {
         @Override
         void add_to_table(Table parent) {
             add(label).pad(15).width(Value.percentWidth(0.4f, parent)).fill().center();
-            add(slider).pad(15).width(Value.percentWidth(0.3f, parent)).expandX().fillX();
-            add(charge).pad(15).size(Value.percentHeight(1, slider)).center();
-            parent.add(this).colspan(2).row();
+            add(slider).pad(15).width(Value.percentWidth(0.3f, parent)).expandX().center();
+            add(charge).pad(15).size(Value.percentHeight(1, slider)).expandX().center();
+            parent.add(this).colspan(2).fillX().row();
         }
     }
 }

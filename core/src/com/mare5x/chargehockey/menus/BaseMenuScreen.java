@@ -57,7 +57,7 @@ public abstract class BaseMenuScreen implements Screen {
         });
         back_button.pad(10);
 
-        table.add(back_button).colspan(colspan).pad(15).expandX().size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).left().top().row();
+        table.add(back_button).colspan(colspan).pad(15).size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).left().top().row();
     }
 
     abstract protected void back_key_pressed();

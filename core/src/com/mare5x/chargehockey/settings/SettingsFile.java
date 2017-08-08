@@ -32,16 +32,25 @@ public class SettingsFile {
     // NOTE: if the keys already exist, does nothing!
     public static void initialize() {
         Preferences prefs = Gdx.app.getPreferences(FILE_NAME);
-        if (prefs.contains(SETTINGS_KEY.values()[0].name()))
+        initialize(prefs, false);
+    }
+
+    static void initialize(Preferences prefs, boolean force) {
+        if (!force && prefs.contains(SETTINGS_KEY.values()[0].name()))
             return;
+
         prefs.putBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR.name(), false);
         prefs.putBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR.name(), false);
         prefs.putBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS.name(), true);
-        prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
         prefs.putBoolean(SETTINGS_KEY.TRACE_PATH.name(), true);
         prefs.putBoolean(SETTINGS_KEY.GRID_LINES.name(), true);
+        prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
         prefs.putFloat(SETTINGS_KEY.CHARGE_SIZE.name(), 1.3f);
         prefs.flush();
+    }
+
+    Preferences get_preferences() {
+        return prefs;
     }
 
     boolean getBoolean(SETTINGS_KEY key) {
