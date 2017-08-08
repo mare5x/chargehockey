@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.PlayMenuScreen;
+import com.mare5x.chargehockey.game.PlayMenuScreen;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsScreen;
 import com.mare5x.chargehockey.editor.CustomMenuScreen;

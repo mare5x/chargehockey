@@ -3,7 +3,7 @@ package com.mare5x.chargehockey.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
-import com.mare5x.chargehockey.GameLogic;
+import com.mare5x.chargehockey.game.GameLogic;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.actors.PuckActor;
 
@@ -41,23 +41,23 @@ public class SettingsFile {
         prefs.flush();
     }
 
-    public boolean getBoolean(SETTINGS_KEY key) {
+    boolean getBoolean(SETTINGS_KEY key) {
         return prefs.getBoolean(key.name());
     }
 
-    public float getFloat(SETTINGS_KEY key) {
+    float getFloat(SETTINGS_KEY key) {
         return prefs.getFloat(key.name());
     }
 
-    public void put(SETTINGS_KEY key, boolean val) {
+    void put(SETTINGS_KEY key, boolean val) {
         prefs.putBoolean(key.name(), val);
     }
 
-    public void put(SETTINGS_KEY key, float val) {
+    void put(SETTINGS_KEY key, float val) {
         prefs.putFloat(key.name(), val);
     }
 
-    public void save() {
+    void save() {
         prefs.flush();
     }
 
@@ -83,7 +83,7 @@ public class SettingsFile {
         apply_global_settings(settings);
     }
 
-    public static void apply_global_settings(SettingsFile settings) {
+    static void apply_global_settings(SettingsFile settings) {
         PuckActor.set_draw_velocity(settings.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         PuckActor.set_draw_acceleration(settings.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
         PuckActor.set_draw_forces(settings.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));

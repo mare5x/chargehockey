@@ -25,7 +25,7 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
-import com.mare5x.chargehockey.CameraController;
+import com.mare5x.chargehockey.game.CameraController;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
