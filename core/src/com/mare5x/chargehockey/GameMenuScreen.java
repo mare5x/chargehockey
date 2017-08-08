@@ -10,6 +10,7 @@ import com.mare5x.chargehockey.settings.SettingsScreen;
 import com.mare5x.chargehockey.editor.EditorScreen;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelectorScreen;
+import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 
 class GameMenuScreen extends BaseMenuScreen {

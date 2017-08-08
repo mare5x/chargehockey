@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.menus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -7,13 +7,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.PlayMenuScreen;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsScreen;
 import com.mare5x.chargehockey.editor.CustomMenuScreen;
 
 
-class MenuScreen extends BaseMenuScreen {
-    MenuScreen(final ChargeHockeyGame game) {
+public class MenuScreen extends BaseMenuScreen {
+    public MenuScreen(final ChargeHockeyGame game) {
         super(game);
 
         Button play_button = new Button(game.skin, "play");

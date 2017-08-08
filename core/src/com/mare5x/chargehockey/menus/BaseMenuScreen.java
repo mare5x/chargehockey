@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey;
+package com.mare5x.chargehockey.menus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.mare5x.chargehockey.ChargeHockeyGame;
 
 
 public abstract class BaseMenuScreen implements Screen {

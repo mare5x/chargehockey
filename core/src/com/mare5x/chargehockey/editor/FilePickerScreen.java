@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.mare5x.chargehockey.BaseMenuScreen;
+import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 
 class FilePickerScreen extends BaseMenuScreen {
