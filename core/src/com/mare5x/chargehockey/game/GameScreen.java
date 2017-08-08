@@ -198,6 +198,8 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(multiplexer);
+
+        game_logic.handle_charge_size_change();
     }
 
     private void update_puck_trace_path() {

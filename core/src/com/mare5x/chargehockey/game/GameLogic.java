@@ -5,15 +5,14 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
-
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
+import com.mare5x.chargehockey.actors.ForcePuckActor;
+import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.Level;
-import com.mare5x.chargehockey.actors.PuckActor;
-import com.mare5x.chargehockey.actors.ForcePuckActor;
 
 
 public class GameLogic {
@@ -347,6 +346,15 @@ public class GameLogic {
             charge.remove();
         }
         charge_actors.clear();
+    }
+
+    /** If necessary, resizes all charges to their new set size.
+     * Use this after changing the SettingsFile. */
+    void handle_charge_size_change() {
+        if (charge_actors.size > 0 && charge_actors.first().size_changed()) {
+            for (ChargeActor charge : charge_actors)
+                charge.reset_size();
+        }
     }
 
     final Array<PuckActor> get_pucks() {

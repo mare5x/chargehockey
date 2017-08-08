@@ -3,6 +3,7 @@ package com.mare5x.chargehockey.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.game.GameLogic;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.actors.PuckActor;
@@ -15,7 +16,8 @@ public class SettingsFile {
         SHOW_FORCE_VECTORS,
         GAME_SPEED,
         TRACE_PATH,
-        GRID_LINES
+        GRID_LINES,
+        CHARGE_SIZE
     }
 
     private static final String FILE_NAME = "mare5x.chargehockey.settings";
@@ -38,6 +40,7 @@ public class SettingsFile {
         prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
         prefs.putBoolean(SETTINGS_KEY.TRACE_PATH.name(), true);
         prefs.putBoolean(SETTINGS_KEY.GRID_LINES.name(), true);
+        prefs.putFloat(SETTINGS_KEY.CHARGE_SIZE.name(), 1.3f);
         prefs.flush();
     }
 
@@ -84,6 +87,7 @@ public class SettingsFile {
     }
 
     static void apply_global_settings(SettingsFile settings) {
+        ChargeActor.set_charge_size(settings.getFloat(SETTINGS_KEY.CHARGE_SIZE));
         PuckActor.set_draw_velocity(settings.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         PuckActor.set_draw_acceleration(settings.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
         PuckActor.set_draw_forces(settings.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));

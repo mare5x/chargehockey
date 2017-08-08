@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -20,6 +21,7 @@ import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 import java.util.Locale;
 
 
+// todo make scrollable, add load defaults button
 public class SettingsScreen extends BaseMenuScreen {
     private final ChargeHockeyGame game;
     private final Screen parent_screen;
@@ -27,7 +29,7 @@ public class SettingsScreen extends BaseMenuScreen {
     private final SettingsFile settings_file;
 
     private final SettingCheckBox acceleration_checkbox, velocity_checkbox, trace_path_checkbox, forces_checkbox;
-    private final SettingSlider game_speed_slider;
+    private final SettingSlider game_speed_slider, charge_size_slider;
 
     public SettingsScreen(final ChargeHockeyGame game, final Screen parent_screen) {
         super(game);
@@ -40,6 +42,8 @@ public class SettingsScreen extends BaseMenuScreen {
         game_speed_slider = new SettingSlider(game, 0.1f, 1.5f, settings_file.getFloat(SETTINGS_KEY.GAME_SPEED));
         game_speed_slider.set_label_format("GAME SPEED: %.1f");
 
+        charge_size_slider = new ChargeSettingSlider(game, settings_file.getFloat(SETTINGS_KEY.CHARGE_SIZE));
+
         velocity_checkbox = new SettingCheckBox(game, "SHOW VELOCITY VECTOR", settings_file.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         acceleration_checkbox = new SettingCheckBox(game, "SHOW ACCELERATION VECTOR", settings_file.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
         forces_checkbox = new SettingCheckBox(game, "SHOW FORCE VECTORS", settings_file.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));
@@ -49,6 +53,7 @@ public class SettingsScreen extends BaseMenuScreen {
         table.add().expand().colspan(2).row();
 
         game_speed_slider.add_to_table(table);
+        charge_size_slider.add_to_table(table);
         velocity_checkbox.add_to_table(table);
         acceleration_checkbox.add_to_table(table);
         forces_checkbox.add_to_table(table);
@@ -65,6 +70,7 @@ public class SettingsScreen extends BaseMenuScreen {
     private void save() {
         Gdx.app.log("SettingsScreen", "saving preferences");
         settings_file.put(SETTINGS_KEY.GAME_SPEED, game_speed_slider.get_value());
+        settings_file.put(SETTINGS_KEY.CHARGE_SIZE, charge_size_slider.get_value());
         settings_file.put(SETTINGS_KEY.SHOW_VELOCITY_VECTOR, velocity_checkbox.is_checked());
         settings_file.put(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR, acceleration_checkbox.is_checked());
         settings_file.put(SETTINGS_KEY.SHOW_FORCE_VECTORS, forces_checkbox.is_checked());
@@ -77,6 +83,7 @@ public class SettingsScreen extends BaseMenuScreen {
         super.resize(width, height);
 
         game_speed_slider.set_knob_size(width * 0.125f);
+        charge_size_slider.set_knob_size(width * 0.125f);
 
         Gdx.graphics.requestRendering();
     }
@@ -119,28 +126,18 @@ public class SettingsScreen extends BaseMenuScreen {
 
         void add_to_table(Table parent) {
             parent.add(text_button).pad(15).width(Value.percentWidth(0.6f, parent)).fillX();
-            parent.add(checkbox).pad(15).size(Value.percentWidth(0.125f, parent)).row();
+            parent.add(checkbox).pad(15).size(Value.percentWidth(0.125f, parent)).expandX().center().row();
         }
 
         boolean is_checked() {
             return checkbox.isChecked();
         }
-
-        @Override
-        public float getHeight() {
-            return text_button.getHeight();
-        }
-
-        @Override
-        public float getWidth() {
-            return text_button.getWidth();
-        }
     }
 
     /** A unified horizontal slider. Do NOT use it as a Table, but use the add_to_table method. */
     private static class SettingSlider extends Table {
-        private final Label label;
-        private final Slider slider;
+        final Label label;
+        final Slider slider;
 
         SettingSlider(final ChargeHockeyGame game, float min, float max, float current) {
             label = new Label("...", game.skin);
@@ -181,6 +178,53 @@ public class SettingsScreen extends BaseMenuScreen {
                     set_text(String.format(Locale.US, format, get_value()));
                 }
             });
+        }
+    }
+
+    /** A slider for setting the charge's visual size. */
+    private static class ChargeSettingSlider extends SettingSlider {
+        private static final float MIN_SIZE = 0.5f;
+        private static final float MAX_SIZE = 2;
+
+        private final Image charge;
+
+        ChargeSettingSlider(ChargeHockeyGame game, float current) {
+            super(game, MIN_SIZE, MAX_SIZE, current);
+
+            charge = new Image(game.sprites.findRegion("pos_red64"));
+
+            set_label_format("CHARGE SIZE: %.1f");
+
+            scale_charge();
+
+            slider.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    scale_charge();
+                }
+            });
+        }
+
+        private void scale_charge() {
+            charge.setScale(0.5f + slider.getPercent() * 0.5f);  // scale includes [0.5, 1.0]
+        }
+
+        @Override
+        void set_knob_size(float size) {
+            super.set_knob_size(size);
+
+            // necessary hack to make the charge be centered in the cell
+            charge.setSize(size, size);
+            charge.setOrigin(Align.center);
+            charge.setAlign(Align.center);
+        }
+
+        @Override
+        void add_to_table(Table parent) {
+            add(label).pad(15).width(Value.percentWidth(0.4f, parent)).fill().center();
+            add(slider).pad(15).width(Value.percentWidth(0.3f, parent)).expandX().fillX();
+            add(charge).pad(15).size(Value.percentHeight(1, slider)).center();
+            parent.add(this).colspan(2).row();
         }
     }
 }

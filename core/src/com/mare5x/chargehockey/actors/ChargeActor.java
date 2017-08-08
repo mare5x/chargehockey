@@ -36,8 +36,8 @@ public class ChargeActor extends Actor {
     private final CHARGE charge_type;
     final Sprite sprite;
 
-    private static final float SIZE = 1.33f;  // TODO make this adjustable in settings
-    private float radius = 0.5f;
+    private static float SIZE = 1.3f;
+    private float radius = SIZE / 2f;
     private static final float WEIGHT = 9.1e-31f;  // kg
     private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
@@ -83,11 +83,19 @@ public class ChargeActor extends Actor {
         }
     }
 
+    public void reset_size() {
+        set_size(SIZE);
+    }
+
     void set_size(float size) {
+        // save the center position
+        float x = get_x();
+        float y = get_y();
+
         radius = size / 2f;
 
-        sprite.setSize(size, size);
-        setBounds(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+        setSize(size, size);
+        set_position(x, y);  // re-center
         sprite.setOriginCenter();
         setOrigin(Align.center);
     }
@@ -126,6 +134,12 @@ public class ChargeActor extends Actor {
     public void setBounds(float x, float y, float width, float height) {
         super.setBounds(x, y, width, height);
         sprite.setBounds(x, y, width, height);
+    }
+
+    @Override
+    public void setSize(float width, float height) {
+        super.setSize(width, height);
+        sprite.setSize(width, height);
     }
 
     @Override
@@ -176,5 +190,13 @@ public class ChargeActor extends Actor {
 
         // if the distance from circle to rectangle is less than the circle's radius, there is an intersection
         return (dx * dx + dy * dy) < (radius * radius);
+    }
+
+    public boolean size_changed() {
+        return !MathUtils.isEqual(radius * 2, SIZE, 0.001f);
+    }
+
+    public static void set_charge_size(float size) {
+        SIZE = size;
     }
 }
