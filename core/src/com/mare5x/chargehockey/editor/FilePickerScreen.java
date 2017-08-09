@@ -16,7 +16,6 @@ class FilePickerScreen extends BaseMenuScreen {
         void on_result(FileHandle path);
     }
 
-    private final ChargeHockeyGame game;
     private final Screen parent_screen;
 
     public FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback) {
@@ -26,7 +25,6 @@ class FilePickerScreen extends BaseMenuScreen {
     FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback, FilePicker.FileFilter filter) {
         super(game);
 
-        this.game = game;
         this.parent_screen = parent_screen;
 
         final Label path_label = new Label("", game.skin);
@@ -83,7 +81,7 @@ class FilePickerScreen extends BaseMenuScreen {
             }
         });
 
-        add_back_button(game.skin, 2);
+        add_back_button(2);
         table.add(path_label).colspan(2).pad(15).width(Value.percentWidth(1, table)).row();
         table.add(file_picker.get_display()).colspan(2).pad(15).expand().fill().row();
         table.add(back_button).pad(15).fill();

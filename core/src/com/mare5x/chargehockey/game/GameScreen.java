@@ -33,6 +33,7 @@ import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.PuckActor;
 
 
+// todo add undo button
 public class GameScreen implements Screen {
     private enum WinDialogBUTTON {
         BACK, SHARE, NEXT
@@ -190,6 +191,17 @@ public class GameScreen implements Screen {
         camera_controller.set_rendering(game_logic.is_playing());
     }
 
+    void save_charge_state(Level.SAVE_TYPE save_type) {
+        level.write_save_file(save_type, game_logic.get_charges());
+    }
+
+    boolean load_charge_state(Level.SAVE_TYPE save_type) {
+        boolean success = game_logic.load_charge_state(save_type);
+        if (success)  // the level was reset so reset the fbo
+            fbo.update(game.batch);
+        return success;
+    }
+
     void restart_level() {
         game_logic.reset();
         fbo.update(game.batch);
@@ -262,7 +274,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-        game_logic.save_charge_state();
+        save_charge_state(Level.SAVE_TYPE.AUTO);
     }
 
     @Override
@@ -272,7 +284,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void hide() {
-        game_logic.save_charge_state();
+        save_charge_state(Level.SAVE_TYPE.AUTO);
         if (game_logic.is_playing())
             toggle_playing();
     }

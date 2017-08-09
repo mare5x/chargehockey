@@ -11,15 +11,12 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 
 
 public class CustomMenuScreen extends BaseMenuScreen {
-    private final ChargeHockeyGame game;
-
     private final FilePickerScreen.FilePickerCallback import_callback;
     private final Importer importer;
 
     public CustomMenuScreen(final ChargeHockeyGame game) {
         super(game);
 
-        this.game = game;
         importer = new Importer(game, stage);
 
         import_callback = new FilePickerScreen.FilePickerCallback() {
@@ -58,7 +55,7 @@ public class CustomMenuScreen extends BaseMenuScreen {
             }
         });
 
-        add_back_button(game.skin);
+        add_back_button();
         table.add().expand().row();
         Value width = Value.percentWidth(0.6f, table);
         table.add(edit_button).pad(15).uniform().width(width).row();

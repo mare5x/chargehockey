@@ -9,21 +9,25 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 
 
+// todo add ScrollableMenuScreen
 public abstract class BaseMenuScreen implements Screen {
+    protected final ChargeHockeyGame game;
     protected final Stage stage;
     final InputMultiplexer input_multiplexer;
 
     protected final Table table;
 
     protected BaseMenuScreen(final ChargeHockeyGame game) {
+        this.game = game;
+
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
 
         table = new Table(game.skin);
@@ -43,12 +47,12 @@ public abstract class BaseMenuScreen implements Screen {
         input_multiplexer = new InputMultiplexer(stage, back_key_processor);
     }
 
-    protected void add_back_button(Skin skin) {
-        add_back_button(skin, 1);
+    protected void add_back_button() {
+        add_back_button(1);
     }
 
-    protected void add_back_button(Skin skin, int colspan) {
-        Button back_button = new Button(skin, "back");
+    protected void add_back_button(int colspan) {
+        Button back_button = new Button(game.skin, "back");
         back_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -61,6 +65,13 @@ public abstract class BaseMenuScreen implements Screen {
     }
 
     abstract protected void back_key_pressed();
+
+    protected TextButton make_text_button(String text) {
+        TextButton button = new TextButton(text, game.skin);
+        button.pad(10);
+        button.getLabel().setWrap(true);
+        return button;
+    }
 
     @Override
     public void show() {

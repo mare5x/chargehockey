@@ -12,12 +12,8 @@ import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 
 public class PlayMenuScreen extends BaseMenuScreen {
-    private final ChargeHockeyGame game;
-
     public PlayMenuScreen(final ChargeHockeyGame game) {
         super(game);
-
-        this.game = game;
 
         TextButton easy_button = new TextButton("EASY", game.skin);
         easy_button.addListener(new ClickListener() {
@@ -58,7 +54,7 @@ public class PlayMenuScreen extends BaseMenuScreen {
         table.pad(10 * ChargeHockeyGame.DENSITY);
 
         Value twidth = Value.percentWidth(0.6f, table);
-        add_back_button(game.skin);
+        add_back_button();
         table.add().expand().row();
         table.add(easy_button).pad(15).uniform().width(twidth).row();
         table.add(medium_button).pad(15).uniform().width(twidth).row();

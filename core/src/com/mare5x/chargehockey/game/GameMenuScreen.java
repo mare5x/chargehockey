@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level;
+import com.mare5x.chargehockey.notifications.TextNotification;
 import com.mare5x.chargehockey.settings.SettingsScreen;
 import com.mare5x.chargehockey.editor.EditorScreen;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
@@ -15,17 +16,14 @@ import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 
 class GameMenuScreen extends BaseMenuScreen {
-    private final ChargeHockeyGame game;
     private final GameScreen parent_screen;
 
     GameMenuScreen(final ChargeHockeyGame game, final GameScreen parent_screen, final Level level) {
         super(game);
 
-        this.game = game;
         this.parent_screen = parent_screen;
 
-        TextButton return_button = new TextButton("PLAY", game.skin);
-        return_button.pad(10);
+        TextButton return_button = make_text_button("PLAY");
         return_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -33,8 +31,7 @@ class GameMenuScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton edit_button = new TextButton("EDIT", game.skin);
-        edit_button.pad(10);
+        TextButton edit_button = make_text_button("EDIT");
         edit_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -43,8 +40,27 @@ class GameMenuScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton restart_button = new TextButton("RESTART LEVEL", game.skin);
-        restart_button.pad(10);
+        TextButton save_button = make_text_button("SAVE CURRENT STATE");
+        save_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                parent_screen.save_charge_state(Level.SAVE_TYPE.CUSTOM);
+            }
+        });
+
+        TextButton load_button = make_text_button("LOAD LAST SAVE");
+        load_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!parent_screen.load_charge_state(Level.SAVE_TYPE.CUSTOM)) {
+                    // probably the file doesn't exist
+                    TextNotification notification = new TextNotification(game, stage, "FAILED TO LOAD LAST SAVE");
+                    notification.show();
+                }
+            }
+        });
+
+        TextButton restart_button = make_text_button("RESTART LEVEL");
         restart_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -52,8 +68,7 @@ class GameMenuScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton selector_button = new TextButton("SELECT LEVEL", game.skin);
-        selector_button.pad(10);
+        TextButton selector_button = make_text_button("SELECT LEVEL");
         selector_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -62,8 +77,7 @@ class GameMenuScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton main_menu_button = new TextButton("MAIN MENU", game.skin);
-        main_menu_button.pad(10);
+        TextButton main_menu_button = make_text_button("MAIN MENU");
         main_menu_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -72,8 +86,7 @@ class GameMenuScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton settings_button = new TextButton("SETTINGS", game.skin);
-        settings_button.pad(10);
+        TextButton settings_button = make_text_button("SETTINGS");
         settings_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -81,12 +94,14 @@ class GameMenuScreen extends BaseMenuScreen {
             }
         });
 
-        table.add(return_button).pad(15).width(Value.percentWidth(0.6f, table)).uniform().fillX().row();
-        if (level.get_type() == LEVEL_TYPE.CUSTOM) table.add(edit_button).pad(15).uniform().fillX().row();
-        table.add(restart_button).pad(15).uniform().fillX().row();
-        table.add(selector_button).pad(15).uniform().fillX().row();
-        table.add(main_menu_button).pad(15).uniform().fillX().row();
-        table.add(settings_button).pad(15).uniform().fillX();
+        table.add(return_button).pad(15).width(Value.percentWidth(0.6f, table)).uniformX().fillX().row();
+        if (level.get_type() == LEVEL_TYPE.CUSTOM) table.add(edit_button).pad(15).uniformX().fillX().row();
+        table.add(save_button).pad(15).uniformX().fillX().row();
+        table.add(load_button).pad(15).uniformX().fillX().row();
+        table.add(restart_button).pad(15).uniformX().fillX().row();
+        table.add(selector_button).pad(15).uniformX().fillX().row();
+        table.add(main_menu_button).pad(15).uniformX().fillX().row();
+        table.add(settings_button).pad(15).uniformX().fillX();
     }
 
     @Override

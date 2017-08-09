@@ -207,7 +207,7 @@ public class EditorScreen implements Screen {
         // TODO save only when something changed.
         level.set_level_finished(false);  // reset the flag
         level.save_level(puck_actors);
-        level.write_header();
+        level.write_save_header();
         SettingsFile.set_setting(SETTINGS_KEY.GRID_LINES, show_grid);
     }
 

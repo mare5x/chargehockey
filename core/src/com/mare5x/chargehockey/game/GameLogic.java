@@ -67,7 +67,7 @@ public class GameLogic {
             game_stage.addActor(initial_puck);
         }
 
-        load_charge_state();
+        load_charge_state(Level.SAVE_TYPE.AUTO);
     }
 
     // Add a charge of type charge_type to the center of the camera position.
@@ -335,17 +335,20 @@ public class GameLogic {
         force_vec.setZero();
     }
 
-    /** Resets the state of the loaded level to its initial state. */
-    void reset() {
-        reset_pucks();
-        for (ForcePuckActor puck : initial_pucks)
-            puck.clear_sprites();
-
+    private void reset_charges() {
         for (ChargeActor charge : charge_actors) {
             charge.clear();
             charge.remove();
         }
         charge_actors.clear();
+    }
+
+    /** Resets the state of the loaded level to its initial state (without the charges). */
+    void reset() {
+        reset_pucks();
+        for (ForcePuckActor puck : initial_pucks)
+            puck.clear_sprites();
+        reset_charges();
     }
 
     /** If necessary, resizes all charges to their new set size.
@@ -361,19 +364,21 @@ public class GameLogic {
         return puck_actors;
     }
 
-    void save_charge_state() {
-        level.write_save_file(charge_actors);
+    final Array<ChargeActor> get_charges() {
+        return charge_actors;
     }
 
-    private void load_charge_state() {
-        Array<ChargeState> charge_states = level.load_save_file();
+    /** Returns true on success and false otherwise. */
+    boolean load_charge_state(Level.SAVE_TYPE save_type) {
+        Array<ChargeState> charge_states = level.load_save_file(save_type);
         if (charge_states == null)
-            return;
+            return false;
 
-        charge_actors.clear();
+        reset();
         for (ChargeState charge_state : charge_states) {
             add_charge(charge_state.type, charge_state.x, charge_state.y);
         }
+        return true;
     }
 
     boolean has_charges() {

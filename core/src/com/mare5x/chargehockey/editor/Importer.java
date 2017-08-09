@@ -28,7 +28,8 @@ class Importer {
     private static final FilePicker.FileFilter import_filter = new FilePicker.FileFilter() {
         @Override
         public boolean is_valid(FileHandle path) {
-            return path.isDirectory() || path.extension().equals("grid") || path.extension().equals("save");
+            String ext = path.extension();
+            return path.isDirectory() || ext.equals("grid") || ext.equals("save") || ext.equals("csave");
         }
     };
 
@@ -54,18 +55,25 @@ class Importer {
             } else {
                 show_notification("YOU MUST PICK A VALID IMPORT LOCATION");
             }
-        } else if (path.extension().equals("grid")) {
-            String name = path.nameWithoutExtension();
-            path.copyTo(LevelSelector.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name));
-            show_notification(String.format(Locale.US, "IMPORTED %s", name));
-        } else if (path.extension().equals("save")) {
-            if (import_save(path)) {
-                show_notification(String.format(Locale.US, "IMPORTED %s", path.nameWithoutExtension()));
-            } else {
-                show_notification("CAN'T IMPORT SAVE FILE. MAKE SURE THE LEVEL EXISTS.");
-            }
         } else {
-            show_notification("YOU MUST PICK A VALID IMPORT LOCATION");
+            String extension = path.extension();
+            String name = path.nameWithoutExtension();
+            if (extension.equals("grid")) {
+                path.copyTo(LevelSelector.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name));
+                show_notification(String.format(Locale.US, "IMPORTED %s", name));
+            } else if (extension.equals("save")) {
+                if (import_save(path, Level.SAVE_TYPE.AUTO))
+                    show_notification(String.format(Locale.US, "IMPORTED %s", name));
+                else
+                    show_notification("CAN'T IMPORT SAVE FILE. MAKE SURE THE LEVEL EXISTS.");
+            } else if (extension.equals("csave")) {
+                if (import_save(path, Level.SAVE_TYPE.CUSTOM))
+                    show_notification(String.format(Locale.US, "IMPORTED %s", name));
+                else
+                    show_notification("CAN'T IMPORT SAVE FILE. MAKE SURE THE LEVEL EXISTS.");
+            } else {
+                show_notification("YOU MUST PICK A VALID IMPORT LOCATION");
+            }
         }
     }
 
@@ -88,7 +96,11 @@ class Importer {
 
             FileHandle save_file = grid_path.sibling(name + ".save");
             if (save_file.exists())
-                import_save(save_file);
+                import_save(save_file, Level.SAVE_TYPE.AUTO);
+
+            save_file = grid_path.sibling(name + ".csave");
+            if (save_file.exists())
+                import_save(save_file, Level.SAVE_TYPE.CUSTOM);
 
             return true;
         }
@@ -96,10 +108,10 @@ class Importer {
     }
 
     /** NOTE: Assumes that path points to an existing, valid .save file. */
-    private boolean import_save(FileHandle path) {
+    private boolean import_save(FileHandle path, Level.SAVE_TYPE save_type) {
         String name = path.nameWithoutExtension();
         if (LevelSelector.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name).exists()) {  // a save file without a grid would be useless
-            FileHandle save_path = LevelSelector.get_level_save_fhandle(LEVEL_TYPE.CUSTOM, name);
+            FileHandle save_path = LevelSelector.get_level_save_fhandle(LEVEL_TYPE.CUSTOM, name, save_type);
 
             // manually copy the save file, but first reset the save file header, so that the
             // level completion flag gets reset. this is necessary because once the flag is set, it's 'permanent'

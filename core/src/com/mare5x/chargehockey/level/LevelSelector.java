@@ -14,9 +14,8 @@ import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import java.util.Locale;
 
 
+// todo sort levels by date/name ...
 public class LevelSelector {
-    private final ChargeHockeyGame game;
-
     private final LEVEL_TYPE level_type;
 
     private final LevelList list;
@@ -27,7 +26,6 @@ public class LevelSelector {
     private Level selected_level = null;
 
     public LevelSelector(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
-        this.game = game;
         this.level_type = level_type;
 
         LevelList.SelectionListener selection_listener = new LevelList.SelectionListener() {
@@ -134,9 +132,15 @@ public class LevelSelector {
         return Gdx.files.internal(String.format(Locale.US, "LEVELS/%s/%s/%s.grid", level_type.name(), level_name, level_name));
     }
 
-    /* Gets the level's save file, which is always in Gdx.files.local, since it has to be writable. */
-    public static FileHandle get_level_save_fhandle(LEVEL_TYPE level_type, String name) {
-        return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.save", level_type.name(), name, name));
+    /** Gets the level's save file, which is always in Gdx.files.local, since it has to be writable. */
+    static FileHandle get_level_save_fhandle(LEVEL_TYPE level_type, String name) {
+        return get_level_save_fhandle(level_type, name, Level.SAVE_TYPE.AUTO);
+    }
+
+    public static FileHandle get_level_save_fhandle(LEVEL_TYPE level_type, String name, Level.SAVE_TYPE save_type) {
+        if (save_type == Level.SAVE_TYPE.CUSTOM)
+            return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.csave", level_type.name(), name, name));
+        return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.save", level_type.name(), name, name));  // AUTO
     }
 
     public static FileHandle get_level_dir_fhandle(LEVEL_TYPE level_type, String name) {

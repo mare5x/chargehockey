@@ -13,12 +13,8 @@ import com.mare5x.chargehockey.notifications.TextNotification;
 
 
 public class LevelSelectorScreen extends BaseMenuScreen {
-    private final ChargeHockeyGame game;
-
     public LevelSelectorScreen(final ChargeHockeyGame game, Level.LEVEL_TYPE level_type) {
         super(game);
-
-        this.game = game;
 
         final LevelSelector level_selector = new LevelSelector(game, level_type);
 
@@ -39,7 +35,7 @@ public class LevelSelectorScreen extends BaseMenuScreen {
 
         table.pad(10 * ChargeHockeyGame.DENSITY);
 
-        add_back_button(game.skin);
+        add_back_button();
         table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));
 

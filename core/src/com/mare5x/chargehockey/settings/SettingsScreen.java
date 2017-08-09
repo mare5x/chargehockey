@@ -21,9 +21,8 @@ import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 import java.util.Locale;
 
 
-// todo make scrollable, add load defaults button
+// todo make scrollable, add load defaults button confirmation
 public class SettingsScreen extends BaseMenuScreen {
-    private final ChargeHockeyGame game;
     private final Screen parent_screen;
 
     private final SettingsFile settings_file;
@@ -34,7 +33,6 @@ public class SettingsScreen extends BaseMenuScreen {
     public SettingsScreen(final ChargeHockeyGame game, final Screen parent_screen) {
         super(game);
 
-        this.game = game;
         this.parent_screen = parent_screen;
 
         settings_file = new SettingsFile();
@@ -59,7 +57,7 @@ public class SettingsScreen extends BaseMenuScreen {
         forces_checkbox = new SettingCheckBox(game, "SHOW FORCE VECTORS", settings_file.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));
         trace_path_checkbox = new SettingCheckBox(game, "TRACE PUCK PATH", settings_file.getBoolean(SETTINGS_KEY.TRACE_PATH));
 
-        add_back_button(game.skin);
+        add_back_button();
         table.add().expand().colspan(2).row();
 
         game_speed_slider.add_to_table(table);

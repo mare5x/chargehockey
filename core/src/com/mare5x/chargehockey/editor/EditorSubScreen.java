@@ -10,13 +10,11 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.game.GameScreen;
 
 class EditorSubScreen extends BaseMenuScreen {
-    private final ChargeHockeyGame game;
     private final EditorScreen parent_screen;
 
     EditorSubScreen(final ChargeHockeyGame game, final EditorScreen parent_screen) {
         super(game);
 
-        this.game = game;
         this.parent_screen = parent_screen;
 
         TextButton return_button = new TextButton("EDIT", game.skin);

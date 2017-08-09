@@ -17,7 +17,6 @@ import com.mare5x.chargehockey.notifications.TextNotification;
 import java.util.Locale;
 
 class ExportScreen extends BaseMenuScreen {
-    private final ChargeHockeyGame game;
     private final LevelSelector selector ;
 
     private final FilePickerScreen.FilePickerCallback export_all_callback;
@@ -32,7 +31,6 @@ class ExportScreen extends BaseMenuScreen {
     ExportScreen(final ChargeHockeyGame game) {
         super(game);
 
-        this.game = game;
         selector = new LevelSelector(game, LEVEL_TYPE.CUSTOM);
 
         export_all_callback = new FilePickerScreen.FilePickerCallback() {
@@ -72,7 +70,7 @@ class ExportScreen extends BaseMenuScreen {
             }
         });
 
-        add_back_button(game.skin);
+        add_back_button();
         table.add(selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(export_button).pad(15).width(Value.percentWidth(0.6f, table)).row();
         table.add(export_all_button).pad(15).width(Value.percentWidth(0.6f, table));

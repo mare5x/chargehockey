@@ -21,8 +21,6 @@ import com.mare5x.chargehockey.notifications.TextNotification;
 
 
 class EditorMenuScreen extends BaseMenuScreen {
-    private final ChargeHockeyGame game;
-
     private final InputDialog input_dialog;
     private final LevelSelector level_selector;
 
@@ -32,8 +30,6 @@ class EditorMenuScreen extends BaseMenuScreen {
 
     EditorMenuScreen(final ChargeHockeyGame game) {
         super(game);
-
-        this.game = game;
 
         input_dialog = new InputDialog("ADD LEVEL", game.skin);
 

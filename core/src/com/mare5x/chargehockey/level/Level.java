@@ -17,9 +17,18 @@ import java.io.Writer;
 import java.util.Locale;
 
 
+// todo compress saves ...
 public class Level {
     public enum LEVEL_TYPE {
         EASY, MEDIUM, HARD, CUSTOM
+    }
+
+    /** AUTO is the save file that gets written to automatically and is the currently loaded save.
+     * CUSTOM is the save file that is used only when explicitly called.
+     * All save types are written to their own files.
+     */
+    public enum SAVE_TYPE {
+        AUTO, CUSTOM
     }
 
     public static final String DEFAULT_HEADER = "0\n";
@@ -138,10 +147,10 @@ public class Level {
      * N (number of charges (lines))
      * CHARGE_TYPE X Y
      */
-    public void write_save_file(Array<ChargeActor> charge_actors) {
+    public void write_save_file(SAVE_TYPE save_type, Array<ChargeActor> charge_actors) {
         Gdx.app.log("Level", "saving charge state");
 
-        FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name);
+        FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name, save_type);
         Writer writer = file.writer(false, "UTF-8");
 
         try {
@@ -161,10 +170,10 @@ public class Level {
         }
     }
 
-    public Array<ChargeState> load_save_file() {
+    public Array<ChargeState> load_save_file(SAVE_TYPE save_type) {
         Gdx.app.log("Level", "loading charge state");
 
-        FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name);
+        FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name, save_type);
         if (!file.exists()) {
             return null;
         }
@@ -191,7 +200,7 @@ public class Level {
 
     /** NOTE: use this only when you want to write the header without changing the rest of
      * the .save file because this method is SLOW and inefficient. */
-    public void write_header() {
+    public void write_save_header() {
         FileHandle save_file = LevelSelector.get_level_save_fhandle(level_type, name);
         if (!save_file.exists())
             return;
