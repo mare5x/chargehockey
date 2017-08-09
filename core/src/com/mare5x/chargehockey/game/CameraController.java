@@ -136,6 +136,12 @@ public class CameraController {
 
     protected void on_zoom_change() { }
 
+    public static Rectangle get_camera_rect(OrthographicCamera camera) {
+        float x = camera.position.x - camera.viewportWidth / 2f * camera.zoom;
+        float y = camera.position.y - camera.viewportHeight / 2f * camera.zoom;
+        return new Rectangle(x, y, camera.viewportWidth, camera.viewportHeight);
+    }
+
     public static int get_grid_line_spacing(float zoom) {
         if (zoom <= 0.6f) return 1;
         else if (zoom <= 1f) return 2;
@@ -179,12 +185,6 @@ public class CameraController {
             this.stage = stage;
 
             resize(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
-        }
-
-        Rectangle get_camera_rect() {
-            float x = camera.position.x - camera.viewportWidth / 2f * camera.zoom;
-            float y = camera.position.y - camera.viewportHeight / 2f * camera.zoom;
-            return new Rectangle(x, y, camera.viewportWidth, camera.viewportHeight);
         }
 
         void update(float delta) {

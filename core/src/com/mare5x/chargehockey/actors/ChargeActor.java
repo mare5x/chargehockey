@@ -1,5 +1,6 @@
 package com.mare5x.chargehockey.actors;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.game.CameraController;
 
 
 public class ChargeActor extends Actor {
@@ -74,10 +76,10 @@ public class ChargeActor extends Actor {
 
                 @Override
                 public void dragStop(InputEvent event, float x, float y, int pointer) {
-                    // if the actor was dragged out the stage, remove it
-                    if (!getStage().getCamera().frustum.pointInFrustum(get_x(), get_y(), 0) || !ChargeHockeyGame.WORLD_RECT.contains(get_x(), get_y())) {
+                    Rectangle camera_rect = CameraController.get_camera_rect((OrthographicCamera) getStage().getCamera());
+                    // if the actor was dragged below the camera into the bottom hud part, remove it
+                    if (get_y() < camera_rect.getY() || !ChargeHockeyGame.WORLD_RECT.contains(get_x(), get_y()))
                         drag_callback.out_of_bounds(ChargeActor.this);
-                    }
                 }
             };
             drag_listener.setTapSquareSize(getWidth() / 8);
@@ -90,7 +92,7 @@ public class ChargeActor extends Actor {
         set_size(SIZE);
     }
 
-    void set_size(float size) {
+    private void set_size(float size) {
         // save the center position
         float x = get_x();
         float y = get_y();

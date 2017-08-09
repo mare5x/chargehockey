@@ -291,6 +291,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
+        save_charge_state(Level.SAVE_TYPE.AUTO);
         fbo.dispose();
         game_stage.dispose();
         hud_stage.dispose();
