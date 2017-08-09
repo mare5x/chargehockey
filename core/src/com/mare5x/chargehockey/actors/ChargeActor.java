@@ -46,6 +46,8 @@ public class ChargeActor extends Actor {
 
         this.charge_type = charge_type;
 
+        float charge_size = SIZE;
+
         sprite = new Sprite();
         switch (charge_type) {
             case POSITIVE:
@@ -56,10 +58,11 @@ public class ChargeActor extends Actor {
                 break;
             case PUCK:
                 sprite.setRegion(game.sprites.findRegion("puck"));
+                charge_size = PuckActor.SIZE;  // make pucks always have the same size
                 break;
         }
 
-        set_size(SIZE);
+        set_size(charge_size);
 
         if (drag_callback != null) {
             DragListener drag_listener = new DragListener() {

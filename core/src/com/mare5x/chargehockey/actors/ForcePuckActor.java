@@ -29,13 +29,13 @@ public class ForcePuckActor extends ChargeActor {
 
     private static boolean DRAW_FORCES = true;
 
-    private static final float SIZE = 1;
+    public static final float SIZE = 1;
     public static float RADIUS = SIZE / 2f;
 
     ForcePuckActor(ChargeHockeyGame game, CHARGE type, DragCallback callback) {
         super(game, type, callback);
 
-        set_size(SIZE);
+//        set_size(SIZE);
 
         vector_region = game.sprites.findRegion("blank_vector");
     }

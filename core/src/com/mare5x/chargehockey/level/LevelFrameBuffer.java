@@ -58,7 +58,7 @@ public class LevelFrameBuffer {
         grid_sprites.put(GRID_ITEM.GOAL, goal_sprite);
 
         puck_sprite = game.sprites.createSprite("puck");
-        puck_sprite.setSize(1, 1);
+        puck_sprite.setSize(PuckActor.SIZE, PuckActor.SIZE);
 
         grid_line_sprite = game.skin.getSprite("pixels/px_purple");
         grid_line_sprite.setSize(grid_line_sprite_size, grid_line_sprite_size);
