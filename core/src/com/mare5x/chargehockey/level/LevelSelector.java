@@ -138,7 +138,7 @@ public class LevelSelector {
     }
 
     public static FileHandle get_level_save_fhandle(LEVEL_TYPE level_type, String name, Level.SAVE_TYPE save_type) {
-        if (save_type == Level.SAVE_TYPE.CUSTOM)
+        if (save_type == Level.SAVE_TYPE.QUICKSAVE)
             return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.csave", level_type.name(), name, name));
         return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.save", level_type.name(), name, name));  // AUTO
     }

@@ -40,21 +40,21 @@ class GameMenuScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton save_button = make_text_button("SAVE CURRENT STATE");
+        TextButton save_button = make_text_button("QUICKSAVE");
         save_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                parent_screen.save_charge_state(Level.SAVE_TYPE.CUSTOM);
+                parent_screen.save_charge_state(Level.SAVE_TYPE.QUICKSAVE);
             }
         });
 
-        TextButton load_button = make_text_button("LOAD LAST SAVE");
+        TextButton load_button = make_text_button("LOAD QUICKSAVE");
         load_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!parent_screen.load_charge_state(Level.SAVE_TYPE.CUSTOM)) {
+                if (!parent_screen.load_charge_state(Level.SAVE_TYPE.QUICKSAVE)) {
                     // probably the file doesn't exist
-                    TextNotification notification = new TextNotification(game, stage, "FAILED TO LOAD LAST SAVE");
+                    TextNotification notification = new TextNotification(game, stage, "FAILED TO LOAD QUICKSAVE");
                     notification.show();
                 }
             }

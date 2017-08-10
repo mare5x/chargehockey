@@ -67,7 +67,7 @@ class Importer {
                 else
                     show_notification("CAN'T IMPORT SAVE FILE. MAKE SURE THE LEVEL EXISTS.");
             } else if (extension.equals("csave")) {
-                if (import_save(path, Level.SAVE_TYPE.CUSTOM))
+                if (import_save(path, Level.SAVE_TYPE.QUICKSAVE))
                     show_notification(String.format(Locale.US, "IMPORTED %s", name));
                 else
                     show_notification("CAN'T IMPORT SAVE FILE. MAKE SURE THE LEVEL EXISTS.");
@@ -100,7 +100,7 @@ class Importer {
 
             save_file = grid_path.sibling(name + ".csave");
             if (save_file.exists())
-                import_save(save_file, Level.SAVE_TYPE.CUSTOM);
+                import_save(save_file, Level.SAVE_TYPE.QUICKSAVE);
 
             return true;
         }

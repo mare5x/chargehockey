@@ -24,11 +24,11 @@ public class Level {
     }
 
     /** AUTO is the save file that gets written to automatically and is the currently loaded save.
-     * CUSTOM is the save file that is used only when explicitly called.
+     * QUICKSAVE is the save file that is used only when explicitly called. (aka quicksave)
      * All save types are written to their own files.
      */
     public enum SAVE_TYPE {
-        AUTO, CUSTOM
+        AUTO, QUICKSAVE
     }
 
     public static final String DEFAULT_HEADER = "0\n";
