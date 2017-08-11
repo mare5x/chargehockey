@@ -27,7 +27,7 @@ import com.mare5x.chargehockey.menus.MenuScreen;
 import java.util.Locale;
 
 abstract public class ChargeHockeyGame extends Game {
-    public static float DENSITY;
+    public static float DENSITY;  // todo better font size
     public static final int WORLD_WIDTH = 64;
     public static final int WORLD_HEIGHT = 64;
 

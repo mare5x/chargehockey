@@ -38,7 +38,7 @@ public class ChargeActor extends Actor {
     private final CHARGE charge_type;
     final Sprite sprite;
 
-    private static float SIZE = 1.3f;
+    private static float SIZE = 1.3f;  // min = 0.5, max = 2
     private float radius = SIZE / 2f;
     private static final float WEIGHT = 9.1e-31f;  // kg
     private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
@@ -82,7 +82,7 @@ public class ChargeActor extends Actor {
                         drag_callback.out_of_bounds(ChargeActor.this);
                 }
             };
-            drag_listener.setTapSquareSize(getWidth() / 8);
+            drag_listener.setTapSquareSize(-1);
 
             addListener(drag_listener);
         }
