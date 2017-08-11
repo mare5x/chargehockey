@@ -15,43 +15,37 @@ public class PlayMenuScreen extends BaseMenuScreen {
     public PlayMenuScreen(final ChargeHockeyGame game) {
         super(game);
 
-        TextButton easy_button = new TextButton("EASY", game.skin);
+        TextButton easy_button = make_text_button("EASY");
         easy_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.EASY));
             }
         });
-        easy_button.pad(10);
 
-        TextButton medium_button = new TextButton("MEDIUM", game.skin);
+        TextButton medium_button = make_text_button("MEDIUM");
         medium_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.MEDIUM));
             }
         });
-        medium_button.pad(10);
 
-        TextButton hard_button = new TextButton("HARD", game.skin);
+        TextButton hard_button = make_text_button("HARD");
         hard_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.HARD));
             }
         });
-        hard_button.pad(10);
 
-        TextButton custom_button = new TextButton("CUSTOM", game.skin);
+        TextButton custom_button = make_text_button("CUSTOM");
         custom_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.CUSTOM));
             }
         });
-        custom_button.pad(10);
-
-        table.pad(10 * ChargeHockeyGame.DENSITY);
 
         Value twidth = Value.percentWidth(0.6f, table);
         add_back_button();

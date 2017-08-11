@@ -173,7 +173,7 @@ public class GameScreen implements Screen {
 
     private void toggle_playing(boolean update_background) {
         if (!game_logic.has_charges()) {
-            NoChargesNotification notification = new NoChargesNotification(game, hud_stage);
+            NoChargesNotification notification = new NoChargesNotification(game, hud_stage);  // note: the player can spam create notifications!
             notification.show();
             return;
         }
@@ -344,7 +344,6 @@ public class GameScreen implements Screen {
             button_table.add(back_button).pad(15).size(percent_width(0.2f), percent_width(0.1f)).padRight(30 * ChargeHockeyGame.DENSITY);
             setObject(back_button, WinDialogBUTTON.BACK);
 
-//            TextButton next_level_button = new TextButton("NEXT LEVEL", skin);
             Button next_level_button = new Button(skin, "forward");
             button_table.add(next_level_button).pad(15).size(percent_width(0.2f), percent_width(0.1f));
             setObject(next_level_button, WinDialogBUTTON.NEXT);

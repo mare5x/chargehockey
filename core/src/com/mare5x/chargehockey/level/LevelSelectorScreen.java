@@ -4,12 +4,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
-import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.game.GameScreen;
 import com.mare5x.chargehockey.game.PlayMenuScreen;
-import com.mare5x.chargehockey.notifications.TextNotification;
+import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 
 public class LevelSelectorScreen extends BaseMenuScreen {
@@ -26,22 +24,18 @@ public class LevelSelectorScreen extends BaseMenuScreen {
                 if (level != null) {
                     game.setScreen(new GameScreen(game, level));
                 } else {
-                    TextNotification notification = new TextNotification(game, stage, "FIRST, SELECT THE LEVEL YOU WISH TO PLAY");
-                    notification.show(2);
+                    show_notification("FIRST, SELECT THE LEVEL YOU WISH TO PLAY", 2);
                 }
             }
         });
         play_button.pad(10);
-
-        table.pad(10 * ChargeHockeyGame.DENSITY);
 
         add_back_button();
         table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));
 
         if (level_selector.is_empty()) {
-            TextNotification notification = new TextNotification(game, stage, "NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.");
-            notification.show(3);
+            show_notification("NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.", 3);
         }
     }
 

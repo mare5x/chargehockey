@@ -74,6 +74,7 @@ public class LevelSelector {
             list.remove_selected_level();
             preview_fbo.clear();
         }
+        selected_level = null;
     }
 
     void remove_level_save(String level_name) {

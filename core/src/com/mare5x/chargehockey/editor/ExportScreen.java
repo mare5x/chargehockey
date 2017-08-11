@@ -7,12 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-
-import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelector;
-import com.mare5x.chargehockey.notifications.TextNotification;
+import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 import java.util.Locale;
 
@@ -47,26 +45,29 @@ class ExportScreen extends BaseMenuScreen {
             }
         };
 
-        TextButton export_button = new TextButton("EXPORT SELECTED", game.skin);
-        export_button.pad(10);
+        TextButton export_button = make_text_button("EXPORT SELECTED");
         export_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!selector.is_selected()) { // something has to be selected
-                    show_notification("FIRST, SELECT A LEVEL");
-                    return;
-                }
-
-                game.setScreen(new FilePickerScreen(game, ExportScreen.this, export_selected_callback, filter));
+                if (!selector.is_empty()) {
+                    // something has to be selected
+                    if (selector.is_selected())
+                        game.setScreen(new FilePickerScreen(game, ExportScreen.this, export_selected_callback, filter));
+                    else
+                        show_notification("FIRST, SELECT A LEVEL");
+                } else
+                    show_notification("NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.", 3);
             }
         });
 
-        TextButton export_all_button = new TextButton("EXPORT ALL", game.skin);
-        export_all_button.pad(10);
+        TextButton export_all_button = make_text_button("EXPORT ALL");
         export_all_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new FilePickerScreen(game, ExportScreen.this, export_all_callback, filter));
+                if (!selector.is_empty())
+                    game.setScreen(new FilePickerScreen(game, ExportScreen.this, export_all_callback, filter));
+                else
+                    show_notification("NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.", 3);
             }
         });
 
@@ -76,14 +77,8 @@ class ExportScreen extends BaseMenuScreen {
         table.add(export_all_button).pad(15).width(Value.percentWidth(0.6f, table));
 
         if (selector.is_empty()) {
-            TextNotification notification = new TextNotification(game, stage, "NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.");
-            notification.show(3);
+            show_notification("NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.", 3);
         }
-    }
-
-    private void show_notification(String message) {
-        TextNotification notification = new TextNotification(game, stage, message);
-        notification.show();
     }
 
     private void export_all(FileHandle target) {

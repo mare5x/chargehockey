@@ -26,8 +26,7 @@ public class CustomMenuScreen extends BaseMenuScreen {
             }
         };
 
-        TextButton edit_button = new TextButton("EDIT", game.skin);
-        edit_button.pad(10);
+        TextButton edit_button = make_text_button("EDIT");
         edit_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -36,8 +35,7 @@ public class CustomMenuScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton import_button = new TextButton("IMPORT", game.skin);
-        import_button.pad(10);
+        TextButton import_button = make_text_button("IMPORT");
         import_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -45,8 +43,7 @@ public class CustomMenuScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton export_button = new TextButton("EXPORT", game.skin);
-        export_button.pad(10);
+        TextButton export_button = make_text_button("EXPORT");
         export_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

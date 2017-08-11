@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -14,15 +15,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.menus.ScrollableMenuScreen;
 import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 
 import java.util.Locale;
 
 
 // todo make scrollable, add load defaults button confirmation
-public class SettingsScreen extends BaseMenuScreen {
+public class SettingsScreen extends ScrollableMenuScreen {
     private final Screen parent_screen;
 
     private final SettingsFile settings_file;
@@ -37,8 +38,7 @@ public class SettingsScreen extends BaseMenuScreen {
 
         settings_file = new SettingsFile();
 
-        final TextButton defaults_button = new TextButton("RESET TO DEFAULT SETTINGS", game.skin);
-        defaults_button.pad(10);
+        final TextButton defaults_button = make_text_button("RESET TO DEFAULT SETTINGS");
         defaults_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -171,6 +171,15 @@ public class SettingsScreen extends BaseMenuScreen {
 
             slider = new Slider(min, max, 0.1f, false, game.skin);
             slider.setValue(current);
+
+            // this fixes the scrollpane (ScrollableMenu...) from messing with the slider
+            slider.addListener(new InputListener() {
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    event.stop();
+                    return false;
+                }
+            });
         }
 
         void add_to_table(Table parent) {

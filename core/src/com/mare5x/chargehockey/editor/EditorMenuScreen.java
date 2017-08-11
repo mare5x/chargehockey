@@ -10,14 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
-import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.Level;
+import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelector;
+import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
-import com.mare5x.chargehockey.notifications.TextNotification;
 
 
 class EditorMenuScreen extends BaseMenuScreen {
@@ -52,11 +50,11 @@ class EditorMenuScreen extends BaseMenuScreen {
                 if (level != null) {
                     game.setScreen(new EditorScreen(game, level));
                 } else if (level_selector.is_empty()) {
-                    EditorNoLevelsNotification notification = new EditorNoLevelsNotification(game, stage);
+                    remove_notification();
+                    notification = new EditorNoLevelsNotification(game, stage);
                     notification.show();
                 } else {
-                    TextNotification notification = new TextNotification(game, stage, "FIRST, SELECT THE LEVEL YOU WISH TO EDIT");
-                    notification.show(2);
+                    show_notification("FIRST, SELECT THE LEVEL YOU WISH TO EDIT", 2);
                 }
             }
         });
@@ -82,20 +80,19 @@ class EditorMenuScreen extends BaseMenuScreen {
 
         Table left_subtable = new Table();
 
-        Value twidth = Value.percentWidth(0.8f, left_subtable);
+        Value twidth = Value.percentWidth(0.9f, left_subtable);
 
-        left_subtable.add(back_button).padBottom(30).size(twidth, Value.percentWidth(0.4f, left_subtable)).expandX().top().row();
         left_subtable.add(add_button).padBottom(30).size(twidth).expand().row();
         left_subtable.add(remove_button).size(twidth).expand();
 
-        table.pad(50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY, 50 * ChargeHockeyGame.DENSITY, 15 * ChargeHockeyGame.DENSITY);
-
+        add_back_button();
         table.add(left_subtable).pad(15).width(Value.percentWidth(0.25f, table)).expandY().fillY();
         table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
         table.add(play_button).pad(15).colspan(2).size(Value.percentWidth(0.3f, table));
 
         if (level_selector.is_empty()) {
-            EditorNoLevelsNotification notification = new EditorNoLevelsNotification(game, stage);
+            remove_notification();
+            notification = new EditorNoLevelsNotification(game, stage);
             notification.show();
         }
     }

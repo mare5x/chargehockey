@@ -26,8 +26,7 @@ public class MenuScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton edit_button = new TextButton("CUSTOM EDITOR", game.skin);
-        edit_button.pad(10);
+        TextButton edit_button = make_text_button("CUSTOM EDITOR");
         edit_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -35,8 +34,7 @@ public class MenuScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton settings_button = new TextButton("SETTINGS", game.skin);
-        settings_button.pad(10);
+        TextButton settings_button = make_text_button("SETTINGS");
         settings_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

@@ -18,14 +18,14 @@ public class NoChargesNotification extends Notification {
         Image neg_charge = new Image(game.sprites.findRegion("neg_blue64"));
 
         add(text_label).padRight(15).expandX().fill();
-        add(pos_charge).padRight(15).size(Value.percentHeight(1, text_label));
-        add(neg_charge).padRight(15).size(Value.percentHeight(1, text_label));
+        add(pos_charge).padRight(15).size(Value.percentHeight(1, text_label)).expandX().center();
+        add(neg_charge).size(Value.percentHeight(1, text_label)).expandX().center();
     }
 
     @Override
-    public void show() {
+    public void show(float time) {
         stage.addActor(this);
-        addAction(get_action());
+        addAction(get_action(time));
         pack();
     }
 }

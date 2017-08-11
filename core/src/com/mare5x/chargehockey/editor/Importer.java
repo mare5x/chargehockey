@@ -138,6 +138,7 @@ class Importer {
         return false;
     }
 
+    // copy in BaseMenuScreen
     private void show_notification(String message) {
         if (notification != null)
             notification.remove();  // get rid of the old notification

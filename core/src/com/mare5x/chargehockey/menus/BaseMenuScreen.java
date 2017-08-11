@@ -15,15 +15,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.notifications.Notification;
+import com.mare5x.chargehockey.notifications.TextNotification;
 
 
-// todo add ScrollableMenuScreen
+// todo add transition animations ...
+// todo minWidth maxWidth constraints ...
 public abstract class BaseMenuScreen implements Screen {
+    // public static float MIN_BUTTON_HEIGHT;  // todo implement a minimum button height
+
     protected final ChargeHockeyGame game;
     protected final Stage stage;
-    final InputMultiplexer input_multiplexer;
+    private final InputMultiplexer input_multiplexer;
 
-    protected final Table table;
+    protected Notification notification = null;
+
+    protected Table table;
 
     protected BaseMenuScreen(final ChargeHockeyGame game) {
         this.game = game;
@@ -67,10 +74,32 @@ public abstract class BaseMenuScreen implements Screen {
     abstract protected void back_key_pressed();
 
     protected TextButton make_text_button(String text) {
+        return make_text_button(text, true);
+    }
+
+    protected TextButton make_text_button(String text, boolean wrap) {
         TextButton button = new TextButton(text, game.skin);
         button.pad(10);
-        button.getLabel().setWrap(true);
+        button.getLabel().setWrap(wrap);
         return button;
+    }
+
+    /** Displays a TextNotification, making sure only one is displayed. */
+    protected void show_notification(String message) {
+        show_notification(message, Notification.DEFAULT_SHOW_TIME);
+    }
+
+    /** Displays a TextNotification, making sure only one is displayed. */
+    protected void show_notification(String message, float show_time) {
+        if (notification != null)
+            notification.remove();
+        notification = new TextNotification(game, stage, message);
+        notification.show(show_time);
+    }
+
+    protected void remove_notification() {
+        if (notification != null)
+            notification.remove();
     }
 
     @Override

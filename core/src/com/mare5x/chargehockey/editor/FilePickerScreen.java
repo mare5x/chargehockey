@@ -58,8 +58,7 @@ class FilePickerScreen extends BaseMenuScreen {
             });
         }
 
-        TextButton back_button = new TextButton("BACK", game.skin);
-        back_button.pad(10);
+        TextButton back_button = make_text_button("BACK", false);
         back_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -67,8 +66,7 @@ class FilePickerScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton result_button = new TextButton("SELECT", game.skin);
-        result_button.pad(10);
+        TextButton result_button = make_text_button("SELECT", false);
         result_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -84,8 +82,8 @@ class FilePickerScreen extends BaseMenuScreen {
         add_back_button(2);
         table.add(path_label).colspan(2).pad(15).width(Value.percentWidth(1, table)).row();
         table.add(file_picker.get_display()).colspan(2).pad(15).expand().fill().row();
-        table.add(back_button).pad(15).fill();
-        table.add(result_button).pad(15).expandX().fill();
+        table.add(back_button).pad(15).fillX();
+        table.add(result_button).pad(15).expandX().fillX();
     }
 
     @Override

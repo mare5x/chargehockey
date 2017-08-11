@@ -17,8 +17,7 @@ class EditorSubScreen extends BaseMenuScreen {
 
         this.parent_screen = parent_screen;
 
-        TextButton return_button = new TextButton("EDIT", game.skin);
-        return_button.pad(10);
+        TextButton return_button = make_text_button("EDIT");
         return_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -26,8 +25,7 @@ class EditorSubScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton play_button = new TextButton("PLAY", game.skin);
-        play_button.pad(10);
+        TextButton play_button = make_text_button("PLAY");
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -36,8 +34,7 @@ class EditorSubScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton selector_button = new TextButton("SELECT LEVEL", game.skin);
-        selector_button.pad(10);
+        TextButton selector_button = make_text_button("SELECT LEVEL");
         selector_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -46,8 +43,7 @@ class EditorSubScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton menu_button = new TextButton("MAIN MENU", game.skin);
-        menu_button.pad(10);
+        TextButton menu_button = make_text_button("MAIN MENU");
         menu_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

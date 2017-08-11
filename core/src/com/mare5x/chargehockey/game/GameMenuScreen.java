@@ -4,18 +4,16 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.level.Level;
-import com.mare5x.chargehockey.notifications.TextNotification;
-import com.mare5x.chargehockey.settings.SettingsScreen;
 import com.mare5x.chargehockey.editor.EditorScreen;
+import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelectorScreen;
-import com.mare5x.chargehockey.menus.BaseMenuScreen;
+import com.mare5x.chargehockey.menus.ScrollableMenuScreen;
+import com.mare5x.chargehockey.settings.SettingsScreen;
 
 
-class GameMenuScreen extends BaseMenuScreen {
+class GameMenuScreen extends ScrollableMenuScreen {
     private final GameScreen parent_screen;
 
     GameMenuScreen(final ChargeHockeyGame game, final GameScreen parent_screen, final Level level) {
@@ -54,8 +52,7 @@ class GameMenuScreen extends BaseMenuScreen {
             public void clicked(InputEvent event, float x, float y) {
                 if (!parent_screen.load_charge_state(Level.SAVE_TYPE.QUICKSAVE)) {
                     // probably the file doesn't exist
-                    TextNotification notification = new TextNotification(game, stage, "FAILED TO LOAD QUICKSAVE");
-                    notification.show();
+                    show_notification("FAILED TO LOAD QUICKSAVE");
                 }
             }
         });

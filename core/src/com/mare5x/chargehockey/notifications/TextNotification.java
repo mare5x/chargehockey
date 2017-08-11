@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
+import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 
 
@@ -13,6 +14,7 @@ public class TextNotification extends Notification {
 
         Label text_label = new Label(message, game.skin, "borderless");
         text_label.setWrap(true);
+        text_label.setAlignment(Align.center);
 
         add(text_label).width(get_text_width()).fill().center();
     }
@@ -28,7 +30,7 @@ public class TextNotification extends Notification {
 
     @Override
     public void show() {
-        show(1.5f);
+        show(DEFAULT_SHOW_TIME);
     }
 
     public void show(float time) {
