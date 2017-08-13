@@ -47,13 +47,12 @@ public class PlayMenuScreen extends BaseMenuScreen {
             }
         });
 
-        Value twidth = Value.percentWidth(0.6f, table);
         add_back_button();
         table.add().expand().row();
-        table.add(easy_button).pad(15).uniform().width(twidth).row();
-        table.add(medium_button).pad(15).uniform().width(twidth).row();
-        table.add(hard_button).pad(15).uniform().width(twidth).row();
-        table.add(custom_button).pad(15).uniform().width(twidth).row();
+        add_text_button(easy_button).row();
+        add_text_button(medium_button).row();
+        add_text_button(hard_button).row();
+        add_text_button(custom_button).row();
         table.add().expand();
     }
 

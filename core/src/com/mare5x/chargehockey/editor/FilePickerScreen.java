@@ -82,8 +82,8 @@ class FilePickerScreen extends BaseMenuScreen {
         add_back_button(2);
         table.add(path_label).colspan(2).pad(15).width(Value.percentWidth(1, table)).row();
         table.add(file_picker.get_display()).colspan(2).pad(15).expand().fill().row();
-        table.add(back_button).pad(15).fillX();
-        table.add(result_button).pad(15).expandX().fillX();
+        table.add(back_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).fillX();
+        table.add(result_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).expandX().fillX();
     }
 
     @Override

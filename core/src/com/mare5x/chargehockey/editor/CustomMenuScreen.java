@@ -54,10 +54,9 @@ public class CustomMenuScreen extends BaseMenuScreen {
 
         add_back_button();
         table.add().expand().row();
-        Value width = Value.percentWidth(0.6f, table);
-        table.add(edit_button).pad(15).uniform().width(width).row();
-        table.add(import_button).pad(15).uniform().width(width).row();
-        table.add(export_button).pad(15).uniform().width(width).row();
+        add_text_button(edit_button).row();
+        add_text_button(import_button).row();
+        add_text_button(export_button).row();
         table.add().expand();
     }
 

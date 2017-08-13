@@ -45,7 +45,6 @@ public class SettingsScreen extends ScrollableMenuScreen {
                 load_defaults();
             }
         });
-        defaults_button.getLabel().setWrap(true);
 
         game_speed_slider = new SettingSlider(game, 0.1f, 1.5f, settings_file.getFloat(SETTINGS_KEY.GAME_SPEED));
         game_speed_slider.set_label_format("GAME SPEED: %.1f");
@@ -67,7 +66,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
         forces_checkbox.add_to_table(table);
         trace_path_checkbox.add_to_table(table);
 
-        table.add(defaults_button).pad(15).colspan(2).center().fillX().row();
+        table.add(defaults_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).colspan(2).center().fillX().row();
 
         table.add().colspan(2).expand();
     }
@@ -146,8 +145,8 @@ public class SettingsScreen extends ScrollableMenuScreen {
         }
 
         void add_to_table(Table parent) {
-            parent.add(text_button).pad(15).width(Value.percentWidth(0.6f, parent)).center();
-            parent.add(checkbox).pad(15).size(Value.percentWidth(0.125f, parent)).expandX().center().row();
+            parent.add(text_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.6f, parent)).center();
+            parent.add(checkbox).pad(15).size(MIN_BUTTON_HEIGHT).expandX().center().row();
         }
 
         void set_checked(boolean checked) {

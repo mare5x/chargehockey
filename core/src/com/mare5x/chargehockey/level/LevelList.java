@@ -18,6 +18,8 @@ import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import static com.mare5x.chargehockey.menus.BaseMenuScreen.MIN_BUTTON_HEIGHT;
+
 
 class LevelList extends VerticalGroup {
     private static class LevelData {
@@ -105,12 +107,12 @@ class LevelList extends VerticalGroup {
             }
         });
 
-        entry.add(name_button).width(Value.percentWidth(0.6f, this)).padRight(10).expandX().fill();
+        entry.add(name_button).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.6f, this)).padRight(10).expandX().fill();
 
         if (level.is_finished()) {
-            entry.add(new Image(game.skin.getDrawable("star"))).size(name_button.getHeight());
+            entry.add(new Image(game.skin.getDrawable("star"))).size(MIN_BUTTON_HEIGHT);
         } else {
-            entry.add(new Image(game.skin.getDrawable("star_empty"))).size(name_button.getHeight());
+            entry.add(new Image(game.skin.getDrawable("star_empty"))).size(MIN_BUTTON_HEIGHT);
         }
 
         entry.pad(5);

@@ -27,7 +27,8 @@ import com.mare5x.chargehockey.menus.MenuScreen;
 import java.util.Locale;
 
 abstract public class ChargeHockeyGame extends Game {
-    public static float DENSITY;  // todo better font size
+    public static float DENSITY;
+    public static final float FONT_SIZE = 24;  // dp units
     public static final int WORLD_WIDTH = 64;
     public static final int WORLD_HEIGHT = 64;
 
@@ -66,7 +67,7 @@ abstract public class ChargeHockeyGame extends Game {
 
         FreetypeFontLoader.FreeTypeFontLoaderParameter font_param = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         font_param.fontFileName = "OpenSans-Regular.ttf";
-        font_param.fontParameters.size = (int)(DENSITY * 24.0f);
+        font_param.fontParameters.size = (int)(DENSITY * FONT_SIZE);
         font_param.fontParameters.borderWidth = 0.5f;  // make the font bold
         Gdx.app.log("font", String.format(Locale.US, "size: %d", font_param.fontParameters.size));
 

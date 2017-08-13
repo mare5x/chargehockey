@@ -52,10 +52,10 @@ class EditorSubScreen extends BaseMenuScreen {
             }
         });
 
-        table.add(return_button).pad(15).width(Value.percentWidth(0.6f, table)).uniform().fillX().row();
-        table.add(play_button).pad(15).uniform().fillX().row();
-        table.add(selector_button).pad(15).uniform().fillX().row();
-        table.add(menu_button).pad(15).uniform().fillX();
+        add_text_button(return_button).row();
+        add_text_button(play_button).row();
+        add_text_button(selector_button).row();
+        add_text_button(menu_button).row();
     }
 
     @Override

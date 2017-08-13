@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
@@ -22,7 +23,7 @@ import com.mare5x.chargehockey.notifications.TextNotification;
 // todo add transition animations ...
 // todo minWidth maxWidth constraints ...
 public abstract class BaseMenuScreen implements Screen {
-    // public static float MIN_BUTTON_HEIGHT;  // todo implement a minimum button height
+    public static float MIN_BUTTON_HEIGHT = Gdx.graphics.getWidth() * 0.125f;
 
     protected final ChargeHockeyGame game;
     protected final Stage stage;
@@ -82,6 +83,11 @@ public abstract class BaseMenuScreen implements Screen {
         button.pad(10);
         button.getLabel().setWrap(wrap);
         return button;
+    }
+
+    /** Adds the button to the table using the default height, width and padding. */
+    protected Cell<TextButton> add_text_button(TextButton button) {
+        return table.add(button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.6f, table));
     }
 
     /** Displays a TextNotification, making sure only one is displayed. */

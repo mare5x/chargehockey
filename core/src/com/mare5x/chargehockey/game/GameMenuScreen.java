@@ -91,14 +91,14 @@ class GameMenuScreen extends ScrollableMenuScreen {
             }
         });
 
-        table.add(return_button).pad(15).width(Value.percentWidth(0.6f, table)).uniformX().fillX().row();
-        if (level.get_type() == LEVEL_TYPE.CUSTOM) table.add(edit_button).pad(15).uniformX().fillX().row();
-        table.add(save_button).pad(15).uniformX().fillX().row();
-        table.add(load_button).pad(15).uniformX().fillX().row();
-        table.add(restart_button).pad(15).uniformX().fillX().row();
-        table.add(selector_button).pad(15).uniformX().fillX().row();
-        table.add(main_menu_button).pad(15).uniformX().fillX().row();
-        table.add(settings_button).pad(15).uniformX().fillX();
+        add_text_button(return_button).row();
+        if (level.get_type() == LEVEL_TYPE.CUSTOM) add_text_button(edit_button).row();
+        add_text_button(save_button).row();
+        add_text_button(load_button).row();
+        add_text_button(restart_button).row();
+        add_text_button(selector_button).row();
+        add_text_button(main_menu_button).row();
+        add_text_button(settings_button);
     }
 
     @Override

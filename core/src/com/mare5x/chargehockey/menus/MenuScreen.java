@@ -43,8 +43,8 @@ public class MenuScreen extends BaseMenuScreen {
         });
 
         table.add(play_button).expandX().pad(15).size(Value.percentWidth(0.6f, table)).row();
-        table.add(edit_button).pad(15).width(Value.percentWidth(0.6f, table)).fillX().row();
-        table.add(settings_button).pad(15).width(Value.percentWidth(0.6f, table)).fillX();
+        add_text_button(edit_button).row();
+        add_text_button(settings_button);
     }
 
     @Override

@@ -73,8 +73,8 @@ class ExportScreen extends BaseMenuScreen {
 
         add_back_button();
         table.add(selector.get_selector_table()).pad(15).expand().fill().row();
-        table.add(export_button).pad(15).width(Value.percentWidth(0.6f, table)).row();
-        table.add(export_all_button).pad(15).width(Value.percentWidth(0.6f, table));
+        add_text_button(export_button).row();
+        add_text_button(export_all_button);
 
         if (selector.is_empty()) {
             show_notification("NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.", 3);
