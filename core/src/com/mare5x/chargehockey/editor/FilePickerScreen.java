@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 class FilePickerScreen extends BaseMenuScreen {
     interface FilePickerCallback {
@@ -88,7 +88,7 @@ class FilePickerScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        game.setScreen(parent_screen);
+        set_screen(parent_screen);
     }
 
     @Override

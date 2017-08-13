@@ -4,10 +4,9 @@ package com.mare5x.chargehockey.editor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 
 public class CustomMenuScreen extends BaseMenuScreen {
@@ -30,8 +29,7 @@ public class CustomMenuScreen extends BaseMenuScreen {
         edit_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new EditorMenuScreen(game));
-                dispose();
+                set_screen(new EditorMenuScreen(game), true);
             }
         });
 
@@ -39,7 +37,7 @@ public class CustomMenuScreen extends BaseMenuScreen {
         import_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new FilePickerScreen(game, CustomMenuScreen.this, import_callback, Importer.get_filter()));
+                set_screen(new FilePickerScreen(game, CustomMenuScreen.this, import_callback, Importer.get_filter()));
             }
         });
 
@@ -47,8 +45,7 @@ public class CustomMenuScreen extends BaseMenuScreen {
         export_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new ExportScreen(game));
-                dispose();
+                set_screen(new ExportScreen(game), true);
             }
         });
 
@@ -62,11 +59,11 @@ public class CustomMenuScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        game.setScreen(game.menu_screen);
-        dispose();
+        set_screen(game.menu_screen, true);
     }
 
     @Override
     public void hide() {
+
     }
 }

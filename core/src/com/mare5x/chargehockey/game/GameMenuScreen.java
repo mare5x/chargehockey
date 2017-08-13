@@ -2,7 +2,6 @@ package com.mare5x.chargehockey.game;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.editor.EditorScreen;
@@ -25,7 +24,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
         return_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(parent_screen);
+                set_screen(parent_screen);
             }
         });
 
@@ -33,7 +32,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
         edit_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new EditorScreen(game, level));
+                set_screen(new EditorScreen(game, level));
                 parent_screen.dispose();
             }
         });
@@ -69,7 +68,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
         selector_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new LevelSelectorScreen(game, level.get_type()));
+                set_screen(new LevelSelectorScreen(game, level.get_type()));
                 parent_screen.dispose();
             }
         });
@@ -78,7 +77,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
         main_menu_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(game.menu_screen);
+                set_screen(game.menu_screen);
                 parent_screen.dispose();
             }
         });
@@ -87,7 +86,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
         settings_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new SettingsScreen(game, parent_screen));
+                set_screen(new SettingsScreen(game, parent_screen));
             }
         });
 
@@ -103,7 +102,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        game.setScreen(parent_screen);
+        set_screen(parent_screen);
     }
 
     @Override

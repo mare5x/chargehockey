@@ -8,6 +8,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -20,7 +21,6 @@ import com.mare5x.chargehockey.notifications.Notification;
 import com.mare5x.chargehockey.notifications.TextNotification;
 
 
-// todo add transition animations ...
 // todo minWidth maxWidth constraints ...
 public abstract class BaseMenuScreen implements Screen {
     public static float MIN_BUTTON_HEIGHT = Gdx.graphics.getWidth() * 0.125f;
@@ -108,8 +108,25 @@ public abstract class BaseMenuScreen implements Screen {
             notification.remove();
     }
 
+    /** Use this instead of game.setScreen to use a transition animation. */
+    public void set_screen(final Screen screen) {
+        set_screen(screen, false);
+    }
+
+    /** Use dispose if you don't dispose in hide(). */
+    public void set_screen(final Screen screen, final boolean dispose) {
+        stage.addAction(Actions.sequence(Actions.fadeOut(0.2f), Actions.run(new Runnable() {
+            @Override
+            public void run() {
+                game.setScreen(screen);
+                if (dispose) dispose();
+            }
+        })));
+    }
+
     @Override
     public void show() {
+        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(0.2f)));
         Gdx.input.setInputProcessor(input_multiplexer);
     }
 

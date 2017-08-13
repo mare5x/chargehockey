@@ -48,7 +48,7 @@ class EditorMenuScreen extends BaseMenuScreen {
             public void clicked(InputEvent event, float x, float y) {
                 final Level level = level_selector.load_selected_level();
                 if (level != null) {
-                    game.setScreen(new EditorScreen(game, level));
+                    set_screen(new EditorScreen(game, level));
                 } else if (level_selector.is_empty()) {
                     remove_notification();
                     notification = new EditorNoLevelsNotification(game, stage);
@@ -99,7 +99,7 @@ class EditorMenuScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        game.setScreen(new CustomMenuScreen(game));
+        set_screen(new CustomMenuScreen(game));
     }
 
     @Override

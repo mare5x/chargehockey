@@ -22,7 +22,7 @@ public class LevelSelectorScreen extends BaseMenuScreen {
             public void clicked(InputEvent event, float x, float y) {
                 final Level level = level_selector.load_selected_level();
                 if (level != null) {
-                    game.setScreen(new GameScreen(game, level));
+                    set_screen(new GameScreen(game, level));
                 } else {
                     show_notification("FIRST, SELECT THE LEVEL YOU WISH TO PLAY", 2);
                 }
@@ -41,7 +41,7 @@ public class LevelSelectorScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        game.setScreen(new PlayMenuScreen(game));
+        set_screen(new PlayMenuScreen(game));
     }
 
     @Override

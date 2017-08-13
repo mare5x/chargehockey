@@ -21,6 +21,4 @@ public abstract class ScrollableMenuScreen extends BaseMenuScreen {
     }
 
     abstract protected void back_key_pressed();
-
-    abstract public void hide();
 }

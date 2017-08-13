@@ -73,7 +73,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        game.setScreen(parent_screen);
+        set_screen(parent_screen);
     }
 
     private void load_defaults() {

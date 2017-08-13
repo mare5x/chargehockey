@@ -2,9 +2,7 @@ package com.mare5x.chargehockey.game;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelectorScreen;
@@ -19,7 +17,7 @@ public class PlayMenuScreen extends BaseMenuScreen {
         easy_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.EASY));
+                set_screen(new LevelSelectorScreen(game, LEVEL_TYPE.EASY));
             }
         });
 
@@ -27,7 +25,7 @@ public class PlayMenuScreen extends BaseMenuScreen {
         medium_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.MEDIUM));
+                set_screen(new LevelSelectorScreen(game, LEVEL_TYPE.MEDIUM));
             }
         });
 
@@ -35,7 +33,7 @@ public class PlayMenuScreen extends BaseMenuScreen {
         hard_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.HARD));
+                set_screen(new LevelSelectorScreen(game, LEVEL_TYPE.HARD));
             }
         });
 
@@ -43,7 +41,7 @@ public class PlayMenuScreen extends BaseMenuScreen {
         custom_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new LevelSelectorScreen(game, LEVEL_TYPE.CUSTOM));
+                set_screen(new LevelSelectorScreen(game, LEVEL_TYPE.CUSTOM));
             }
         });
 
@@ -58,7 +56,7 @@ public class PlayMenuScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        game.setScreen(game.menu_screen);
+        set_screen(game.menu_screen);
     }
 
     @Override

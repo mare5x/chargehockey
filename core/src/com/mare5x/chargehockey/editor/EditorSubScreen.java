@@ -3,11 +3,10 @@ package com.mare5x.chargehockey.editor;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.game.GameScreen;
+import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 class EditorSubScreen extends BaseMenuScreen {
     private final EditorScreen parent_screen;
@@ -29,7 +28,7 @@ class EditorSubScreen extends BaseMenuScreen {
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game, parent_screen.get_level()));
+                set_screen(new GameScreen(game, parent_screen.get_level()));
                 parent_screen.dispose();
             }
         });
@@ -38,7 +37,7 @@ class EditorSubScreen extends BaseMenuScreen {
         selector_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new EditorMenuScreen(game));
+                set_screen(new EditorMenuScreen(game));
                 parent_screen.dispose();
             }
         });
@@ -47,7 +46,7 @@ class EditorSubScreen extends BaseMenuScreen {
         menu_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(game.menu_screen);
+                set_screen(game.menu_screen);
                 parent_screen.dispose();
             }
         });
@@ -60,7 +59,7 @@ class EditorSubScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        game.setScreen(parent_screen);
+        set_screen(parent_screen);
     }
 
     @Override

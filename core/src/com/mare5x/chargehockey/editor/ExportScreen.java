@@ -4,7 +4,6 @@ package com.mare5x.chargehockey.editor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.mare5x.chargehockey.ChargeHockeyGame;
@@ -52,7 +51,7 @@ class ExportScreen extends BaseMenuScreen {
                 if (!selector.is_empty()) {
                     // something has to be selected
                     if (selector.is_selected())
-                        game.setScreen(new FilePickerScreen(game, ExportScreen.this, export_selected_callback, filter));
+                        set_screen(new FilePickerScreen(game, ExportScreen.this, export_selected_callback, filter));
                     else
                         show_notification("FIRST, SELECT A LEVEL");
                 } else
@@ -65,7 +64,7 @@ class ExportScreen extends BaseMenuScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!selector.is_empty())
-                    game.setScreen(new FilePickerScreen(game, ExportScreen.this, export_all_callback, filter));
+                    set_screen(new FilePickerScreen(game, ExportScreen.this, export_all_callback, filter));
                 else
                     show_notification("NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.", 3);
             }
@@ -107,11 +106,11 @@ class ExportScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        game.setScreen(new CustomMenuScreen(game));
-        dispose();
+        set_screen(new CustomMenuScreen(game), true);
     }
 
     @Override
     public void hide() {
+
     }
 }

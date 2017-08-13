@@ -6,12 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.editor.CustomMenuScreen;
 import com.mare5x.chargehockey.game.PlayMenuScreen;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsScreen;
-import com.mare5x.chargehockey.editor.CustomMenuScreen;
 
 
 public class MenuScreen extends BaseMenuScreen {
@@ -22,7 +21,7 @@ public class MenuScreen extends BaseMenuScreen {
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new PlayMenuScreen(game));
+                set_screen(new PlayMenuScreen(game));
             }
         });
 
@@ -30,7 +29,7 @@ public class MenuScreen extends BaseMenuScreen {
         edit_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new CustomMenuScreen(game));
+                set_screen(new CustomMenuScreen(game));
             }
         });
 
@@ -38,7 +37,7 @@ public class MenuScreen extends BaseMenuScreen {
         settings_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new SettingsScreen(game, MenuScreen.this));
+                set_screen(new SettingsScreen(game, MenuScreen.this));
             }
         });
 
