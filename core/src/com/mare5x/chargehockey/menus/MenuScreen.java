@@ -41,9 +41,18 @@ public class MenuScreen extends BaseMenuScreen {
             }
         });
 
+        TextButton exit_button = make_text_button("EXIT");
+        exit_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                back_key_pressed();
+            }
+        });
+
         table.add(play_button).expandX().pad(15).size(Value.percentWidth(0.6f, table)).row();
         add_text_button(edit_button).row();
-        add_text_button(settings_button);
+        add_text_button(settings_button).row();
+        add_text_button(exit_button);
     }
 
     @Override

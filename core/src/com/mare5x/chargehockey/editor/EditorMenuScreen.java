@@ -117,33 +117,42 @@ class EditorMenuScreen extends BaseMenuScreen {
             setResizable(false);
             setMovable(false);
 
-            pad(15 * ChargeHockeyGame.DENSITY);
-            padTop(game.skin.getFont("font").getLineHeight() * 2);
+            pad(ChargeHockeyGame.FONT_SIZE * 1.5f * ChargeHockeyGame.DENSITY);
 
-//            getTitleTable().pad(game.skin.getFont("font").getLineHeight());
-//            getTitleTable().clear();
-
-            getContentTable().pad(15 * ChargeHockeyGame.DENSITY);
+            getTitleTable().clear();
 
             name_input = new TextField("LEVEL NAME", game.skin);
-            getContentTable().add(name_input).width(Value.percentWidth(0.8f, this)).expandX();
+            getContentTable().add(name_input).space(15).width(get_input_width());
 
             Button cancel_button = new Button(game.skin, "cancel");
             cancel_button.pad(10);
             Button confirm_button = new Button(game.skin, "confirm");
             confirm_button.pad(10);
 
+            getButtonTable().defaults().size(Value.percentWidth(0.125f, table)).padTop(15).space(15).expandX().center();
             button(cancel_button, DIALOG_BUTTON.CANCEL);
             button(confirm_button, DIALOG_BUTTON.CONFIRM);
+        }
 
-            Value size = percent_width(0.2f);
-            getButtonTable().getCell(cancel_button).size(size);
-            getButtonTable().getCell(confirm_button).size(size);
+        @Override
+        public float getPrefWidth() {
+            return stage.getWidth() * 0.8f;
+        }
+
+        private Value get_input_width() {
+            return new Value() {
+                @Override
+                public float get(Actor context) {
+                    return getPrefWidth() - getPadLeft() - getPadRight();
+                }
+            };
         }
 
         @Override
         public Dialog show(Stage stage) {
             super.show(stage);
+
+            super.setPosition(stage.getWidth() / 2 - getWidth() / 2, (float) (stage.getHeight() * 0.8 - getHeight()));
 
             name_input.selectAll();  // select everything, so it's ready to be overwritten
             stage.setKeyboardFocus(name_input);
@@ -160,15 +169,6 @@ class EditorMenuScreen extends BaseMenuScreen {
 
             name_input.getOnscreenKeyboard().show(false);
             hide();
-        }
-
-        private Value percent_width(final float percent) {
-            return new Value() {
-                @Override
-                public float get(Actor context) {
-                    return percent * stage.getWidth();
-                }
-            };
         }
     }
 }

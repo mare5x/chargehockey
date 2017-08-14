@@ -1,6 +1,7 @@
 package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.StreamUtils;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
@@ -166,9 +168,17 @@ class LevelList extends VerticalGroup {
     }
 
     float get_selected_percent() {
-        if (selected_index != -1)
-            return selected_index / (float) (level_list.size - 1);
-        return 0;
+        if (selected_index == -1 || level_list.size < 2)
+            return 0;
+
+        // because selected_button.getY() doesn't work, I have to manually calculate it
+        float selected_y = 0;
+        SnapshotArray<Actor> items = getChildren();
+        for (int i = 0; i < selected_index; i++) {
+            Table entry = (Table) items.get(i);
+            selected_y += entry.getPrefHeight() + entry.getPadBottom() + entry.getPadTop();
+        }
+        return selected_y / getPrefHeight();
     }
 
     int get_level_list_size() {

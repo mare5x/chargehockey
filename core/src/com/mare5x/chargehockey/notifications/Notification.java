@@ -96,10 +96,6 @@ public abstract class Notification extends Table {
         );
     }
 
-    float get_padding() {
-        return 10 * ChargeHockeyGame.DENSITY;
-    }
-
     public boolean is_displayed() {
         return hasParent();
     }
