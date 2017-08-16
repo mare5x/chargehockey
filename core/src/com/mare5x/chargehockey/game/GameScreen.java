@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -43,6 +42,8 @@ public class GameScreen implements Screen {
     private final Level level;
 
     private final GameLogic game_logic;
+
+    private boolean level_finished_changed = false;
 
     private final Stage game_stage, hud_stage;
     private final OrthographicCamera camera;
@@ -77,6 +78,11 @@ public class GameScreen implements Screen {
         game_logic = new GameLogic(game, game_stage, level, new GameLogic.ResultCallback() {
             @Override
             public void win() {
+                if (!level.get_level_finished()) {
+                    level.set_level_finished(true);
+                    level_finished_changed = true;
+                }
+
                 toggle_playing();
                 win_dialog.show(hud_stage);
             }
@@ -87,6 +93,7 @@ public class GameScreen implements Screen {
                 game_logic.blink_collided_pucks();
             }
         });
+        game_logic.charge_state_changed();  // initialize tracking
 
         hud_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
 
@@ -192,7 +199,10 @@ public class GameScreen implements Screen {
     }
 
     void save_charge_state(Level.SAVE_TYPE save_type) {
-        level.write_save_file(save_type, game_logic.get_charges());
+        if (!level.save_file_exists() || game_logic.charge_state_changed() || level_finished_changed) {
+            level.write_save_file(save_type, game_logic.get_charges());
+            level_finished_changed = false;
+        }
     }
 
     boolean load_charge_state(Level.SAVE_TYPE save_type) {

@@ -16,8 +16,8 @@ class EditorSubScreen extends BaseMenuScreen {
 
         this.parent_screen = parent_screen;
 
-        TextButton return_button = make_text_button("EDIT");
-        return_button.addListener(new ClickListener() {
+        TextButton resume_button = make_text_button("RESUME");
+        resume_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 back_key_pressed();
@@ -51,7 +51,7 @@ class EditorSubScreen extends BaseMenuScreen {
             }
         });
 
-        add_text_button(return_button).row();
+        add_text_button(resume_button).row();
         add_text_button(play_button).row();
         add_text_button(selector_button).row();
         add_text_button(menu_button).row();

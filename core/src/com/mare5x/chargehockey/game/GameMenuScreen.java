@@ -20,8 +20,8 @@ class GameMenuScreen extends ScrollableMenuScreen {
 
         this.parent_screen = parent_screen;
 
-        TextButton return_button = make_text_button("PLAY");
-        return_button.addListener(new ClickListener() {
+        TextButton resume_button = make_text_button("RESUME");
+        resume_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 set_screen(parent_screen);
@@ -90,7 +90,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
             }
         });
 
-        add_text_button(return_button).row();
+        add_text_button(resume_button).row();
         if (level.get_type() == LEVEL_TYPE.CUSTOM) add_text_button(edit_button).row();
         add_text_button(save_button).row();
         add_text_button(load_button).row();

@@ -53,6 +53,7 @@ public class ChargeActor extends Actor {
     public abstract static class DragCallback {
         public abstract void out_of_bounds(ChargeActor charge);
         public void drag(ChargeActor charge) {}
+        public void drag_started(ChargeActor charge) {}
     }
 
     private final CHARGE charge_type;
@@ -92,6 +93,11 @@ public class ChargeActor extends Actor {
                 public void drag(InputEvent event, float dx, float dy, int pointer) {
                     moveBy(dx - getTouchDownX(), dy - getTouchDownY());
                     drag_callback.drag(ChargeActor.this);
+                }
+
+                @Override
+                public void dragStart(InputEvent event, float x, float y, int pointer) {
+                    drag_callback.drag_started(ChargeActor.this);
                 }
 
                 @Override

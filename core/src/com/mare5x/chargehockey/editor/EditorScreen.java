@@ -48,6 +48,8 @@ public class EditorScreen implements Screen {
     private Level level;
 
     private boolean show_grid = true;
+    private boolean prev_show_grid = show_grid;  // the previous show grid value, changes when saving level
+    private boolean level_changed = false;
 
     private final GridItemSelectorButton grid_item_button;
     private final Button puck_button;
@@ -62,6 +64,12 @@ public class EditorScreen implements Screen {
             puck_actors.removeValue(charge, true);
             charge.clear();
             charge.remove();
+            level_changed = true;
+        }
+
+        @Override
+        public void drag_started(ChargeActor charge) {
+            level_changed = true;
         }
     };
 
@@ -122,6 +130,7 @@ public class EditorScreen implements Screen {
             }
         });
         show_grid = LevelFrameBuffer.get_grid_lines_setting();
+        prev_show_grid = show_grid;
         show_grid_button.setChecked(show_grid);
         show_grid_button.pad(10);
 
@@ -203,11 +212,17 @@ public class EditorScreen implements Screen {
     }
 
     private void save_changes() {
-        // TODO save only when something changed.
-        level.set_level_finished(false);  // reset the flag
-        level.save_level(puck_actors);
-        level.write_save_header();
-        SettingsFile.set_setting(SETTINGS_KEY.GRID_LINES, show_grid);
+        if (level_changed) {
+            level_changed = false;
+
+            level.set_level_finished(false);  // reset the flag
+            level.save_level(puck_actors);
+            level.write_save_header();  // reset save file header
+        }
+        if (prev_show_grid != show_grid) {
+            SettingsFile.set_setting(SETTINGS_KEY.GRID_LINES, show_grid);
+            prev_show_grid = show_grid;
+        }
     }
 
     @Override
@@ -227,6 +242,7 @@ public class EditorScreen implements Screen {
 
     @Override
     public void dispose() {
+        save_changes();
         fbo.dispose();
         edit_stage.dispose();
         hud_stage.dispose();
@@ -270,6 +286,8 @@ public class EditorScreen implements Screen {
             // update the background every tap
             fbo.update(game.batch);
 
+            level_changed = true;
+
             return true;
         }
 
@@ -301,6 +319,8 @@ public class EditorScreen implements Screen {
             if (level.get_grid_item(row, col) != new_item) {
                 level.set_item(row, col, new_item);
                 fbo.update(game.batch);
+
+                level_changed = true;
             }
         }
 

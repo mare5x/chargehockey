@@ -32,6 +32,7 @@ public class GameLogic {
     private final Stage game_stage;
 
     private boolean is_playing = false;
+    private boolean charge_state_changed = false;
 
     private static final float MIN_DIST = PuckActor.RADIUS;  // how many units apart can two charges be when calculating the force? (avoids infinite forces)
     private static final float E_CONST = 1.1e-10f;
@@ -91,6 +92,11 @@ public class GameLogic {
                         puck.set_force(charge, calc_force(puck, charge));
                 }
             }
+
+            @Override
+            public void drag_started(ChargeActor charge) {
+                charge_state_changed = true;
+            }
         });
         charge.set_position(x, y);
 
@@ -101,6 +107,8 @@ public class GameLogic {
             puck.set_force(charge, calc_force(puck, charge));
         for (ForcePuckActor puck : initial_pucks)
             puck.set_force(charge, calc_force(puck, charge));
+
+        charge_state_changed = true;
 
         return charge;
     }
@@ -119,6 +127,8 @@ public class GameLogic {
         for (ForcePuckActor puck : initial_pucks) {
             puck.remove_force(charge);
         }
+
+        charge_state_changed = true;
     }
 
     void update(float delta) {
@@ -150,7 +160,6 @@ public class GameLogic {
 
         if (result == GAME_RESULT.WIN) {
             result_callback.win();
-            level.set_level_finished(true);
         } else {  // LOSS
             result_callback.loss();
         }
@@ -341,6 +350,8 @@ public class GameLogic {
             charge.remove();
         }
         charge_actors.clear();
+
+        charge_state_changed = true;
     }
 
     /** Resets the state of the loaded level to its initial state (without the charges). */
@@ -349,6 +360,8 @@ public class GameLogic {
         for (ForcePuckActor puck : initial_pucks)
             puck.clear_sprites();
         reset_charges();
+
+        charge_state_changed = true;
     }
 
     /** If necessary, resizes all charges to their new set size.
@@ -358,6 +371,14 @@ public class GameLogic {
             for (ChargeActor charge : charge_actors)
                 charge.reset_size();
         }
+    }
+
+    /** Returns whether the position of charges has changed since the last call to this method or
+     * if this is the first call, returns true. */
+    boolean charge_state_changed() {
+        boolean ret_val = charge_state_changed;
+        charge_state_changed = false;
+        return ret_val;
     }
 
     final Array<PuckActor> get_pucks() {

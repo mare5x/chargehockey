@@ -60,6 +60,10 @@ public class Level {
         return name;
     }
 
+    public boolean get_level_finished() {
+        return level_finished;
+    }
+
     public void set_level_finished(boolean finished) {
         level_finished = finished;
     }
@@ -70,6 +74,10 @@ public class Level {
 
     public final Grid.GRID_ITEM get_grid_item(int row, int col) {
         return grid.get_item(row, col);
+    }
+
+    public boolean save_file_exists() {
+        return LevelSelector.get_level_save_fhandle(level_type, name, SAVE_TYPE.AUTO).exists();
     }
 
     /** LEVEL GRID SAVE STRUCTURE
