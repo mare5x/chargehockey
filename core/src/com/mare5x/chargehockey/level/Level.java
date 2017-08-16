@@ -144,7 +144,7 @@ public class Level {
     /** .save structure:
      * HEADER 0/1 FLAG if level finished
      * N (number of charges (lines))
-     * CHARGE_TYPE X Y
+     * CHARGE_TYPE(code) X Y
      */
     public void write_save_file(SAVE_TYPE save_type, Array<ChargeActor> charge_actors) {
         Gdx.app.log("Level", "saving charge state");
@@ -159,7 +159,7 @@ public class Level {
             for (ChargeActor charge : charge_actors) {
                 ChargeState state = charge.get_state();
 
-                writer.write(String.format(Locale.US, "%s %f %f\n", state.type.name(), state.x, state.y));
+                writer.write(String.format(Locale.US, "%s %f %f\n", state.type.code(), state.x, state.y));
             }
         } catch (IOException e) {
             file.delete();
@@ -186,7 +186,7 @@ public class Level {
 
             for (int i = 0; i < n; i++) {
                 String[] split = reader.readLine().split(" ");
-                states.add(new ChargeState(CHARGE.valueOf(split[0]), Float.parseFloat(split[1]), Float.parseFloat(split[2])));
+                states.add(new ChargeState(CHARGE.from_code(split[0].charAt(0)), Float.parseFloat(split[1]), Float.parseFloat(split[2])));
             }
 
             return states;

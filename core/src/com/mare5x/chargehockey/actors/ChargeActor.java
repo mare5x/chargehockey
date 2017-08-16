@@ -16,7 +16,27 @@ import com.mare5x.chargehockey.game.CameraController;
 
 public class ChargeActor extends Actor {
     public enum CHARGE {
-        POSITIVE, NEGATIVE, PUCK
+        POSITIVE('p'),
+        NEGATIVE('n'),
+        PUCK('k');
+
+        private char code;  // item abbreviation code used when writing to files
+        CHARGE(char code) {
+            this.code = code;
+        }
+
+        public static CHARGE from_code(char code) {
+            switch (code) {
+                case 'p': return POSITIVE;
+                case 'n': return NEGATIVE;
+                case 'k': return PUCK;
+            }
+            return null;
+        }
+
+        public char code() {
+            return code;
+        }
     }
 
     public static class ChargeState {

@@ -82,4 +82,30 @@ def fix_positions(path):
                     f.writelines(lines)
             
 
-fix_positions("android/assets/LEVELS/")
+# fix_positions("android/assets/LEVELS/")
+
+
+def positions_to_code(path):
+    for d, _, files in os.walk(path):
+        if not files:
+            continue
+
+        for fp in files:
+            if fp.endswith(".save") or fp.endswith(".csave"):
+                fpath = os.path.join(d, fp)
+                print(fpath)
+
+                lines = []
+                with open(fpath, "r", encoding="UTF-8", newline="\n") as f:
+                    lines = f.readlines()
+
+                for i, line in enumerate(lines):
+                    if line.startswith("POSITIVE"):
+                        lines[i] = line.replace("POSITIVE", 'p')
+                    elif line.startswith("NEGATIVE"):
+                        lines[i] = line.replace("NEGATIVE", 'n')
+
+                with open(fpath, "w", encoding="UTF-8", newline="\n") as f:
+                    f.writelines(lines)
+
+positions_to_code("android/assets/LEVELS")
