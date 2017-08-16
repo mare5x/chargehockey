@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.SnapshotArray;
+import com.badlogic.gdx.utils.Sort;
 import com.badlogic.gdx.utils.StreamUtils;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
@@ -85,7 +86,10 @@ class LevelList extends VerticalGroup {
         if (!dir.exists())
             dir.mkdirs();
 
-        for (FileHandle child : dir.list()) {
+        // alphabetically sort the file list
+        FileHandle[] file_list = dir.list();
+        Sort.instance().sort(file_list, new NaturalOrderComparator());
+        for (FileHandle child : file_list) {
             add_level(new LevelData(child.name(), type));
         }
 

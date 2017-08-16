@@ -72,6 +72,8 @@ public class LevelFrameBuffer {
         fbo_camera = new OrthographicCamera(ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
         fbo_camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
         fbo_camera.update();
+
+        clear();
     }
 
     // NOTE: Remember to call end().
