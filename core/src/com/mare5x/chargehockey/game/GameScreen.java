@@ -199,7 +199,7 @@ public class GameScreen implements Screen {
     }
 
     void save_charge_state(Level.SAVE_TYPE save_type) {
-        if (!level.save_file_exists() || game_logic.charge_state_changed() || level_finished_changed) {
+        if (save_type == Level.SAVE_TYPE.QUICKSAVE || !level.save_file_exists() || game_logic.charge_state_changed() || level_finished_changed) {
             level.write_save_file(save_type, game_logic.get_charges());
             level_finished_changed = false;
         }
