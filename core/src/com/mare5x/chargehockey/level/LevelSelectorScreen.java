@@ -11,8 +11,15 @@ import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 
 public class LevelSelectorScreen extends BaseMenuScreen {
-    // todo select level
+    public LevelSelectorScreen(final ChargeHockeyGame game, Level selected_level) {
+        this(game, selected_level.get_type(), selected_level.get_name());
+    }
+
     public LevelSelectorScreen(final ChargeHockeyGame game, Level.LEVEL_TYPE level_type) {
+        this(game, level_type, null);
+    }
+
+    private LevelSelectorScreen(final ChargeHockeyGame game, Level.LEVEL_TYPE level_type, String selected_level_name) {
         super(game);
 
         final LevelSelector level_selector = new LevelSelector(game, level_type);
@@ -37,6 +44,9 @@ public class LevelSelectorScreen extends BaseMenuScreen {
 
         if (level_selector.is_empty()) {
             show_notification("NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.", 3);
+        } else if (selected_level_name != null) {
+            table.validate();
+            level_selector.select(selected_level_name);
         }
     }
 

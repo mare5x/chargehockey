@@ -27,6 +27,10 @@ class EditorMenuScreen extends BaseMenuScreen {
     }
 
     EditorMenuScreen(final ChargeHockeyGame game) {
+        this(game, null);
+    }
+
+    EditorMenuScreen(final ChargeHockeyGame game, final Level selected_level) {
         super(game);
 
         input_dialog = new InputDialog("ADD LEVEL", game.skin);
@@ -94,6 +98,9 @@ class EditorMenuScreen extends BaseMenuScreen {
             remove_notification();
             notification = new EditorNoLevelsNotification(game, stage);
             notification.show();
+        } else if (selected_level != null) {
+            table.validate();
+            level_selector.select(selected_level.get_name());
         }
     }
 

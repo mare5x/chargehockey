@@ -37,7 +37,7 @@ class EditorSubScreen extends BaseMenuScreen {
         selector_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                set_screen(new EditorMenuScreen(game));
+                set_screen(new EditorMenuScreen(game, parent_screen.get_level()));
                 parent_screen.dispose();
             }
         });

@@ -2,6 +2,7 @@ package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -12,8 +13,6 @@ import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 
 import java.util.Locale;
 
-
-// todo sort levels by date/name ...
 public class LevelSelector {
     private final LEVEL_TYPE level_type;
 
@@ -76,12 +75,6 @@ public class LevelSelector {
         selected_level = null;
     }
 
-    void remove_level_save(String level_name) {
-        FileHandle file = get_level_save_fhandle(level_type, level_name);
-        if (file.exists())
-            file.delete();
-    }
-
     public void add_level(String level_name) {
         if (!level_name.isEmpty()) {
             if (!list.contains(level_name)) {
@@ -90,9 +83,7 @@ public class LevelSelector {
                 list.select(level_name);
             }
 
-            // necessary to actually scroll to the bottom
-            scroll_pane.validate();
-            scroll_pane.setScrollPercentY(list.get_selected_percent());  // scroll to the selected item
+            scroll_to_selected();
         }
     }
 
@@ -114,6 +105,19 @@ public class LevelSelector {
             return new Level(level_name, level_type);
         }
         return null;
+    }
+
+    public void select(String level_name) {
+        list.select(level_name);
+        scroll_to_selected();
+    }
+
+    private void scroll_to_selected() {
+        Rectangle rect = list.get_selected_rect();
+
+        // necessary to scroll to bottom
+        scroll_pane.validate();
+        scroll_pane.scrollTo(rect.x, rect.y, rect.width, rect.height, true, true);
     }
 
     /** Returns whether any level is currently selected. */

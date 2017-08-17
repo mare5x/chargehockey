@@ -1,7 +1,8 @@
 package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -11,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.Sort;
 import com.badlogic.gdx.utils.StreamUtils;
 import com.mare5x.chargehockey.ChargeHockeyGame;
@@ -173,18 +173,10 @@ class LevelList extends VerticalGroup {
         return level_list.contains(level_name, false);
     }
 
-    float get_selected_percent() {
-        if (selected_index == -1 || level_list.size < 2)
-            return 0;
-
-        // because selected_button.getY() doesn't work, I have to manually calculate it
-        float selected_y = 0;
-        SnapshotArray<Actor> items = getChildren();
-        for (int i = 0; i < selected_index; i++) {
-            Table entry = (Table) items.get(i);
-            selected_y += entry.getPrefHeight() + entry.getPadBottom() + entry.getPadTop();
-        }
-        return selected_y / getPrefHeight();
+    Rectangle get_selected_rect() {
+        Table entry = (Table) getChildren().get(selected_index);
+        Vector2 xy = entry.localToParentCoordinates(new Vector2(0, 0));
+        return new Rectangle(xy.x, xy.y, entry.getPrefWidth(), entry.getPrefHeight());
     }
 
     int get_level_list_size() {

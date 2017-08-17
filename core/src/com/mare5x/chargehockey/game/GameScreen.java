@@ -396,7 +396,7 @@ public class GameScreen implements Screen {
 
                 GameScreen.this.hide();
                 dispose();
-                game.setScreen(new LevelSelectorScreen(game, level.get_type()));
+                game.setScreen(new LevelSelectorScreen(game, level));
             }
         }
 
