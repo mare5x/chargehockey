@@ -141,11 +141,13 @@ class LevelList extends VerticalGroup {
     }
 
     private void select(int index, TextButton name_button) {
-        if (selected_button != null) selected_button.setChecked(false);  // uncheck the previously selected button
         name_button.setChecked(true);
-        selected_index = index;
-        selected_button = name_button;
-        selection_listener.changed(level_list.get(selected_index));
+        if (index != selected_index) {
+            if (selected_button != null) selected_button.setChecked(false);  // uncheck the previously selected button
+            selected_index = index;
+            selected_button = name_button;
+            selection_listener.changed(level_list.get(index));
+        }
     }
 
     void remove_selected_level() {

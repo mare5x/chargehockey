@@ -171,6 +171,16 @@ public class EditorScreen implements Screen {
         multiplexer = new InputMultiplexer(hud_stage, edit_stage, camera_controller.get_gesture_detector(), back_key_processor);
     }
 
+    private void place_tile(int row, int col, GRID_ITEM item) {
+        // only update the fbo if a new tile was just placed
+        if (level.get_grid_item(row, col) != item) {
+            level.set_item(row, col, item);
+            fbo.update(game.batch);
+
+            level_changed = true;
+        }
+    }
+
     @Override
     public void show() {
         Gdx.input.setInputProcessor(multiplexer);
@@ -279,14 +289,11 @@ public class EditorScreen implements Screen {
                 charge.set_position(x, y);
                 edit_stage.addActor(charge);
                 puck_actors.add(charge);
+                fbo.update(game.batch);
+                level_changed = true;
             }
             else
-                level.set_item(row, col, grid_item_button.get_selected_item());
-
-            // update the background every tap
-            fbo.update(game.batch);
-
-            level_changed = true;
+                place_tile(row, col, grid_item_button.get_selected_item());
 
             return true;
         }
@@ -314,14 +321,7 @@ public class EditorScreen implements Screen {
             int row = (int) y;
             int col = (int) x;
 
-            // only update the fbo if a new tile was just placed
-            GRID_ITEM new_item = grid_item_button.get_selected_item();
-            if (level.get_grid_item(row, col) != new_item) {
-                level.set_item(row, col, new_item);
-                fbo.update(game.batch);
-
-                level_changed = true;
-            }
+            place_tile(row, col, grid_item_button.get_selected_item());
         }
 
         @Override

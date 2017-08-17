@@ -66,17 +66,51 @@ public class Grid {
         return GRID_ITEM.NULL;
     }
 
+    /** A compressed string representation of the grid.
+     * Tiles repeated more than once are compressed in the following manner:
+     * NGRID_ITEM(code), where N is an integer > 1. */
     String get_grid_string() {
         StringBuilder grid_str = new StringBuilder();
-        for (int i = 0; i < grid.size; i++) {
-            grid_str.append(grid.get(i).code());
+        char prev = 'n', cur = 'n';
+        for (int i = 1; i < grid.size; i++) {
+            prev = grid.get(i - 1).code();
+            cur = grid.get(i).code();
+            int repeated = 1;
+            while (prev == cur) {
+                repeated++;
+                if (i + 1 != grid.size)
+                    cur = grid.get(++i).code();
+                else
+                    break;
+            }
+            if (repeated > 1)
+                grid_str.append(repeated).append(prev);
+            else
+                grid_str.append(prev);
         }
+        if (prev != cur)  // final edge case
+            grid_str.append(cur);
+
         return grid_str.toString();
     }
 
     void load_from_grid_string(String grid_str) {
+        int grid_idx = 0;
         for (int i = 0; i < grid_str.length(); i++) {
-            grid.set(i, GRID_ITEM.from_code(grid_str.charAt(i)));
+            int start_idx = i;
+            char code = grid_str.charAt(i);
+            String repeat_count_str = "";
+
+            while (Character.isDigit(code)) {
+                repeat_count_str += code;
+                code = grid_str.charAt(++i);
+            }
+
+            int repeat_count = start_idx == i ? 1 : Integer.parseInt(repeat_count_str);
+            GRID_ITEM current_tile = GRID_ITEM.from_code(code);
+            for (int j = 0; j < repeat_count; j++)
+                grid.set(grid_idx + j, current_tile);
+            grid_idx += repeat_count;
         }
     }
 
