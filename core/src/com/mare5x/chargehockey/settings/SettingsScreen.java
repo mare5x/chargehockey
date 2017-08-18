@@ -22,7 +22,7 @@ import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 import java.util.Locale;
 
 
-// todo make scrollable, add load defaults button confirmation
+// todo add load defaults button confirmation
 public class SettingsScreen extends ScrollableMenuScreen {
     private final Screen parent_screen;
 

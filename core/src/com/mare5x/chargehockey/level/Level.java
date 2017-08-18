@@ -16,7 +16,6 @@ import java.io.Writer;
 import java.util.Locale;
 
 
-// todo compress saves ...
 public class Level {
     public enum LEVEL_TYPE {
         EASY, MEDIUM, HARD, CUSTOM

@@ -173,6 +173,7 @@ public class CameraController {
         private float zoom_to_time = 0;
 
         private float px_to_zoom;  // conversion factor
+        private Vector2 px_to_world_unit = new Vector2();  // conversion factor
 
         private boolean zoom_started = false;
         private float zoom_target_val = -1;
@@ -208,6 +209,17 @@ public class CameraController {
             float diagonal = (float) Math.sqrt(screen_width * screen_width + screen_height * screen_height);
             float zoom_range = ZoomLevel.MIN.get_amount() - ZoomLevel.MAX.get_amount();
             px_to_zoom = zoom_range / diagonal;  // 1 px = px_to_zoom camera.zoom units
+
+            calc_px_to_world_unit();
+        }
+
+        private void calc_px_to_world_unit() {
+            px_to_world_unit.x = (camera.viewportWidth * camera.zoom * 0.5f) / stage.getViewport().getScreenWidth();
+            px_to_world_unit.y = (camera.viewportHeight * camera.zoom * 0.5f) / stage.getViewport().getScreenHeight();
+        }
+
+        private Vector2 px_to_world_units(Vector2 px) {
+            return px.scl(px_to_world_unit);
         }
 
         /** Move the camera based on the current velocity. */
@@ -215,7 +227,7 @@ public class CameraController {
             float delta_x = velocity.x * delta;
             float delta_y = velocity.y * delta;
 
-            move_by(delta_x, delta_y);
+            move_by(tmp_coords.set(delta_x, delta_y));
             handle_out_of_bounds();
 
             velocity.scl(0.9f);  // smooth camera fling movement
@@ -227,12 +239,9 @@ public class CameraController {
             }
         }
 
-        private void move_by(float delta_x, float delta_y) {
-            float translate_x  = -delta_x / camera.viewportWidth * camera.zoom;
-            float translate_y = delta_y / camera.viewportHeight * camera.zoom;
-
-            if (translate_x != 0 || translate_y != 0)
-                camera.translate(translate_x, translate_y);
+        /** amount must be in world units. */
+        private void move_by(Vector2 amount) {
+            camera.translate(amount.scl(-1, 1));
         }
 
         private void handle_out_of_bounds() {
@@ -314,7 +323,7 @@ public class CameraController {
             } else {
                 is_stopping = true;
                 velocity.scl(0.6f);
-                move_by(velocity.x * Gdx.graphics.getDeltaTime(), velocity.y * Gdx.graphics.getDeltaTime());
+                move_by(velocity.scl(Gdx.graphics.getDeltaTime()));
             }
         }
 
@@ -359,7 +368,7 @@ public class CameraController {
 
             restore_rendering();
 
-            move_by(deltaX, deltaY);
+            move_by(px_to_world_units(tmp_coords.set(deltaX, deltaY)));
 
             return true;
         }
@@ -381,7 +390,7 @@ public class CameraController {
                 Gdx.graphics.setContinuousRendering(true);
             is_moving_to_target = false;
 
-            velocity.set(velocityX, velocityY);
+            px_to_world_units(velocity.set(velocityX, velocityY));
 
             return true;
         }
@@ -456,6 +465,7 @@ public class CameraController {
                 camera.zoom = zoom_to_start_value + (target_val - zoom_to_start_value) * alpha;
             }
 
+            calc_px_to_world_unit();
             on_zoom_change();
         }
 
