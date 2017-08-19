@@ -28,7 +28,7 @@ class FilePickerScreen extends BaseMenuScreen {
         this.parent_screen = parent_screen;
 
         final Label path_label = new Label("", game.skin);
-        path_label.setFontScale(0.75f);
+        path_label.setFontScale(0.81f);
         path_label.setWrap(true);
 
         final FilePicker file_picker;
@@ -80,10 +80,10 @@ class FilePickerScreen extends BaseMenuScreen {
         });
 
         add_back_button(2);
-        table.add(path_label).colspan(2).pad(15).width(Value.percentWidth(1, table)).row();
+        table.add(path_label).colspan(2).pad(15).width(Value.percentWidth(0.9f, table)).center().row();
         table.add(file_picker.get_display()).colspan(2).pad(15).expand().fill().row();
-        table.add(back_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).fillX();
-        table.add(result_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).expandX().fillX();
+        table.add(back_button).pad(15).height(MIN_BUTTON_HEIGHT).fillX();
+        table.add(result_button).pad(15).height(MIN_BUTTON_HEIGHT).expandX().fillX();
     }
 
     @Override

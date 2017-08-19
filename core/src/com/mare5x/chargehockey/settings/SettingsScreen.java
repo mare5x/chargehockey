@@ -57,7 +57,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
         trace_path_checkbox = new SettingCheckBox(game, "TRACE PUCK PATH", settings_file.getBoolean(SETTINGS_KEY.TRACE_PATH));
 
         add_back_button();
-        table.add().expand().colspan(2).row();
+        table.add().expand().row();
 
         game_speed_slider.add_to_table(table);
         charge_size_slider.add_to_table(table);
@@ -66,9 +66,9 @@ public class SettingsScreen extends ScrollableMenuScreen {
         forces_checkbox.add_to_table(table);
         trace_path_checkbox.add_to_table(table);
 
-        table.add(defaults_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).colspan(2).center().fillX().row();
+        table.add(defaults_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).center().fillX().row();
 
-        table.add().colspan(2).expand();
+        table.add().expand();
     }
 
     @Override
@@ -122,12 +122,14 @@ public class SettingsScreen extends ScrollableMenuScreen {
         dispose();
     }
 
-    /** Encapsulates a unified checkbox. Use with add_to_table(). DO NOT use it as an Actor. */
-    private static class SettingCheckBox extends Actor {
+    /** Encapsulates a unified checkbox. Use with add_to_table(). */
+    private static class SettingCheckBox extends Table {
         private final Button checkbox;
         private final TextButton text_button;
 
         SettingCheckBox(final ChargeHockeyGame game, String label, boolean checked) {
+            super();
+
             checkbox = new Button(game.skin, "checkbox");
             checkbox.setChecked(checked);
             checkbox.pad(10);
@@ -142,11 +144,14 @@ public class SettingsScreen extends ScrollableMenuScreen {
             });
 
             text_button.getLabel().setWrap(true);
+
+            add(text_button).space(15).minHeight(MIN_BUTTON_HEIGHT).center();
+            add(checkbox).space(15).size(MIN_BUTTON_HEIGHT).expandX().center();
         }
 
         void add_to_table(Table parent) {
-            parent.add(text_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.6f, parent)).center();
-            parent.add(checkbox).pad(15).size(MIN_BUTTON_HEIGHT).expandX().center().row();
+            getCell(text_button).width(Value.percentWidth(0.6f, parent));
+            parent.add(this).pad(15).fillX().expandX().row();
         }
 
         void set_checked(boolean checked) {
@@ -179,12 +184,16 @@ public class SettingsScreen extends ScrollableMenuScreen {
                     return false;
                 }
             });
+
+            add(label).space(15).fill().center();
+            add(slider).space(15).expandX().center();
         }
 
         void add_to_table(Table parent) {
-            add(label).pad(15).width(Value.percentWidth(0.4f, parent)).fill().center();
-            add(slider).pad(15).width(Value.percentWidth(0.4f, parent)).expandX().center();
-            parent.add(this).colspan(2).fillX().row();
+            getCell(label).width(Value.percentWidth(0.4f, parent));
+            getCell(slider).width(Value.percentWidth(0.4f, parent));
+
+            parent.add(this).pad(15).fillX().expandX().row();
         }
 
         void set_text(String text) {
@@ -240,6 +249,15 @@ public class SettingsScreen extends ScrollableMenuScreen {
                     scale_charge();
                 }
             });
+
+            // remove parent layout
+            clear();
+            reset();
+            remove();
+
+            add(label).space(15).fill().center();
+            add(slider).space(15).expandX().center();
+            add(charge).space(15).size(Value.percentHeight(1, slider)).expandX().center();
         }
 
         private void scale_charge() {
@@ -258,10 +276,9 @@ public class SettingsScreen extends ScrollableMenuScreen {
 
         @Override
         void add_to_table(Table parent) {
-            add(label).pad(15).width(Value.percentWidth(0.4f, parent)).fill().center();
-            add(slider).pad(15).width(Value.percentWidth(0.3f, parent)).expandX().center();
-            add(charge).pad(15).size(Value.percentHeight(1, slider)).expandX().center();
-            parent.add(this).colspan(2).fillX().row();
+            getCell(label).width(Value.percentWidth(0.4f, parent));
+            getCell(slider).width(Value.percentWidth(0.3f, parent));
+            parent.add(this).pad(15).fillX().expandX().row();
         }
     }
 }

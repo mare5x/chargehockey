@@ -39,7 +39,7 @@ public class LevelSelectorScreen extends BaseMenuScreen {
         play_button.pad(10);
 
         add_back_button();
-        table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
+        table.add(level_selector.get_selector_table()).pad(5, 15, 5, 15).expand().fill().row();
         table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));
 
         if (level_selector.is_empty()) {
