@@ -11,10 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.notifications.Notification;
@@ -69,7 +71,7 @@ public abstract class BaseMenuScreen implements Screen {
         });
         back_button.pad(10);
 
-        table.add(back_button).colspan(colspan).pad(15).size(Value.percentWidth(0.3f, table), Value.percentWidth(0.15f, table)).left().top().row();
+        table.add(back_button).colspan(colspan).pad(15).size(2 * MIN_BUTTON_HEIGHT, MIN_BUTTON_HEIGHT).left().top().row();
     }
 
     abstract protected void back_key_pressed();
@@ -88,6 +90,17 @@ public abstract class BaseMenuScreen implements Screen {
     /** Adds the button to the table using the default height, width and padding. */
     protected Cell<TextButton> add_text_button(TextButton button) {
         return table.add(button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.6f, table));
+    }
+
+    protected Label make_label(String text) {
+        return make_label(text, true);
+    }
+
+    protected Label make_label(String text, boolean borderless) {
+        Label label = new Label(text, game.skin, borderless ? "borderless" : "default");
+        label.setWrap(true);
+        label.setAlignment(Align.center);
+        return label;
     }
 
     /** Displays a TextNotification, making sure only one is displayed. */
@@ -115,18 +128,26 @@ public abstract class BaseMenuScreen implements Screen {
 
     /** Use dispose if you don't dispose in hide(). */
     public void set_screen(final Screen screen, final boolean dispose) {
-        stage.addAction(Actions.sequence(Actions.fadeOut(0.2f), Actions.run(new Runnable() {
+        fade_out(new Runnable() {
             @Override
             public void run() {
                 game.setScreen(screen);
                 if (dispose) dispose();
             }
-        })));
+        });
+    }
+
+    protected void fade_in() {
+        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(0.2f)));
+    }
+
+    protected void fade_out(Runnable runnable) {
+        stage.addAction(Actions.sequence(Actions.fadeOut(0.2f), Actions.run(runnable)));
     }
 
     @Override
     public void show() {
-        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(0.2f)));
+        fade_in();
         Gdx.input.setInputProcessor(input_multiplexer);
     }
 

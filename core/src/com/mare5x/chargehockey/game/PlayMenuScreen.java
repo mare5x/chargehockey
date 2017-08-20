@@ -7,11 +7,20 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelectorScreen;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
+import com.mare5x.chargehockey.tutorial.TutorialScreen;
 
 
 public class PlayMenuScreen extends BaseMenuScreen {
     public PlayMenuScreen(final ChargeHockeyGame game) {
         super(game);
+
+        TextButton tutorial_button = make_text_button("TUTORIAL");
+        tutorial_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                set_screen(new TutorialScreen(game));
+            }
+        });
 
         TextButton easy_button = make_text_button("EASY");
         easy_button.addListener(new ClickListener() {
@@ -47,6 +56,7 @@ public class PlayMenuScreen extends BaseMenuScreen {
 
         add_back_button();
         table.add().expand().row();
+        add_text_button(tutorial_button).row();
         add_text_button(easy_button).row();
         add_text_button(medium_button).row();
         add_text_button(hard_button).row();

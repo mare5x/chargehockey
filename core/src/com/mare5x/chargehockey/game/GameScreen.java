@@ -106,7 +106,7 @@ public class GameScreen implements Screen {
         });
         menu_button.pad(10);
 
-        Button charge_pos_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("pos_red64")));
+        Button charge_pos_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("charge_pos")));
         charge_pos_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -116,7 +116,7 @@ public class GameScreen implements Screen {
         });
         charge_pos_button.pad(10);
 
-        Button charge_neg_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("neg_blue64")));
+        Button charge_neg_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("charge_neg")));
         charge_neg_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

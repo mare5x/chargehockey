@@ -19,8 +19,8 @@ public class ForcePuckActor extends ChargeActor {
     private float alpha = 1f;
 
     // force vector colors
-    private static final Color POS_RED = new Color(1, 0, 0, 1);
-    private static final Color NEG_BLUE = new Color(0, 0.58f, 1, 1);
+    public static final Color POS_RED = new Color(1, 0, 0, 1);
+    public static final Color NEG_BLUE = new Color(0, 0.58f, 1, 1);
 
     // vector sprite settings
     static final float _MAX_LENGTH = ChargeHockeyGame.WORLD_WIDTH * 0.8f;

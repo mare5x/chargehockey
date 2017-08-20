@@ -11,14 +11,14 @@ blank_vector
   orig: 128, 44
   offset: 0, 0
   index: -1
-neg_blue64
+charge_neg
   rotate: false
   xy: 4, 4
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-pos_red64
+charge_pos
   rotate: false
   xy: 72, 4
   size: 64, 64

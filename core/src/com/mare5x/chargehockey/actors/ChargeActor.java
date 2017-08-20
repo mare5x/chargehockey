@@ -74,10 +74,10 @@ public class ChargeActor extends Actor {
         sprite = new Sprite();
         switch (charge_type) {
             case POSITIVE:
-                sprite.setRegion(game.sprites.findRegion("pos_red64"));
+                sprite.setRegion(game.sprites.findRegion("charge_pos"));
                 break;
             case NEGATIVE:
-                sprite.setRegion(game.sprites.findRegion("neg_blue64"));
+                sprite.setRegion(game.sprites.findRegion("charge_neg"));
                 break;
             case PUCK:
                 sprite.setRegion(game.sprites.findRegion("puck"));

@@ -18,8 +18,8 @@ public class EditorNoLevelsNotification extends Notification {
         Label add_label = get_label("ADD A NEW LEVEL USING ");
         Label remove_label = get_label("REMOVE A LEVEL USING ");
 
-        Image add_img = new Image(game.skin.getRegion("add_green64"));
-        Image remove_img = new Image(game.skin.getRegion("remove_green64"));
+        Image add_img = new Image(game.skin.getRegion("add_up"));
+        Image remove_img = new Image(game.skin.getRegion("remove_up"));
 
         columnDefaults(0).width(get_label_width());
         add(add_label).space(15);

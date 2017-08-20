@@ -13,43 +13,43 @@
 
     "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
         "play": {
-            "down": "play_green256",
-            "up": "play_green256"
+            "down": "play_up",
+            "up": "play_up"
         },
 
         "stop": {
-            "down": "stop_green64",
-            "up": "stop_green64"
+            "down": "stop_up",
+            "up": "stop_up"
         },
 
         "back": {
-            "down": "back_arrow_green128",
-            "up": "back_arrow_green128"
+            "down": "back_arrow_up",
+            "up": "back_arrow_up"
         },
 
         "add": {
-            "down": "add_green64",
-            "up": "add_green64"
+            "down": "add_up",
+            "up": "add_up"
         },
 
         "remove": {
-            "down": "remove_green64",
-            "up": "remove_green64"
+            "down": "remove_up",
+            "up": "remove_up"
         },
 
         "cancel": {
-            "down": "cancel_green64",
-            "up": "cancel_green64"
+            "down": "cancel_up",
+            "up": "cancel_up"
         },
 
         "confirm": {
-             "down": "confirm_green64",
-             "up": "confirm_green64"
+             "down": "confirm_up",
+             "up": "confirm_up"
         },
 
         "menu": {
-            "down": "menu_green64",
-            "up": "menu_green64"
+            "down": "menu_up",
+            "up": "menu_up"
         },
 
         "checkbox": {
@@ -95,8 +95,8 @@
             "up": "button_up",
             "pressedOffsetY": -2,
             "unpressedOffsetY": 0,
-            "imageUp": "play_green256",
-            "imageDown": "play_green256"
+            "imageUp": "play_up",
+            "imageDown": "play_up"
         }
     },
 
