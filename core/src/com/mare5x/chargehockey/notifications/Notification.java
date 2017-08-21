@@ -19,7 +19,7 @@ public abstract class Notification extends Table {
     public static final float DEFAULT_SHOW_TIME = 1.5f;
 
     private final ChargeHockeyGame game;
-    final Stage stage;
+    private final Stage stage;
 
     // NOTE: stage must use screen coordinates.
     Notification(ChargeHockeyGame game, Stage stage) {
@@ -27,8 +27,6 @@ public abstract class Notification extends Table {
 
         this.game = game;
         this.stage = stage;
-
-//        setDebug(true, true);
 
         setBackground(game.skin.getDrawable("button_up"));
 
@@ -79,12 +77,8 @@ public abstract class Notification extends Table {
         return text_label;
     }
 
-    Action get_action() {
-        return get_action(DEFAULT_SHOW_TIME);
-    }
-
     /** Returns a default fade in/out action. */
-    Action get_action(float time) {
+    private Action get_action(float time) {
         return Actions.sequence(
                 Actions.alpha(0.4f),
                 Actions.show(),
@@ -112,7 +106,11 @@ public abstract class Notification extends Table {
     }
 
     /** Adds the notification content to the stage for 'time' duration, then removes itself. */
-    public abstract void show(float time);
+    public void show(float time) {
+        stage.addActor(this);
+        addAction(get_action(time));
+        pack();
+    }
 
     /** Immediately removes this notification (actor) from the stage. */
     protected void hide() {

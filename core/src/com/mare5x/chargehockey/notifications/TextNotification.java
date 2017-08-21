@@ -25,15 +25,4 @@ public class TextNotification extends Notification {
             }
         };
     }
-
-    @Override
-    public void show() {
-        show(DEFAULT_SHOW_TIME);
-    }
-
-    public void show(float time) {
-        stage.addActor(this);
-        addAction(get_action(time));
-        pack();
-    }
 }

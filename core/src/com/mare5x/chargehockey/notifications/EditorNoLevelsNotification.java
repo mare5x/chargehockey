@@ -21,11 +21,11 @@ public class EditorNoLevelsNotification extends Notification {
         Image add_img = new Image(game.skin.getRegion("add_up"));
         Image remove_img = new Image(game.skin.getRegion("remove_up"));
 
-        columnDefaults(0).width(get_label_width());
-        add(add_label).space(15);
+        columnDefaults(0).width(get_label_width()).space(15);
+        add(add_label);
         add(add_img).size(img_size);
         row();
-        add(remove_label).space(15);
+        add(remove_label);
         add(remove_img).size(img_size);
     }
 
@@ -41,12 +41,5 @@ public class EditorNoLevelsNotification extends Notification {
     @Override
     public void show() {
         show(2.5f);
-    }
-
-    @Override
-    public void show(float time) {
-        stage.addActor(this);
-        addAction(get_action(time));
-        pack();
     }
 }

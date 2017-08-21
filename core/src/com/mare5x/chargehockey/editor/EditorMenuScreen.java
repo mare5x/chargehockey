@@ -52,7 +52,10 @@ class EditorMenuScreen extends BaseMenuScreen {
             public void clicked(InputEvent event, float x, float y) {
                 final Level level = level_selector.load_selected_level();
                 if (level != null) {
-                    set_screen(new EditorScreen(game, level));
+                    EditorScreen editor = new EditorScreen(game, level);
+                    set_screen(editor);
+                    if (level_selector.get_level_count() == 1)
+                        editor.show_paint_tip();
                 } else if (level_selector.is_empty()) {
                     remove_notification();
                     notification = new EditorNoLevelsNotification(game, stage);

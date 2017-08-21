@@ -33,6 +33,8 @@ class EditorSubScreen extends BaseMenuScreen {
             }
         });
 
+        // todo HELP screen
+
         TextButton selector_button = make_text_button("SELECT LEVEL");
         selector_button.addListener(new ClickListener() {
             @Override

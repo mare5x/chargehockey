@@ -32,11 +32,4 @@ public class NoChargesNotification extends Notification {
             }
         };
     }
-
-    @Override
-    public void show(float time) {
-        stage.addActor(this);
-        addAction(get_action(time));
-        pack();
-    }
 }

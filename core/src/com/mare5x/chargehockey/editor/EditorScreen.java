@@ -30,6 +30,7 @@ import com.mare5x.chargehockey.game.CameraController;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
+import com.mare5x.chargehockey.notifications.EditorPaintTipNotification;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 
@@ -260,6 +261,11 @@ public class EditorScreen implements Screen {
 
     Level get_level() {
         return level;
+    }
+
+    void show_paint_tip() {
+        EditorPaintTipNotification notification = new EditorPaintTipNotification(game, hud_stage);
+        notification.show(2.5f);
     }
 
     private class EditCameraController extends CameraController {
