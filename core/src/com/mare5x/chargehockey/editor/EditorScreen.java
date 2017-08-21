@@ -148,9 +148,10 @@ public class EditorScreen implements Screen {
 
         Table button_table = new Table();
         button_table.setBackground(game.skin.getDrawable("pixels/px_black"));
-        button_table.add(grid_item_button).pad(15).size(Value.percentHeight(0.6f, button_table)).uniform();
-        button_table.add(puck_button).pad(15).fill().uniform();
-        button_table.add(show_grid_button).pad(15).fill().uniform();
+        button_table.defaults().size(Value.percentHeight(0.6f, button_table)).space(15);
+        button_table.add(grid_item_button);
+        button_table.add(puck_button);
+        button_table.add(show_grid_button);
 
         hud_table.add(edit_icon).pad(15).expandX().left().size(Value.percentWidth(0.15f, hud_table));
         hud_table.add(menu_button).pad(15).expandX().right().size(Value.percentWidth(0.15f, hud_table)).row();
