@@ -4,16 +4,30 @@ size: 1024,512
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-add_up
+add_down
   rotate: false
-  xy: 924, 422
+  xy: 920, 422
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-back_arrow_up
+add_up
+  rotate: false
+  xy: 400, 162
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+back_down
   rotate: false
   xy: 4, 30
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
+back_up
+  rotate: false
+  xy: 656, 290
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
@@ -29,37 +43,51 @@ button_down
   index: -1
 button_up
   rotate: false
-  xy: 264, 264
+  xy: 988, 464
   size: 22, 22
   split: 4, 17, 4, 17
   pad: 5, 5, 5, 5
   orig: 22, 22
   offset: 0, 0
   index: -1
+cancel_down
+  rotate: false
+  xy: 268, 30
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 cancel_up
   rotate: false
-  xy: 136, 30
+  xy: 920, 354
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 check_off
   rotate: false
-  xy: 396, 290
+  xy: 656, 222
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 check_on
   rotate: false
-  xy: 464, 290
+  xy: 724, 222
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+confirm_down
+  rotate: false
+  xy: 792, 222
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 confirm_up
   rotate: false
-  xy: 532, 290
+  xy: 400, 94
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -73,91 +101,112 @@ edit_off
   index: -1
 edit_on
   rotate: false
-  xy: 264, 358
+  xy: 524, 358
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-forward
+forward_down
   rotate: false
-  xy: 264, 290
+  xy: 136, 30
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
+forward_up
+  rotate: false
+  xy: 788, 290
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 grid_off
   rotate: false
-  xy: 396, 358
+  xy: 136, 98
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 grid_on
   rotate: false
-  xy: 528, 358
+  xy: 656, 358
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-menu_up
+menu_down
   rotate: false
-  xy: 600, 290
+  xy: 920, 286
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-play_up
+menu_up
+  rotate: false
+  xy: 468, 158
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+play_down
   rotate: false
   xy: 4, 230
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
+play_up
+  rotate: false
+  xy: 264, 230
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+remove_down
+  rotate: false
+  xy: 536, 158
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 remove_up
   rotate: false
-  xy: 668, 290
+  xy: 468, 90
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 share
   rotate: false
-  xy: 660, 358
+  xy: 268, 98
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 slider_knob
   rotate: false
-  xy: 736, 290
+  xy: 536, 90
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 star
   rotate: false
-  xy: 792, 358
+  xy: 788, 358
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 star_empty
   rotate: false
-  xy: 136, 98
+  xy: 524, 226
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-stop_up
-  rotate: false
-  xy: 804, 290
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
 undo_green64
   rotate: false
-  xy: 924, 354
+  xy: 604, 154
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -189,30 +238,37 @@ pixels/px_green
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_grey
+pixels/px_green_down
   rotate: false
   xy: 5, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_purple
+pixels/px_grey
   rotate: false
   xy: 8, 5
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_white
+pixels/px_purple
   rotate: false
   xy: 8, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_white_opaque
+pixels/px_white
   rotate: false
   xy: 11, 5
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+pixels/px_white_opaque
+  rotate: false
+  xy: 11, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0

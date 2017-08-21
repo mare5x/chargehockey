@@ -13,42 +13,42 @@
 
     "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
         "play": {
-            "down": "play_up",
+            "down": "play_down",
             "up": "play_up"
         },
 
         "stop": {
-            "down": "stop_up",
-            "up": "stop_up"
+            "down": "pixels/px_green_down",
+            "up": "pixels/px_green"
         },
 
         "back": {
-            "down": "back_arrow_up",
-            "up": "back_arrow_up"
+            "down": "back_down",
+            "up": "back_up"
         },
 
         "add": {
-            "down": "add_up",
+            "down": "add_down",
             "up": "add_up"
         },
 
         "remove": {
-            "down": "remove_up",
+            "down": "remove_down",
             "up": "remove_up"
         },
 
         "cancel": {
-            "down": "cancel_up",
+            "down": "cancel_down",
             "up": "cancel_up"
         },
 
         "confirm": {
-             "down": "confirm_up",
+             "down": "confirm_down",
              "up": "confirm_up"
         },
 
         "menu": {
-            "down": "menu_up",
+            "down": "menu_down",
             "up": "menu_up"
         },
 
@@ -56,16 +56,6 @@
             "up": "check_off",
             "down": "check_on",
             "checked": "check_on"
-        },
-
-        "share": {
-            "up": "share",
-            "down": "share"
-        },
-
-        "forward": {
-            "up": "forward",
-            "down": "forward"
         },
 
         "grid": {

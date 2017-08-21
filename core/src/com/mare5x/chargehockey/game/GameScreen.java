@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -20,6 +21,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -355,12 +358,20 @@ public class GameScreen implements Screen {
             button_table.add(back_button).pad(15).size(percent_width(0.2f), percent_width(0.1f)).padRight(30 * ChargeHockeyGame.DENSITY);
             setObject(back_button, WinDialogBUTTON.BACK);
 
-            Button next_level_button = new Button(skin, "forward");
+            // manually flip the back button arrow and make a new button out of it
+            Sprite next_up_sprite = game.skin.getSprite("back_up");
+            next_up_sprite.flip(true, false);
+            Drawable next_up = new SpriteDrawable(next_up_sprite);
+            Sprite next_down_sprite = game.skin.getSprite("back_down");
+            next_down_sprite.flip(true, false);
+            Drawable next_down = new SpriteDrawable(next_down_sprite);
+            Button next_level_button = new Button(next_up, next_down);
             button_table.add(next_level_button).pad(15).size(percent_width(0.2f), percent_width(0.1f));
             setObject(next_level_button, WinDialogBUTTON.NEXT);
 
             button_table.row();
 
+            // todo Share
 //            TextButton share_button = new TextButton("SHARE", skin);
 //            Button share_button = new Button(skin, "share");
 //            button_table.add(share_button).pad(15).size(percent_width(0.1f)).colspan(2).expandX().center();
