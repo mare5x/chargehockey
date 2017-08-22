@@ -53,10 +53,20 @@ class EditorSubScreen extends BaseMenuScreen {
             }
         });
 
+        TextButton exit_button = make_text_button("EXIT");
+        exit_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                parent_screen.dispose();
+                game.menu_screen.exit_clicked();
+            }
+        });
+
         add_text_button(resume_button).row();
         add_text_button(play_button).row();
         add_text_button(selector_button).row();
         add_text_button(menu_button).row();
+        add_text_button(exit_button);
     }
 
     @Override

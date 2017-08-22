@@ -62,7 +62,7 @@ public class GameLogic {
 
             ForcePuckActor initial_puck = new ForcePuckActor(game);
             initial_puck.set_position(pos.x, pos.y);
-            initial_puck.set_alpha(0.35f);
+            initial_puck.set_alpha(1);
             initial_puck.setVisible(false);
             initial_pucks.add(initial_puck);
             game_stage.addActor(initial_puck);
@@ -248,6 +248,8 @@ public class GameLogic {
     void blink_collided_pucks() {
         for (PuckActor puck : puck_actors) {
             if (puck.get_collision() == GRID_ITEM.WALL || check_out_of_bounds(puck)) {
+                puck.set_puck_alpha(1);
+                puck.set_vector_alpha(0.35f);
                 puck.start_blinking();
             }
         }
@@ -311,25 +313,28 @@ public class GameLogic {
     }
     
     private void show_initial_pucks(boolean visibility) {
-        for (ForcePuckActor puck : initial_pucks) {
-            puck.setVisible(visibility);
+        for (int i = 0; i < initial_pucks.size; i++) {
+            initial_pucks.get(i).setVisible(visibility);
+
+            // when showing initial pucks, lower the alpha of current pucks
+            if (visibility)
+                puck_actors.get(i).set_alpha(0.35f);
+            else
+                puck_actors.get(i).set_alpha(1);
         }
     }
 
-    void set_playing(boolean value) {
+    void set_playing(boolean playing) {
         // reset positions if changing to playing from not playing
-        if (value && !is_playing) {
+        if (playing && !is_playing) {
             reset_pucks();
         }
-        
-        if (!value)
-            show_initial_pucks(true);
-        else
-            show_initial_pucks(false);
-        
+
+        show_initial_pucks(!playing);
+
         dt_accumulator = 0;
-        is_playing = value;
-        Gdx.graphics.setContinuousRendering(value);
+        is_playing = playing;
+        Gdx.graphics.setContinuousRendering(playing);
         Gdx.graphics.requestRendering();
     }
 

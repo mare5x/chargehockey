@@ -16,7 +16,8 @@ public class ForcePuckActor extends ChargeActor {
 
     private final ObjectMap<ChargeActor, Sprite> force_sprites = new ObjectMap<ChargeActor, Sprite>();
 
-    private float alpha = 1f;
+    private float puck_alpha = 1f;
+    private float vector_alpha = 1f;
 
     // force vector colors
     public static final Color POS_RED = new Color(1, 0, 0, 1);
@@ -48,15 +49,24 @@ public class ForcePuckActor extends ChargeActor {
     public void draw(Batch batch, float parentAlpha) {
         if (DRAW_FORCES) {
             for (Sprite force_sprite : force_sprites.values())
-                force_sprite.draw(batch, alpha);
+                force_sprite.draw(batch, vector_alpha);
         }
 
         // draw the sprite after the vectors, so it's on top
-        super.draw(batch, parentAlpha * alpha);
+        super.draw(batch, parentAlpha * puck_alpha);
     }
 
     public void set_alpha(float value) {
-        alpha = value;
+        puck_alpha = value;
+        vector_alpha = value;
+    }
+
+    public void set_puck_alpha(float value) {
+        puck_alpha = value;
+    }
+
+    public void set_vector_alpha(float value) {
+        vector_alpha = value;
     }
 
     void prepare_vector_sprite(Sprite sprite, Vector2 vector, float length) {

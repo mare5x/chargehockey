@@ -90,6 +90,14 @@ class GameMenuScreen extends ScrollableMenuScreen {
             }
         });
 
+        TextButton exit_button = make_text_button("EXIT");
+        exit_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.menu_screen.exit_clicked();
+            }
+        });
+
         add_text_button(resume_button).row();
         if (level.get_type() == LEVEL_TYPE.CUSTOM) add_text_button(edit_button).row();
         add_text_button(save_button).row();
@@ -97,7 +105,8 @@ class GameMenuScreen extends ScrollableMenuScreen {
         add_text_button(restart_button).row();
         add_text_button(selector_button).row();
         add_text_button(main_menu_button).row();
-        add_text_button(settings_button);
+        add_text_button(settings_button).row();
+        add_text_button(exit_button);
     }
 
     @Override

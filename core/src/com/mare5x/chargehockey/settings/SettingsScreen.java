@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.menus.ScrollableMenuScreen;
 import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 
@@ -229,13 +230,10 @@ public class SettingsScreen extends ScrollableMenuScreen {
 
     /** A slider for setting the charge's visual size. */
     private static class ChargeSettingSlider extends SettingSlider {
-        private static final float MIN_SIZE = 0.5f;
-        private static final float MAX_SIZE = 2;
-
         private final Image charge;
 
         ChargeSettingSlider(ChargeHockeyGame game, float current) {
-            super(game, MIN_SIZE, MAX_SIZE, current);
+            super(game, ChargeActor.MIN_SIZE, ChargeActor.MAX_SIZE, current);
 
             charge = new Image(game.sprites.findRegion("charge_pos"));
 

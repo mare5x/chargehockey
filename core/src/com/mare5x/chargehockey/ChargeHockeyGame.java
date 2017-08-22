@@ -2,7 +2,6 @@ package com.mare5x.chargehockey;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
@@ -39,7 +38,7 @@ abstract public class ChargeHockeyGame extends Game {
 	public SpriteBatch batch;
     public Skin skin;
     public TextureAtlas sprites;
-    public Screen menu_screen;
+    public MenuScreen menu_screen;
 
     private AssetManager manager;
 

@@ -59,7 +59,9 @@ public class ChargeActor extends Actor {
     private final CHARGE charge_type;
     final Sprite sprite;
 
-    private static float SIZE = 1.3f;  // min = 0.5, max = 2
+    public static final float MAX_SIZE = 3;
+    public static final float MIN_SIZE = 0.5f;
+    private static float SIZE = 2;
     private float radius = SIZE / 2f;
     private static final float WEIGHT = 9.1e-31f;  // kg
     private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs

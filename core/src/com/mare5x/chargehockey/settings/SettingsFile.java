@@ -45,7 +45,7 @@ public class SettingsFile {
         prefs.putBoolean(SETTINGS_KEY.TRACE_PATH.name(), true);
         prefs.putBoolean(SETTINGS_KEY.GRID_LINES.name(), true);
         prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
-        prefs.putFloat(SETTINGS_KEY.CHARGE_SIZE.name(), 1.3f);
+        prefs.putFloat(SETTINGS_KEY.CHARGE_SIZE.name(), 2);
         prefs.flush();
     }
 

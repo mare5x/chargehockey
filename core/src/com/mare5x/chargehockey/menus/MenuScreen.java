@@ -57,6 +57,10 @@ public class MenuScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
+        exit_clicked();
+    }
+
+    public void exit_clicked() {
         Gdx.app.exit();
     }
 
