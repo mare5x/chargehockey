@@ -1,6 +1,6 @@
 android {
     buildToolsVersion "25.0.2"
-    compileSdkVersion 25
+    compileSdkVersion 26
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -20,7 +20,15 @@ android {
     defaultConfig {
         applicationId "com.mare5x.chargehockey"
         minSdkVersion 9
-        targetSdkVersion 25
+        targetSdkVersion 26
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+        }
     }
 }
 // called every time gradle gets executed, takes the native dependencies of
