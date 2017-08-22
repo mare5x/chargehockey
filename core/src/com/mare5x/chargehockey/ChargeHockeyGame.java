@@ -10,13 +10,16 @@ import com.badlogic.gdx.assets.loaders.TextureAtlasLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.mare5x.chargehockey.editor.FilePicker;
 import com.mare5x.chargehockey.editor.PermissionTools;
@@ -85,6 +88,14 @@ abstract public class ChargeHockeyGame extends Game {
         manager.finishLoading();
 
         skin = manager.get("skin.json", Skin.class);
+
+        // manually flip the back button arrow and make a new button out of it
+        Sprite next_up_sprite = new Sprite(skin.getRegion("back_up"));
+        next_up_sprite.flip(true, false);
+        Sprite next_down_sprite = new Sprite(skin.getRegion("back_down"));
+        next_down_sprite.flip(true, false);
+        Button.ButtonStyle next_button = new Button.ButtonStyle(new SpriteDrawable(next_up_sprite), new SpriteDrawable(next_down_sprite), null);
+        skin.add("next", next_button, Button.ButtonStyle.class);
 
         sprites = manager.get("sprites.atlas", TextureAtlas.class);
 
