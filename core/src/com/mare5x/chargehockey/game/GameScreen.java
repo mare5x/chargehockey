@@ -140,7 +140,7 @@ public class GameScreen implements Screen {
 
         Table button_table = new Table();
         button_table.setBackground(game.skin.getDrawable("pixels/px_black"));
-        button_table.defaults().size(Value.percentHeight(0.6f, button_table)).space(15);
+        button_table.defaults().size(Value.percentHeight(0.6f, button_table)).space(24);
         button_table.add(play_button);
         button_table.add(charge_pos_button);
         button_table.add(charge_neg_button);
