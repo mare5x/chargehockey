@@ -127,6 +127,7 @@ public class EditorScreen implements Screen {
                 show_grid = show_grid_button.isChecked();
                 fbo.set_draw_grid_lines(show_grid);
                 fbo.set_grid_line_spacing(CameraController.get_grid_line_spacing(camera.zoom));
+                fbo.update_grid_line_size(camera.zoom);
                 fbo.update(game.batch);
             }
         });
@@ -306,13 +307,14 @@ public class EditorScreen implements Screen {
         }
 
         @Override
-        protected void on_zoom_change() {
+        protected void on_zoom_change(float zoom, boolean zoom_level_changed) {
             if (!show_grid)
                 return;
 
-            int grid_line_spacing = get_grid_line_spacing(camera.zoom);
-            if (fbo.get_grid_line_spacing() != grid_line_spacing) {
+            int grid_line_spacing = get_grid_line_spacing(zoom);
+            if (zoom_level_changed || fbo.get_grid_line_spacing() != grid_line_spacing) {
                 fbo.set_grid_line_spacing(grid_line_spacing);
+                fbo.update_grid_line_size(zoom);
                 fbo.update(game.batch);
             }
         }

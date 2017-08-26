@@ -19,7 +19,7 @@ import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 
 
 // Wrapper for a FrameBuffer
-// TODO fix camera rounding errors
+// TODO fix camera rounding errors (PHYSICALLY IMPOSSIBLE)
 public class LevelFrameBuffer {
     private final FrameBuffer fbo;
     private final TextureRegion fbo_region;
@@ -34,7 +34,7 @@ public class LevelFrameBuffer {
     private final Sprite grid_line_sprite;
     private static boolean DRAW_GRID_LINES_SETTING = false;
     private boolean draw_grid_lines = false;  // ability to override the setting
-    private static float grid_line_sprite_size = 1f / (1024f / ChargeHockeyGame.WORLD_WIDTH);  // 1 px
+    private static float grid_line_sprite_size = 1f / (1024f / ChargeHockeyGame.WORLD_WIDTH);  // 1 tx
     private int grid_line_spacing = 1;  // determines after how many grid tiles a line is drawn
 
     private Level level;
@@ -59,6 +59,7 @@ public class LevelFrameBuffer {
         puck_sprite = game.sprites.createSprite("puck");
         puck_sprite.setSize(PuckActor.SIZE, PuckActor.SIZE);
 
+        update_grid_line_size(1);
         grid_line_sprite = game.skin.getSprite("pixels/px_purple");
         grid_line_sprite.setSize(grid_line_sprite_size, grid_line_sprite_size);
 
@@ -228,6 +229,13 @@ public class LevelFrameBuffer {
 
     public void set_draw_pucks(boolean val) {
         draw_pucks = val;
+    }
+
+    public void update_grid_line_size(float zoom) {
+        // make sure grid_line_sprite_size is 1 pixel NOT 1 texel, otherwise grid lines might
+        // not even get drawn due to rounding 'errors'
+
+        grid_line_sprite_size = Math.max(1 / 16f, 1024f / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()) * (1.5f / 16f) * zoom);
     }
 
     public void set_grid_line_spacing(int spacing) {
