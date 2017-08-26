@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.mare5x.chargehockey.editor.FilePicker;
 import com.mare5x.chargehockey.editor.PermissionTools;
+import com.mare5x.chargehockey.level.GridSprites;
 import com.mare5x.chargehockey.menus.MenuScreen;
 import com.mare5x.chargehockey.settings.SettingsFile;
 
@@ -41,6 +42,9 @@ abstract public class ChargeHockeyGame extends Game {
     public MenuScreen menu_screen;
 
     private AssetManager manager;
+
+    // FBO helper
+    public GridSprites grid_sprites;
 
     // platform specific abstract methods
 
@@ -97,6 +101,8 @@ abstract public class ChargeHockeyGame extends Game {
         skin.add("next", next_button, Button.ButtonStyle.class);
 
         sprites = manager.get("sprites.atlas", TextureAtlas.class);
+
+        grid_sprites = new GridSprites(this);
 
         SettingsFile.initialize();
 

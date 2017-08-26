@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
@@ -21,11 +20,18 @@ import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 // Wrapper for a FrameBuffer
 // TODO fix camera rounding errors (PHYSICALLY IMPOSSIBLE)
 public class LevelFrameBuffer {
+    private static final int _FBO_SIZE = 1024;
+    private static final int _PREVIEW_FBO_SIZE = 256;
+
+    private static int FBO_SIZE;
+    private static float WORLD_UNIT_TX;  //  = FBO_SIZE / ChargeHockeyGame.WORLD_WIDTH;  // 1 world unit = world_unit_tx texels
+    private static float ONE_TX; // = 1 / WORLD_UNIT_TX;  // 1 texel
+
+    private final ChargeHockeyGame game;
+
     private final FrameBuffer fbo;
     private final TextureRegion fbo_region;
     private final OrthographicCamera fbo_camera;
-
-    private final ObjectMap<Grid.GRID_ITEM, Sprite> grid_sprites;
 
     private final Sprite puck_sprite;
     private float puck_alpha = 0.5f;
@@ -34,38 +40,39 @@ public class LevelFrameBuffer {
     private final Sprite grid_line_sprite;
     private static boolean DRAW_GRID_LINES_SETTING = false;
     private boolean draw_grid_lines = false;  // ability to override the setting
-    private static float grid_line_sprite_size = 1f / (1024f / ChargeHockeyGame.WORLD_WIDTH);  // 1 tx
+    private static float grid_line_sprite_size;  // 1 tx
     private int grid_line_spacing = 1;  // determines after how many grid tiles a line is drawn
 
     private Level level;
 
     public LevelFrameBuffer(final ChargeHockeyGame game, final Level level) {
+        this(game, level, _FBO_SIZE);
+    }
+
+    LevelFrameBuffer(final ChargeHockeyGame game, final Level level, boolean preview) {
+        this(game, level, preview ? _PREVIEW_FBO_SIZE : _FBO_SIZE);
+    }
+
+    private LevelFrameBuffer(final ChargeHockeyGame game, final Level level, int size) {
+        this.game = game;
         this.level = level;
 
-        Sprite null_sprite = game.sprites.createSprite("grid/grid_null");
-        null_sprite.setSize(1, 1);
+        FBO_SIZE = size;
+        WORLD_UNIT_TX = FBO_SIZE / ChargeHockeyGame.WORLD_WIDTH;  // 1 world unit = world_unit_tx texels
+        ONE_TX = 1 / WORLD_UNIT_TX;  // 1 texel
 
-        Sprite wall_sprite = game.sprites.createSprite("grid/grid_wall");
-        wall_sprite.setSize(1, 1);
+        grid_line_sprite_size = ONE_TX;  // 1 tx
 
-        Sprite goal_sprite = game.sprites.createSprite("grid/grid_goal");
-        goal_sprite.setSize(1, 1);
+        game.grid_sprites.set_preview(false);
 
-        grid_sprites = new ObjectMap<GRID_ITEM, Sprite>(GRID_ITEM.values.length);
-        grid_sprites.put(GRID_ITEM.NULL, null_sprite);
-        grid_sprites.put(GRID_ITEM.WALL, wall_sprite);
-        grid_sprites.put(GRID_ITEM.GOAL, goal_sprite);
-
-        puck_sprite = game.sprites.createSprite("puck");
-        puck_sprite.setSize(PuckActor.SIZE, PuckActor.SIZE);
+        puck_sprite = game.grid_sprites.get_puck();
 
         update_grid_line_size(1);
-        grid_line_sprite = game.skin.getSprite("pixels/px_purple");
-        grid_line_sprite.setSize(grid_line_sprite_size, grid_line_sprite_size);
+        grid_line_sprite = game.grid_sprites.get_grid_line(grid_line_sprite_size);
 
         // For pixel perfect rendering, the width and height of the FBO must be a multiple of the world width * sprite size.
         // Here each tile has a size of 16*16 px.
-        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, 1024, 1024, false);
+        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, FBO_SIZE, FBO_SIZE, false);
         fbo.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         fbo_region = new TextureRegion(fbo.getColorBufferTexture());
         fbo_region.flip(false, true);  // FBO uses lower left, TextureRegion uses upper-left
@@ -153,7 +160,7 @@ public class LevelFrameBuffer {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
                 if (item != GRID_ITEM.NULL) {
-                    Sprite sprite = grid_sprites.get(item);
+                    Sprite sprite = game.grid_sprites.get(item);
                     sprite.setPosition(col, row);
                     sprite.draw(batch);
                 }
@@ -235,7 +242,7 @@ public class LevelFrameBuffer {
         // make sure grid_line_sprite_size is 1 pixel NOT 1 texel, otherwise grid lines might
         // not even get drawn due to rounding 'errors'
 
-        grid_line_sprite_size = Math.max(1 / 16f, 1024f / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()) * (1.5f / 16f) * zoom);
+        grid_line_sprite_size = Math.max(ONE_TX, FBO_SIZE / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()) * ONE_TX * 1.5f * zoom);
     }
 
     public void set_grid_line_spacing(int spacing) {

@@ -42,7 +42,7 @@ public class LevelSelector {
         scroll_pane.setScrollingDisabled(true, false);
         scroll_pane.setVariableSizeKnobs(true);
 
-        preview_fbo = new LevelFrameBuffer(game, null);
+        preview_fbo = new LevelFrameBuffer(game, null, true);
         preview_fbo.set_puck_alpha(1);
         preview_fbo.set_draw_grid_lines(false);
     }
