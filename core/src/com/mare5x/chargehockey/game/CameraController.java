@@ -476,7 +476,7 @@ public class CameraController {
             }
 
             calc_px_to_world_unit();
-            on_zoom_change(camera.zoom, ZoomLevel.get(camera.zoom) == tmp_zoom_level);
+            on_zoom_change(camera.zoom, ZoomLevel.get(camera.zoom) != tmp_zoom_level);
         }
 
         boolean is_moving() {
