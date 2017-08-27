@@ -48,6 +48,8 @@ public class EditorScreen implements Screen {
 
     private Level level;
 
+    private static boolean SHOW_GRID_LINES_SETTING = true;
+
     private boolean show_grid = true;
     private boolean prev_show_grid = show_grid;  // the previous show grid value, changes when saving level
     private boolean level_changed = false;
@@ -86,8 +88,9 @@ public class EditorScreen implements Screen {
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
-        fbo.set_draw_grid_lines(LevelFrameBuffer.get_grid_lines_setting());
+        fbo.set_draw_grid_lines(SHOW_GRID_LINES_SETTING);
         fbo.set_grid_line_spacing(CameraController.get_grid_line_spacing(camera.zoom));
+        fbo.set_grid_line_alpha(1);
         fbo.update(game.batch);
 
         // add interactive pucks from the stored puck positions
@@ -131,7 +134,7 @@ public class EditorScreen implements Screen {
                 fbo.update(game.batch);
             }
         });
-        show_grid = LevelFrameBuffer.get_grid_lines_setting();
+        show_grid = SHOW_GRID_LINES_SETTING;
         prev_show_grid = show_grid;
         show_grid_button.setChecked(show_grid);
         show_grid_button.pad(10);
@@ -233,7 +236,7 @@ public class EditorScreen implements Screen {
             level.write_save_header();  // reset save file header
         }
         if (prev_show_grid != show_grid) {
-            SettingsFile.set_setting(SETTINGS_KEY.GRID_LINES, show_grid);
+            SettingsFile.set_setting(SETTINGS_KEY.EDITOR_GRID_LINES, show_grid);
             prev_show_grid = show_grid;
         }
     }
@@ -268,6 +271,10 @@ public class EditorScreen implements Screen {
     void show_paint_tip() {
         EditorPaintTipNotification notification = new EditorPaintTipNotification(game, hud_stage);
         notification.show(2.5f);
+    }
+
+    public static void set_grid_lines_setting(boolean value) {
+        SHOW_GRID_LINES_SETTING = value;
     }
 
     private class EditCameraController extends CameraController {

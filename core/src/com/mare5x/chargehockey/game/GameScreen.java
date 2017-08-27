@@ -51,6 +51,8 @@ public class GameScreen implements Screen {
 
     private final LevelFrameBuffer fbo;
 
+    private static boolean SHOW_GRID_LINES_SETTING = false;
+
     private final PlayButton play_button;
 
     private final InputMultiplexer multiplexer;
@@ -69,7 +71,9 @@ public class GameScreen implements Screen {
         camera.zoom = 0.8f;
 
         fbo = new LevelFrameBuffer(game, level);
-        fbo.set_draw_grid_lines(false);
+        fbo.set_draw_grid_lines(SHOW_GRID_LINES_SETTING);
+        fbo.set_grid_line_alpha(0.8f);
+        fbo.set_grid_line_spacing(CameraController.get_grid_line_spacing(camera.zoom));
         fbo.set_draw_pucks(false);
         fbo.update(game.batch);
 
@@ -151,7 +155,7 @@ public class GameScreen implements Screen {
 
         hud_stage.addActor(hud_table);
 
-        camera_controller = new CameraController(camera, game_stage);
+        camera_controller = new GameCameraController(camera, game_stage);
         camera_controller.set_double_tap_zoom(true);
         InputAdapter back_key_processor = new InputAdapter() {  // same as menu_button
             @Override
@@ -222,7 +226,12 @@ public class GameScreen implements Screen {
     public void show() {
         Gdx.input.setInputProcessor(multiplexer);
 
+        // check if any settings were changed
         game_logic.handle_charge_size_change();
+        if (SHOW_GRID_LINES_SETTING != fbo.get_draw_grid_lines()) {
+            fbo.set_draw_grid_lines(SHOW_GRID_LINES_SETTING);
+            fbo.update(game.batch);
+        }
     }
 
     private void update_puck_trace_path() {
@@ -306,6 +315,29 @@ public class GameScreen implements Screen {
         fbo.dispose();
         game_stage.dispose();
         hud_stage.dispose();
+    }
+
+    public static void set_grid_lines_setting(boolean value) {
+        SHOW_GRID_LINES_SETTING = value;
+    }
+
+    private class GameCameraController extends CameraController {
+        GameCameraController(OrthographicCamera camera, Stage stage) {
+            super(camera, stage);
+        }
+
+        @Override
+        protected void on_zoom_change(float zoom, boolean zoom_level_changed) {
+            if (!SHOW_GRID_LINES_SETTING)
+                return;
+
+            int grid_line_spacing = get_grid_line_spacing(zoom);
+            if (zoom_level_changed || fbo.get_grid_line_spacing() != grid_line_spacing) {
+                fbo.set_grid_line_spacing(grid_line_spacing);
+                fbo.update_grid_line_size(zoom);
+                fbo.update(game.batch);
+            }
+        }
     }
 
     private class PlayButton extends Button {

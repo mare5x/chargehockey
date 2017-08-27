@@ -5,8 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.PuckActor;
+import com.mare5x.chargehockey.editor.EditorScreen;
 import com.mare5x.chargehockey.game.GameLogic;
-import com.mare5x.chargehockey.level.LevelFrameBuffer;
+import com.mare5x.chargehockey.game.GameScreen;
 
 
 public class SettingsFile {
@@ -16,7 +17,8 @@ public class SettingsFile {
         SHOW_FORCE_VECTORS,
         GAME_SPEED,
         TRACE_PATH,
-        GRID_LINES,
+        EDITOR_GRID_LINES,
+        GAME_GRID_LINES,
         CHARGE_SIZE
     }
 
@@ -43,7 +45,8 @@ public class SettingsFile {
         prefs.putBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR.name(), false);
         prefs.putBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS.name(), true);
         prefs.putBoolean(SETTINGS_KEY.TRACE_PATH.name(), true);
-        prefs.putBoolean(SETTINGS_KEY.GRID_LINES.name(), true);
+        prefs.putBoolean(SETTINGS_KEY.EDITOR_GRID_LINES.name(), true);
+        prefs.putBoolean(SETTINGS_KEY.GAME_GRID_LINES.name(), false);
         prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
         prefs.putFloat(SETTINGS_KEY.CHARGE_SIZE.name(), 2);
         prefs.flush();
@@ -102,6 +105,7 @@ public class SettingsFile {
         PuckActor.set_draw_forces(settings.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));
         PuckActor.set_trace_path(settings.getBoolean(SETTINGS_KEY.TRACE_PATH));
         GameLogic.set_game_speed(settings.getFloat(SETTINGS_KEY.GAME_SPEED));
-        LevelFrameBuffer.set_grid_lines_setting(settings.getBoolean(SETTINGS_KEY.GRID_LINES));
+        EditorScreen.set_grid_lines_setting(settings.getBoolean(SETTINGS_KEY.EDITOR_GRID_LINES));
+        GameScreen.set_grid_lines_setting(settings.getBoolean(SETTINGS_KEY.GAME_GRID_LINES));
     }
 }

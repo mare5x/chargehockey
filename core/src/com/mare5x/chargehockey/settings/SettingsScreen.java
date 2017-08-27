@@ -29,7 +29,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
 
     private final SettingsFile settings_file;
 
-    private final SettingCheckBox acceleration_checkbox, velocity_checkbox, trace_path_checkbox, forces_checkbox;
+    private final SettingCheckBox acceleration_checkbox, velocity_checkbox, trace_path_checkbox, forces_checkbox, game_grid_lines;
     private final SettingSlider game_speed_slider, charge_size_slider;
 
     public SettingsScreen(final ChargeHockeyGame game, final Screen parent_screen) {
@@ -52,6 +52,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
 
         charge_size_slider = new ChargeSettingSlider(game, settings_file.getFloat(SETTINGS_KEY.CHARGE_SIZE));
 
+        game_grid_lines = new SettingCheckBox(game, "SHOW GRID LINES", settings_file.getBoolean(SETTINGS_KEY.GAME_GRID_LINES));
         velocity_checkbox = new SettingCheckBox(game, "SHOW VELOCITY VECTOR", settings_file.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         acceleration_checkbox = new SettingCheckBox(game, "SHOW ACCELERATION VECTOR", settings_file.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
         forces_checkbox = new SettingCheckBox(game, "SHOW FORCE VECTORS", settings_file.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));
@@ -62,6 +63,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
 
         game_speed_slider.add_to_table(table);
         charge_size_slider.add_to_table(table);
+        game_grid_lines.add_to_table(table);
         velocity_checkbox.add_to_table(table);
         acceleration_checkbox.add_to_table(table);
         forces_checkbox.add_to_table(table);
@@ -82,6 +84,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
 
         game_speed_slider.set_value(settings_file.getFloat(SETTINGS_KEY.GAME_SPEED));
         charge_size_slider.set_value(settings_file.getFloat(SETTINGS_KEY.CHARGE_SIZE));
+        game_grid_lines.set_checked(settings_file.getBoolean(SETTINGS_KEY.GAME_GRID_LINES));
         velocity_checkbox.set_checked(settings_file.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         acceleration_checkbox.set_checked(settings_file.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
         forces_checkbox.set_checked(settings_file.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));
@@ -92,6 +95,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
         Gdx.app.log("SettingsScreen", "saving preferences");
         settings_file.put(SETTINGS_KEY.GAME_SPEED, game_speed_slider.get_value());
         settings_file.put(SETTINGS_KEY.CHARGE_SIZE, charge_size_slider.get_value());
+        settings_file.put(SETTINGS_KEY.GAME_GRID_LINES, game_grid_lines.is_checked());
         settings_file.put(SETTINGS_KEY.SHOW_VELOCITY_VECTOR, velocity_checkbox.is_checked());
         settings_file.put(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR, acceleration_checkbox.is_checked());
         settings_file.put(SETTINGS_KEY.SHOW_FORCE_VECTORS, forces_checkbox.is_checked());

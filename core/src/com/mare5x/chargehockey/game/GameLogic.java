@@ -13,6 +13,7 @@ import com.mare5x.chargehockey.actors.ForcePuckActor;
 import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.Level;
+import com.mare5x.chargehockey.level.LevelFrameBuffer;
 
 
 public class GameLogic {
@@ -229,7 +230,8 @@ public class GameLogic {
     private GRID_ITEM check_collision(PuckActor puck, int row, int col) {
         GRID_ITEM grid_item = level.get_grid_item(row, col);
         // add a bit of leniency: walls have a smaller size than goals
-        float wall_size = 14 / 16f;  // 16px - 1px border - 1px border = 14px
+        float wall_size = (LevelFrameBuffer.WORLD_UNIT_TX - 2) / LevelFrameBuffer.WORLD_UNIT_TX;
+//        float wall_size = 14 / 16f;  // 16px - 1px border - 1px border = 14px
         if (grid_item == GRID_ITEM.WALL && puck.intersects(new Rectangle(col + (1 - wall_size) / 2, row + (1 - wall_size) / 2, wall_size, wall_size)))
             return grid_item;
         else if (grid_item == GRID_ITEM.GOAL && puck.intersects(new Rectangle(col, row, 1, 1)))
