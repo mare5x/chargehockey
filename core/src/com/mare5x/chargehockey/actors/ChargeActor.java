@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
-import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.game.CameraController;
 
@@ -61,17 +61,16 @@ public class ChargeActor extends Actor {
 
     public static final float MAX_SIZE = 3;
     public static final float MIN_SIZE = 0.5f;
-    private static float SIZE = 2;
-    private float radius = SIZE / 2f;
+    private static float SIZE = 2;  // the public shared size of all charges set in the settings
+    private float radius = SIZE / 2f;  // all 'size' checking, etc uses this
+    private float charge_size = 2 * radius;  // this is the effective size of the charge (not necessarily the current size), it's the size the charge gets reset to
     private static final float WEIGHT = 9.1e-31f;  // kg
     private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
-    public ChargeActor(final ChargeHockeyGame game, CHARGE charge_type, final DragCallback drag_callback) {
+    public ChargeActor(final ChargeHockeyGame game, final CHARGE charge_type, final DragCallback drag_callback) {
         super();
 
         this.charge_type = charge_type;
-
-        float charge_size = SIZE;
 
         sprite = new Sprite();
         switch (charge_type) {
@@ -87,10 +86,31 @@ public class ChargeActor extends Actor {
                 break;
         }
 
-        set_size(charge_size);
+        reset_size();
 
         if (drag_callback != null) {
             DragListener drag_listener = new DragListener() {
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    // when a charge is touched, increase its size
+                    // adjust is necessary to translate the old x,y into new x,y local coordinates
+                    float adjust = 1.5f * radius - radius;
+                    boolean ret = super.touchDown(event, x + adjust, y + adjust, pointer, button);
+
+                    // go ahead with the sizing only if the input is valid
+                    if (ret) {
+                        clearActions();
+                        set_size(1.5f * charge_size, true);
+                    }
+                    return ret;
+                }
+
+                @Override
+                public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                    set_size(charge_size, true);
+                    super.touchUp(event, x, y, pointer, button);
+                }
+
                 @Override
                 public void drag(InputEvent event, float dx, float dy, int pointer) {
                     moveBy(dx - getTouchDownX(), dy - getTouchDownY());
@@ -117,20 +137,24 @@ public class ChargeActor extends Actor {
     }
 
     public void reset_size() {
-        set_size(SIZE);
+        if (charge_type == CHARGE.PUCK)
+            charge_size = PuckActor.SIZE;
+        else
+            charge_size = SIZE;
+        set_size(charge_size);
     }
 
     private void set_size(float size) {
-        // save the center position
-        float x = get_x();
-        float y = get_y();
+        set_size(size, false);
+    }
 
-        radius = size / 2f;
-
-        setSize(size, size);
-        set_position(x, y);  // re-center
-        sprite.setOriginCenter();
-        setOrigin(Align.center);
+    /** Correctly sizes the circular actor. If animate is false the sizing happens immediately. */
+    private void set_size(float size, boolean animate) {
+        if (animate) {
+            addAction(Actions.sizeTo(size, size, 0.1f));
+        } else {
+            setSize(size, size);
+        }
     }
 
     public float get_x() {
@@ -171,8 +195,18 @@ public class ChargeActor extends Actor {
 
     @Override
     public void setSize(float width, float height) {
+        // save the center position
+        float x = get_x();
+        float y = get_y();
+
         super.setSize(width, height);
         sprite.setSize(width, height);
+
+        radius = width / 2f;
+
+        set_position(x, y);  // re-center
+        sprite.setOriginCenter();
+        setOrigin(radius, radius);
     }
 
     @Override
