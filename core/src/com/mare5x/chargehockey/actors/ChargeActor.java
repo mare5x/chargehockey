@@ -90,17 +90,26 @@ public class ChargeActor extends Actor {
 
         if (drag_callback != null) {
             DragListener drag_listener = new DragListener() {
+                private final float max_zoom = CameraController.ZoomLevel.MAX.get_amount();
+                private final float min_zoom = CameraController.ZoomLevel.MIN.get_amount();
+
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                     // when a charge is touched, increase its size
                     // adjust is necessary to translate the old x,y into new x,y local coordinates
-                    float adjust = 1.5f * radius - radius;
+                    float zoom = ((OrthographicCamera) (getStage().getCamera())).zoom;
+                    zoom -= max_zoom;
+
+                    // from 1.1 to 1.6 based on the current zoom
+                    float enlarge_factor = 1.1f + (zoom / (min_zoom - max_zoom)) * 0.5f;
+
+                    float adjust = radius * enlarge_factor - radius;
                     boolean ret = super.touchDown(event, x + adjust, y + adjust, pointer, button);
 
                     // go ahead with the sizing only if the input is valid
                     if (ret) {
                         clearActions();
-                        set_size(1.5f * charge_size, true);
+                        set_size(enlarge_factor * charge_size, true);
                     }
                     return ret;
                 }

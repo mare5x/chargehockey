@@ -14,7 +14,7 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 
 // TODO rewrite the whole class using InputAdapter
 public class CameraController {
-    private enum ZoomLevel {
+    public enum ZoomLevel {
         MIN(1.6f),
         LEVEL1(0.8f),
         LEVEL2(0.4f),
@@ -27,7 +27,7 @@ public class CameraController {
             this.amount = amount;
         }
 
-        float get_amount() {
+        public float get_amount() {
             return amount;
         }
 
