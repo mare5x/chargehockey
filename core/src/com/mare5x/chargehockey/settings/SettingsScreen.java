@@ -52,7 +52,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
 
         charge_size_slider = new ChargeSettingSlider(game, settings_file.getFloat(SETTINGS_KEY.CHARGE_SIZE));
 
-        game_grid_lines = new SettingCheckBox(game, "SHOW GRID LINES", settings_file.getBoolean(SETTINGS_KEY.GAME_GRID_LINES));
+        game_grid_lines = new SettingCheckBox(game, "SHOW GRID", settings_file.getBoolean(SETTINGS_KEY.GAME_GRID_LINES));
         velocity_checkbox = new SettingCheckBox(game, "SHOW VELOCITY VECTOR", settings_file.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         acceleration_checkbox = new SettingCheckBox(game, "SHOW ACCELERATION VECTOR", settings_file.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
         forces_checkbox = new SettingCheckBox(game, "SHOW FORCE VECTORS", settings_file.getBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS));

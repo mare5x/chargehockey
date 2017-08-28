@@ -16,13 +16,8 @@ public class GridSprites {
 
     public GridSprites(ChargeHockeyGame game) {
         Sprite null_sprite = game.sprites.createSprite("grid/grid_null");
-        null_sprite.setSize(1, 1);
-
         Sprite wall_sprite = game.sprites.createSprite("grid/grid_wall");
-        wall_sprite.setSize(1, 1);
-
         Sprite goal_sprite = game.sprites.createSprite("grid/grid_goal");
-        goal_sprite.setSize(1, 1);
 
         grid_sprites = new ObjectMap<Grid.GRID_ITEM, Sprite>(Grid.GRID_ITEM.values.length);
         grid_sprites.put(Grid.GRID_ITEM.NULL, null_sprite);
@@ -31,18 +26,15 @@ public class GridSprites {
 
         // p_ = preview
         Sprite p_null_sprite = game.sprites.createSprite("grid/p_grid_null");
-        p_null_sprite.setSize(1, 1);
-
         Sprite p_wall_sprite = game.sprites.createSprite("grid/p_grid_wall");
-        p_wall_sprite.setSize(1, 1);
-
         Sprite p_goal_sprite = game.sprites.createSprite("grid/p_grid_goal");
-        p_goal_sprite.setSize(1, 1);
 
         preview_grid_sprites = new ObjectMap<Grid.GRID_ITEM, Sprite>(Grid.GRID_ITEM.values.length);
         preview_grid_sprites.put(Grid.GRID_ITEM.NULL, p_null_sprite);
         preview_grid_sprites.put(Grid.GRID_ITEM.WALL, p_wall_sprite);
         preview_grid_sprites.put(Grid.GRID_ITEM.GOAL, p_goal_sprite);
+
+        set_grid_tile_size(1);
 
         puck_sprite = game.sprites.createSprite("puck");
         puck_sprite.setSize(PuckActor.SIZE, PuckActor.SIZE);
@@ -52,6 +44,20 @@ public class GridSprites {
 
     void set_preview(boolean value) {
         preview = value;
+    }
+
+    void set_grid_tile_size(float size) {
+        set_grid_tile_size(size, size);
+    }
+
+    void set_grid_tile_size(float width, float height) {
+        for (ObjectMap.Entry<Grid.GRID_ITEM, Sprite> entry : grid_sprites.entries()) {
+            entry.value.setSize(width, height);
+        }
+
+        for (ObjectMap.Entry<Grid.GRID_ITEM, Sprite> entry : preview_grid_sprites.entries()) {
+            entry.value.setSize(width, height);
+        }
     }
 
     /** Returns the stored grid item sprite. If preview returns the preview version of the sprite. */
