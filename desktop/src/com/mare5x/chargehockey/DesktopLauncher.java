@@ -8,6 +8,9 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 450;
         config.height = 800;
+		config.vSyncEnabled = false;
+        config.foregroundFPS = 0;
+        config.backgroundFPS = 0;
 
 		new LwjglApplication(new DesktopChargeHockeyGame(), config);
 	}

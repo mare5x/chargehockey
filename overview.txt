@@ -1,0 +1,41 @@
+﻿------------------
+|COULOMB'S HOCKEY|
+------------------
+
+------------
+level editor
+------------
+grid
+3 types of blocks (black/white with outlines):
+	1. normal wall -> collision stops the particle
+	2. red outlined wall -> collision means game over
+	3. green outlined wall -> the target goal
+in the editor outline certain sides of the blocks with whatever color
+"paint" the grid with the selected block
+place the target particle (red or blue circle outlined with black) at the starting location
+
+whether the target particle can go off the grid or not depends if a wall is placed in the editor
+
+------------
+  gameplay
+------------
+place positive (red) and negative (blue) particles on the grid to get the target particle into the goal
+press run when satisfied
+
+all particles have the same charge
+
+points based on how many/few particles were used in total
+
+advance in levels based on difficulty
+play custom levels
+upload and download custom community levels
+
+------------
+    menu
+------------
+toggle sound effects
+play, select level or load custom level
+editor -> save an unlimited amount of levels, organize them (rename, rearrage order, add difficulty tags)
+change color scheme 
+
+toggle grid lines, force vectors
