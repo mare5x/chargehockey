@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -26,6 +27,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.PuckActor;
+import com.mare5x.chargehockey.level.GridCache;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.level.LevelSelectorScreen;
@@ -50,12 +52,15 @@ public class GameScreen implements Screen {
     private final CameraController camera_controller;
 
     private final LevelFrameBuffer fbo;
+    private final GridCache grid_lines;
 
     private static boolean SHOW_GRID_LINES_SETTING = false;
 
     private final PlayButton play_button;
 
     private final InputMultiplexer multiplexer;
+
+    private FPSLogger fps = new FPSLogger();
 
     public GameScreen(final ChargeHockeyGame game, final Level level) {
         this.game = game;
@@ -71,11 +76,13 @@ public class GameScreen implements Screen {
         camera.zoom = 0.8f;
 
         fbo = new LevelFrameBuffer(game, level);
-        fbo.set_draw_grid_lines(SHOW_GRID_LINES_SETTING);
-        fbo.set_grid_line_alpha(0.8f);
-        fbo.set_grid_line_spacing(CameraController.get_grid_line_spacing(camera.zoom));
         fbo.set_draw_pucks(false);
         fbo.update(game.batch);
+
+        grid_lines = new GridCache(game);
+        grid_lines.set_grid_line_alpha(0.8f);
+        grid_lines.set_show_grid_lines(SHOW_GRID_LINES_SETTING);
+        grid_lines.update(camera.zoom);
 
         final WinDialog win_dialog = new WinDialog("WIN", game.skin);
 
@@ -193,7 +200,7 @@ public class GameScreen implements Screen {
         play_button.cycle_style();
         game_logic.set_playing(!game_logic.is_playing());
 
-        // render if going from pause to playing
+        // clear if going from pause to playing
         if (update_background) {
             fbo.update(game.batch);
         }
@@ -228,9 +235,9 @@ public class GameScreen implements Screen {
 
         // check if any settings were changed
         game_logic.handle_charge_size_change();
-        if (SHOW_GRID_LINES_SETTING != fbo.get_draw_grid_lines()) {
-            fbo.set_draw_grid_lines(SHOW_GRID_LINES_SETTING);
-            fbo.update(game.batch);
+        if (SHOW_GRID_LINES_SETTING != grid_lines.get_show_grid_lines()) {
+            grid_lines.set_show_grid_lines(SHOW_GRID_LINES_SETTING);
+            grid_lines.update(camera.zoom);
         }
     }
 
@@ -254,6 +261,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        fps.log();
+
         Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -268,10 +277,11 @@ public class GameScreen implements Screen {
         game_stage.getViewport().apply();
         game.batch.setProjectionMatrix(camera.combined);
 
+        GridCache.set_projection_matrix(camera.combined);
+        grid_lines.render();
+
         game.batch.begin();
-        game.batch.disableBlending();
         fbo.render(game.batch, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
-        game.batch.enableBlending();
         game.batch.end();
 
         game_stage.draw();
@@ -331,11 +341,9 @@ public class GameScreen implements Screen {
             if (!SHOW_GRID_LINES_SETTING)
                 return;
 
-            int grid_line_spacing = get_grid_line_spacing(zoom);
-            if (zoom_level_changed || fbo.get_grid_line_spacing() != grid_line_spacing) {
-                fbo.set_grid_line_spacing(grid_line_spacing);
-                fbo.update_grid_line_size(zoom);
-                fbo.update(game.batch);
+            int grid_line_spacing = GridCache.get_grid_line_spacing(zoom);
+            if (zoom_level_changed || grid_lines.get_grid_line_spacing() != grid_line_spacing) {
+                grid_lines.update(zoom, grid_line_spacing);
             }
         }
     }

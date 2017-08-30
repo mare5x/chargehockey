@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.PuckActor;
@@ -23,9 +22,9 @@ public class LevelFrameBuffer {
     private static final int _FBO_SIZE = 1024;
     private static final int _PREVIEW_FBO_SIZE = 256;
 
-    private static int FBO_SIZE;  // in texels
-    private static float WORLD_UNIT_TX;  //  = FBO_SIZE / ChargeHockeyGame.WORLD_WIDTH;  // 1 world unit = world_unit_tx texels
-    public static float ONE_TX; // = 1 / WORLD_UNIT_TX;  // 1 texel in world units
+    static int FBO_SIZE;
+    private static float WORLD_UNIT_TX;  // 1 world unit = world_unit_tx texels
+    public static float ONE_TX; // 1 texel in world units
 
     public static float GRID_TILE_SIZE = 1 + ONE_TX;  // in world units
 
@@ -38,12 +37,6 @@ public class LevelFrameBuffer {
     private boolean draw_pucks = true;
     private final Sprite puck_sprite;
     private float puck_alpha = 0.5f;
-
-    private boolean draw_grid_lines = false;
-    private static float grid_line_sprite_size;  // 1 tx
-    private final Sprite grid_line_sprite;
-    private int grid_line_spacing = 1;  // determines after how many grid tiles a line is drawn
-    private float grid_line_alpha = 1;
 
     private Level level;
 
@@ -64,16 +57,10 @@ public class LevelFrameBuffer {
         ONE_TX = 1 / WORLD_UNIT_TX;  // 1 texel
         GRID_TILE_SIZE = 1 + ONE_TX;
 
-        grid_line_sprite_size = ONE_TX;  // 1 tx
-
         game.grid_sprites.set_grid_tile_size(GRID_TILE_SIZE);
-        game.grid_sprites.set_preview(is_preview(size));
+        game.grid_sprites.set_preview(is_preview(FBO_SIZE));
 
         puck_sprite = game.grid_sprites.get_puck();
-
-        update_grid_line_size(1);
-        grid_line_sprite = game.grid_sprites.get_grid_line(grid_line_sprite_size);
-        grid_line_sprite.setAlpha(grid_line_alpha);
 
         // For pixel perfect rendering, the width and height of the FBO must be a multiple of the world width * sprite size.
         // Here each tile has a size of 16*16 px.
@@ -102,20 +89,19 @@ public class LevelFrameBuffer {
         batch.setProjectionMatrix(fbo_camera.combined);
     }
 
-    /* Update the FBO with the level data. **/
+    /* Update the FBO with the level data and CLEARS the FBO! **/
     public void update(final SpriteBatch batch) {
         if (level == null) return;
 
         fbo.begin();
 
-        Gdx.gl20.glClearColor(0, 0, 0, 1);
+        // the fbo background is transparent so that it doesn't cover the background grid lines
+        Gdx.gl20.glClearColor(0, 0, 0, 0);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         set_projection_matrix(batch);
 
         batch.begin();
-
-        draw_grid_lines(batch);
 
         draw_grid(batch);
 
@@ -133,53 +119,6 @@ public class LevelFrameBuffer {
         fbo.end();
 
         Gdx.graphics.requestRendering();
-    }
-
-    private void draw_grid_lines(final SpriteBatch batch) {
-        // Draw the grid's lines (optional)
-        if (draw_grid_lines) {
-            // vertical lines
-            grid_line_sprite.setSize(grid_line_sprite_size, ChargeHockeyGame.WORLD_HEIGHT);
-            grid_line_sprite.setAlpha(0.5f * grid_line_alpha);
-            for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col += grid_line_spacing) {
-                grid_line_sprite.setPosition(col, 0);
-                grid_line_sprite.draw(batch);
-            }
-            // fix for the line on the edge, so it stays on screen
-            grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH - grid_line_sprite_size, 0);
-            grid_line_sprite.draw(batch);
-
-            grid_line_sprite.setAlpha(1f * grid_line_alpha);  // center vertical ilne
-            grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH / 2, 0);
-            grid_line_sprite.draw(batch);
-
-            grid_line_sprite.setAlpha(0.8f * grid_line_alpha);  // quarter vertical lines
-            grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH / 4f, 0);
-            grid_line_sprite.draw(batch);
-            grid_line_sprite.setPosition(3 * ChargeHockeyGame.WORLD_WIDTH / 4f, 0);
-            grid_line_sprite.draw(batch);
-
-            // horizontal lines
-            grid_line_sprite.setSize(ChargeHockeyGame.WORLD_WIDTH, grid_line_sprite_size);
-
-            grid_line_sprite.setAlpha(1 * grid_line_alpha);  // center horizontal line
-            grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT / 2);
-            grid_line_sprite.draw(batch);
-
-            grid_line_sprite.setAlpha(0.8f * grid_line_alpha);  // quarter horizontal lines
-            grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT / 4f);
-            grid_line_sprite.draw(batch);
-            grid_line_sprite.setPosition(0, 3 * ChargeHockeyGame.WORLD_HEIGHT / 4f);
-            grid_line_sprite.draw(batch);
-
-            grid_line_sprite.setAlpha(0.5f * grid_line_alpha);
-            for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row += grid_line_spacing) {
-                grid_line_sprite.setPosition(0, row);
-                grid_line_sprite.draw(batch);
-            }
-            grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT - grid_line_sprite_size);
-            grid_line_sprite.draw(batch);
-        }
     }
 
     private void draw_grid(final SpriteBatch batch) {
@@ -282,33 +221,6 @@ public class LevelFrameBuffer {
 
     public void set_draw_pucks(boolean val) {
         draw_pucks = val;
-    }
-
-    public void update_grid_line_size(float zoom) {
-        // make sure grid_line_sprite_size is 1 pixel NOT 1 texel, otherwise grid lines might
-        // not even get drawn due to rounding 'errors'
-
-        grid_line_sprite_size = Math.max(ONE_TX, FBO_SIZE / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()) * ONE_TX * 1.5f * zoom);
-    }
-
-    public void set_grid_line_spacing(int spacing) {
-        grid_line_spacing = MathUtils.clamp(spacing, 1, ChargeHockeyGame.WORLD_WIDTH / 2);
-    }
-
-    public int get_grid_line_spacing() {
-        return grid_line_spacing;
-    }
-
-    public void set_draw_grid_lines(boolean val) {
-        draw_grid_lines = val;
-    }
-
-    public boolean get_draw_grid_lines() {
-        return draw_grid_lines;
-    }
-
-    public void set_grid_line_alpha(float alpha) {
-        grid_line_alpha = alpha;
     }
 
     private static boolean is_preview(int size) {

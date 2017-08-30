@@ -28,6 +28,7 @@ import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.game.CameraController;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
+import com.mare5x.chargehockey.level.GridCache;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.notifications.EditorPaintTipNotification;
@@ -45,6 +46,7 @@ public class EditorScreen implements Screen {
     private final EditCameraController camera_controller;
 
     private final LevelFrameBuffer fbo;
+    private final GridCache grid_lines;
 
     private Level level;
 
@@ -88,10 +90,12 @@ public class EditorScreen implements Screen {
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
-        fbo.set_draw_grid_lines(SHOW_GRID_LINES_SETTING);
-        fbo.set_grid_line_spacing(CameraController.get_grid_line_spacing(camera.zoom));
-        fbo.set_grid_line_alpha(1);
         fbo.update(game.batch);
+        
+        grid_lines = new GridCache(game);
+        grid_lines.set_grid_line_alpha(1);
+        grid_lines.set_show_grid_lines(SHOW_GRID_LINES_SETTING);
+        grid_lines.update(camera.zoom);
 
         // add interactive pucks from the stored puck positions
         puck_actors = new Array<ChargeActor>(level.get_puck_positions().size * 2);
@@ -128,10 +132,8 @@ public class EditorScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 show_grid = show_grid_button.isChecked();
-                fbo.set_draw_grid_lines(show_grid);
-                fbo.set_grid_line_spacing(CameraController.get_grid_line_spacing(camera.zoom));
-                fbo.update_grid_line_size(camera.zoom);
-                fbo.update(game.batch);
+                grid_lines.set_show_grid_lines(show_grid);
+                grid_lines.update(camera.zoom);
             }
         });
         show_grid = SHOW_GRID_LINES_SETTING;
@@ -202,10 +204,11 @@ public class EditorScreen implements Screen {
         edit_stage.getViewport().apply();
         game.batch.setProjectionMatrix(camera.combined);
 
+        GridCache.set_projection_matrix(camera.combined);
+        grid_lines.render();
+
         game.batch.begin();
-        game.batch.disableBlending();
         fbo.render(game.batch, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
-        game.batch.enableBlending();
         game.batch.end();
 
         edit_stage.act();
@@ -318,11 +321,9 @@ public class EditorScreen implements Screen {
             if (!show_grid)
                 return;
 
-            int grid_line_spacing = get_grid_line_spacing(zoom);
-            if (zoom_level_changed || fbo.get_grid_line_spacing() != grid_line_spacing) {
-                fbo.set_grid_line_spacing(grid_line_spacing);
-                fbo.update_grid_line_size(zoom);
-                fbo.update(game.batch);
+            int grid_line_spacing = GridCache.get_grid_line_spacing(zoom);
+            if (zoom_level_changed || grid_lines.get_grid_line_spacing() != grid_line_spacing) {
+                grid_lines.update(zoom, grid_line_spacing);
             }
         }
 

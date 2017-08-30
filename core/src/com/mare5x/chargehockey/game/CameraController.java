@@ -13,6 +13,7 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 
 
 // TODO rewrite the whole class using InputAdapter
+// TODO make all movements independent of fps (use fixed delta)
 public class CameraController {
     public enum ZoomLevel {
         MIN(1.6f),
@@ -146,13 +147,6 @@ public class CameraController {
         float x = camera.position.x - camera.viewportWidth / 2f * camera.zoom;
         float y = camera.position.y - camera.viewportHeight / 2f * camera.zoom;
         return new Rectangle(x, y, camera.viewportWidth, camera.viewportHeight);
-    }
-
-    public static int get_grid_line_spacing(float zoom) {
-        if (zoom <= 0.6f) return 1;
-        else if (zoom <= 1f) return 2;
-        else if (zoom <= 1.4f) return 4;
-        else return 8;
     }
 
     private class CameraControllerImpl extends GestureDetector.GestureAdapter {
