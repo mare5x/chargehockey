@@ -1,6 +1,7 @@
 package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -204,6 +205,7 @@ public class LevelFrameBuffer {
     }
 
     public void render(Batch batch, float x, float y, float w, float h) {
+        game.batch.setColor(Color.WHITE);  // this fixes a weird alpha bug
         batch.draw(fbo_region, x, y, w, h);
     }
 

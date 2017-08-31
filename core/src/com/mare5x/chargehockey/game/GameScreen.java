@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -59,8 +58,6 @@ public class GameScreen implements Screen {
     private final PlayButton play_button;
 
     private final InputMultiplexer multiplexer;
-
-    private FPSLogger fps = new FPSLogger();
 
     public GameScreen(final ChargeHockeyGame game, final Level level) {
         this.game = game;
@@ -239,6 +236,8 @@ public class GameScreen implements Screen {
             grid_lines.set_show_grid_lines(SHOW_GRID_LINES_SETTING);
             grid_lines.update(camera.zoom);
         }
+
+        render(Gdx.graphics.getDeltaTime());
     }
 
     private void update_puck_trace_path() {
@@ -261,8 +260,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        fps.log();
-
         Gdx.gl20.glClearColor(0.1f, 0.1f, 0.1f, 1);  // dark brownish color
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

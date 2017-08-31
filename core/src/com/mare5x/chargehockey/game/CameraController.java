@@ -13,7 +13,6 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 
 
 // TODO rewrite the whole class using InputAdapter
-// TODO make all movements independent of fps (use fixed delta)
 public class CameraController {
     public enum ZoomLevel {
         MIN(1.6f),
@@ -65,7 +64,15 @@ public class CameraController {
         controller = new CameraControllerImpl(camera, stage);
         detector = new GestureDetector(controller) {
             @Override
+            public boolean touchDown(float x, float y, int pointer, int button) {
+                if (!Gdx.graphics.isContinuousRendering())
+                    Gdx.graphics.setContinuousRendering(true);
+                return super.touchDown(x, y, pointer, button);
+            }
+
+            @Override
             public boolean touchUp(int x, int y, int pointer, int button) {
+                restore_rendering();
                 if (long_press_started && pointer == 0)
                     on_long_press_end();
                 return super.touchUp(x, y, pointer, button);
@@ -150,6 +157,9 @@ public class CameraController {
     }
 
     private class CameraControllerImpl extends GestureDetector.GestureAdapter {
+        private static final float dt = 1 / 60f;  // fixed time step
+        private float dt_accumulator = 0;
+
         private static final int BORDER = 16;
         private final OrthographicCamera camera;
         private final Stage stage;
@@ -191,20 +201,26 @@ public class CameraController {
         }
 
         void update(float delta) {
-            if (is_zooming)
-                zoom_to(zoom_target_val, zoom_to_interpolator, delta);
+            dt_accumulator += delta;
 
-            if (is_moving_to_target) {
-                move_to(target_pos.x, target_pos.y, move_to_interpolator, delta);
-            } else if (is_stopping) {
-                stop_movement(false);
-            } else if (velocity.isZero()) {
-                restore_rendering();
-            } else {
-                update_vel(delta);
+            while (dt_accumulator >= delta) {
+                if (is_zooming)
+                    zoom_to(zoom_target_val, zoom_to_interpolator, dt);
+
+                if (is_moving_to_target) {
+                    move_to(target_pos.x, target_pos.y, move_to_interpolator, dt);
+                } else if (is_stopping) {
+                    stop_movement(false);
+                } else if (velocity.isZero()) {
+                    restore_rendering();
+                } else {
+                    update_vel(dt);
+                }
+
+                camera.update();
+
+                dt_accumulator -= dt;
             }
-
-            camera.update();
         }
 
         void resize(float screen_width, float screen_height) {
@@ -325,7 +341,7 @@ public class CameraController {
             } else {
                 is_stopping = true;
                 velocity.scl(0.6f);
-                move_by(velocity.scl(Gdx.graphics.getDeltaTime()));
+                move_by(velocity.scl(dt));
             }
         }
 
@@ -368,8 +384,6 @@ public class CameraController {
             velocity.setZero();
             is_moving_to_target = false;
 
-            restore_rendering();
-
             move_by(px_to_world_units(tmp_coords.set(deltaX, deltaY)));
 
             return true;
@@ -377,6 +391,8 @@ public class CameraController {
 
         @Override
         public boolean panStop(float x, float y, int pointer, int button) {
+            restore_rendering();
+
             handle_out_of_bounds();
 
             return true;
@@ -474,7 +490,7 @@ public class CameraController {
         }
 
         boolean is_moving() {
-            return is_moving_to_target || is_stopping || is_zooming || !velocity.isZero();
+            return is_moving_to_target || is_stopping || is_zooming || !velocity.isZero() || Gdx.input.isTouched();
         }
     }
 }
