@@ -22,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.mare5x.chargehockey.editor.FilePicker;
 import com.mare5x.chargehockey.editor.PermissionTools;
-import com.mare5x.chargehockey.level.GridCache;
 import com.mare5x.chargehockey.level.GridSprites;
 import com.mare5x.chargehockey.menus.MenuScreen;
 import com.mare5x.chargehockey.settings.SettingsFile;
@@ -118,6 +117,10 @@ abstract public class ChargeHockeyGame extends Game {
         skin.remove("font", BitmapFont.class);
         manager.dispose();
         batch.dispose();
-        GridCache.dispose();
 	}
+
+	/** Safely exit the game. ... or not. */
+	public void exit() {
+        Gdx.app.exit();
+    }
 }

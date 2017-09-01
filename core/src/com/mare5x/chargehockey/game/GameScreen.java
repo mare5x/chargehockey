@@ -274,7 +274,7 @@ public class GameScreen implements Screen {
         game_stage.getViewport().apply();
         game.batch.setProjectionMatrix(camera.combined);
 
-        GridCache.set_projection_matrix(camera.combined);
+        grid_lines.set_projection_matrix(camera.combined);
         grid_lines.render();
 
         game.batch.begin();
@@ -320,6 +320,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         save_charge_state(Level.SAVE_TYPE.AUTO);
         fbo.dispose();
+        grid_lines.dispose();
         game_stage.dispose();
         hud_stage.dispose();
     }

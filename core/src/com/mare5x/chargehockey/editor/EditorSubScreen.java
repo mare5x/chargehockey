@@ -58,7 +58,7 @@ class EditorSubScreen extends BaseMenuScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 parent_screen.dispose();
-                game.menu_screen.exit_clicked();
+                game.exit();
             }
         });
 

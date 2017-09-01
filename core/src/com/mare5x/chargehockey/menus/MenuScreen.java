@@ -1,6 +1,5 @@
 package com.mare5x.chargehockey.menus;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -57,11 +56,7 @@ public class MenuScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        exit_clicked();
-    }
-
-    public void exit_clicked() {
-        Gdx.app.exit();
+        game.exit();
     }
 
     @Override

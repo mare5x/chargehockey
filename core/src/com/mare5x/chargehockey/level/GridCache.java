@@ -16,9 +16,9 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
  * trace path).
  */
 public class GridCache {
-    private static final SpriteCache cache = new SpriteCache();
+    private final SpriteCache cache = new SpriteCache();
 
-    private static int background_id = -1;
+    private int background_id = -1;
     private int grid_lines_id = -1;
 
     private boolean draw_grid = false;
@@ -52,8 +52,6 @@ public class GridCache {
             cache.beginCache(grid_lines_id);
         else
             cache.beginCache();
-
-        cache.begin();
 
         // Draw the grid's lines (optional)
         // vertical lines
@@ -97,8 +95,6 @@ public class GridCache {
         }
         grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT - grid_line_sprite_size);
         cache.add(grid_line_sprite);
-
-        cache.end();
 
         grid_lines_id = cache.endCache();
     }
@@ -175,11 +171,11 @@ public class GridCache {
         else return 8;
     }
 
-    public static void set_projection_matrix(Matrix4 matrix) {
+    public void set_projection_matrix(Matrix4 matrix) {
         cache.setProjectionMatrix(matrix);
     }
 
-    public static void dispose() {
+    public void dispose() {
         cache.dispose();
     }
 }

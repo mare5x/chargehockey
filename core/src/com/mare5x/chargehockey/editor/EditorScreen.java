@@ -204,7 +204,7 @@ public class EditorScreen implements Screen {
         edit_stage.getViewport().apply();
         game.batch.setProjectionMatrix(camera.combined);
 
-        GridCache.set_projection_matrix(camera.combined);
+        grid_lines.set_projection_matrix(camera.combined);
         grid_lines.render();
 
         game.batch.begin();
@@ -263,6 +263,7 @@ public class EditorScreen implements Screen {
     public void dispose() {
         save_changes();
         fbo.dispose();
+        grid_lines.dispose();
         edit_stage.dispose();
         hud_stage.dispose();
     }
