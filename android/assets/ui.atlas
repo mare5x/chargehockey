@@ -176,6 +176,13 @@ remove_up
   orig: 64, 64
   offset: 0, 0
   index: -1
+rotate_knob
+  rotate: false
+  xy: 536, 90
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 share
   rotate: false
   xy: 268, 98
@@ -185,7 +192,7 @@ share
   index: -1
 slider_knob
   rotate: false
-  xy: 536, 90
+  xy: 604, 154
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -206,7 +213,14 @@ star_empty
   index: -1
 undo_green64
   rotate: false
-  xy: 604, 154
+  xy: 672, 154
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+vertical_knob
+  rotate: false
+  xy: 740, 154
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

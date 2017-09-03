@@ -137,7 +137,11 @@ public class GridCache {
         // make sure grid_line_sprite_size is closer to 1 pixel NOT 1 texel, otherwise grid lines might
         // not even get drawn due to rounding 'errors'
 
-        grid_line_sprite_size = Math.max(LevelFrameBuffer.ONE_TX,
+        grid_line_sprite_size = calculate_grid_line_size(zoom);
+    }
+
+    public static float calculate_grid_line_size(float zoom) {
+        return Math.max(LevelFrameBuffer.ONE_TX,
                 LevelFrameBuffer.FBO_SIZE / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()) * LevelFrameBuffer.ONE_TX * 1.5f * zoom);
     }
 

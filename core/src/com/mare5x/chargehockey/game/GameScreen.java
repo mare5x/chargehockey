@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.PuckActor;
+import com.mare5x.chargehockey.actors.SymmetryToolActor;
 import com.mare5x.chargehockey.level.GridCache;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
@@ -52,6 +53,8 @@ public class GameScreen implements Screen {
 
     private final LevelFrameBuffer fbo;
     private final GridCache grid_lines;
+
+    private final SymmetryToolActor symmetry_tool;
 
     private static boolean SHOW_GRID_LINES_SETTING = false;
 
@@ -80,6 +83,10 @@ public class GameScreen implements Screen {
         grid_lines.set_grid_line_alpha(0.8f);
         grid_lines.set_show_grid_lines(SHOW_GRID_LINES_SETTING);
         grid_lines.update(camera.zoom);
+
+        symmetry_tool = new SymmetryToolActor(game);
+        symmetry_tool.update_size(camera.zoom);
+        game_stage.addActor(symmetry_tool);
 
         final WinDialog win_dialog = new WinDialog("WIN", game.skin);
 
@@ -336,12 +343,15 @@ public class GameScreen implements Screen {
 
         @Override
         protected void on_zoom_change(float zoom, boolean zoom_level_changed) {
-            if (!SHOW_GRID_LINES_SETTING)
-                return;
+            if (zoom_level_changed) {
+                if (symmetry_tool.isVisible())
+                    symmetry_tool.update_size(zoom);
 
-            int grid_line_spacing = GridCache.get_grid_line_spacing(zoom);
-            if (zoom_level_changed || grid_lines.get_grid_line_spacing() != grid_line_spacing) {
-                grid_lines.update(zoom, grid_line_spacing);
+                if (SHOW_GRID_LINES_SETTING) {
+                    int grid_line_spacing = GridCache.get_grid_line_spacing(zoom);
+                    if (grid_lines.get_grid_line_spacing() != grid_line_spacing)
+                        grid_lines.update(zoom, grid_line_spacing);
+                }
             }
         }
     }
