@@ -121,6 +121,15 @@ public class GameScreen implements Screen {
         });
         menu_button.pad(10);
 
+        Button symmetry_tool_button = new Button(game.skin, "symmetry_tool");
+        symmetry_tool_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                symmetry_tool.set_enabled(!symmetry_tool.is_enabled());
+            }
+        });
+        symmetry_tool_button.pad(10);
+
         Button charge_pos_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("charge_pos")));
         charge_pos_button.addListener(new ClickListener() {
             @Override
@@ -160,7 +169,9 @@ public class GameScreen implements Screen {
         button_table.add(charge_pos_button);
         button_table.add(charge_neg_button);
 
+        hud_table.add(symmetry_tool_button).pad(15).expandX().left().size(Value.percentWidth(0.15f, hud_table));
         hud_table.add(menu_button).pad(15).expandX().right().size(Value.percentWidth(0.15f, hud_table)).row();
+        hud_table.defaults().colspan(2);
         hud_table.add().expand().fill().row();
         hud_table.add(button_table).height(Value.percentHeight(0.2f, hud_table)).expandX().fill();
 

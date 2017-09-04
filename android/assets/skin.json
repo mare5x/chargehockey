@@ -52,6 +52,11 @@
             "up": "menu_up"
         },
 
+        "symmetry_tool": {
+            "down": "symmetry_tool_down",
+            "up": "symmetry_tool_up"
+        },
+
         "checkbox": {
             "up": "check_off",
             "down": "check_on",

@@ -211,16 +211,30 @@ star_empty
   orig: 128, 128
   offset: 0, 0
   index: -1
-undo_green64
+symmetry_tool_down
   rotate: false
   xy: 672, 154
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-vertical_knob
+symmetry_tool_up
   rotate: false
   xy: 740, 154
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+undo_green64
+  rotate: false
+  xy: 604, 86
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+vertical_knob
+  rotate: false
+  xy: 672, 86
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
