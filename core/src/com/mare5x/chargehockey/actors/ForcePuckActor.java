@@ -36,8 +36,6 @@ public class ForcePuckActor extends ChargeActor {
     ForcePuckActor(ChargeHockeyGame game, CHARGE type, DragCallback callback) {
         super(game, type, callback);
 
-//        set_size(SIZE);
-
         vector_region = game.sprites.findRegion("blank_vector");
     }
 

@@ -11,6 +11,7 @@ import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
 import com.mare5x.chargehockey.actors.ForcePuckActor;
 import com.mare5x.chargehockey.actors.PuckActor;
+import com.mare5x.chargehockey.actors.SymmetryToolActor;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
@@ -30,6 +31,8 @@ public class GameLogic {
     private final Level level;
     private final ResultCallback result_callback;
 
+    private final SymmetryToolActor symmetry_tool;
+
     private final Stage game_stage;
 
     private boolean is_playing = false;
@@ -48,11 +51,12 @@ public class GameLogic {
     
     private final Array<ForcePuckActor> initial_pucks = new Array<ForcePuckActor>();
 
-    GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, ResultCallback result_callback) {
+    GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, ResultCallback result_callback, SymmetryToolActor symmetry_tool) {
         this.game = game;
         this.game_stage = game_stage;
         this.level = level;
         this.result_callback = result_callback;
+        this.symmetry_tool = symmetry_tool;
 
         for (Vector2 pos : level.get_puck_positions()) {
             PuckActor puck = new PuckActor(game);
@@ -72,9 +76,22 @@ public class GameLogic {
         load_charge_state(Level.SAVE_TYPE.AUTO);
     }
 
-    // Add a charge of type charge_type to the center of the camera position.
-    ChargeActor add_charge(CHARGE charge_type) {
-        return add_charge(charge_type, game_stage.getCamera().position.x, game_stage.getCamera().position.y);
+    /** Add a charge of type charge_type to the center of the camera position. If the symmetry tool is
+     * enabled, it appropriately connects the two added charges. */
+    void add_charge(CHARGE charge_type) {
+        if (symmetry_tool.is_enabled()) {
+            ChargeActor charge1 = add_charge(charge_type, game_stage.getCamera().position.x, game_stage.getCamera().position.y);
+            symmetry_tool.get_symmetrical_pos(tmp_vec.set(charge1.get_x(), charge1.get_y()));
+            ChargeActor charge2 = add_charge(charge_type, tmp_vec.x, tmp_vec.y);
+
+            charge1.set_partner(charge2);
+            charge2.set_partner(charge1);
+
+            if (charge2.check_out_of_bounds())
+                remove_charge(charge2);
+        } else {
+            add_charge(charge_type, game_stage.getCamera().position.x, game_stage.getCamera().position.y);
+        }
     }
 
     private ChargeActor add_charge(CHARGE charge_type, float x, float y) {
@@ -98,7 +115,7 @@ public class GameLogic {
             public void drag_started(ChargeActor charge) {
                 charge_state_changed = true;
             }
-        });
+        }, symmetry_tool);
         charge.set_position(x, y);
 
         charge_actors.add(charge);
@@ -118,6 +135,11 @@ public class GameLogic {
         if (charge instanceof PuckActor)
             return;
 
+        ChargeActor partner = charge.get_partner();
+        if (partner != null) {
+            partner.set_partner(null);
+            charge.set_partner(null);
+        }
         charge_actors.removeValue(charge, true);
         charge.clear();
         charge.remove();

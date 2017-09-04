@@ -94,6 +94,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
         exit_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                parent_screen.dispose();
                 game.exit();
             }
         });

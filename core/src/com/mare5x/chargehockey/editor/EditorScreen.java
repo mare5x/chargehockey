@@ -308,7 +308,6 @@ public class EditorScreen implements Screen {
                 charge.set_position(x, y);
                 edit_stage.addActor(charge);
                 puck_actors.add(charge);
-                fbo.update(game.batch);
                 level_changed = true;
             }
             else

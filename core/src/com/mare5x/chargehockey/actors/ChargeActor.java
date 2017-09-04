@@ -59,6 +59,9 @@ public class ChargeActor extends Actor {
     private final CHARGE charge_type;
     final Sprite sprite;
 
+    private ChargeActor partner;  // the symmetrical tool partner of this charge (must have the same drag_callback)
+    private final Vector2 tmp_vec = new Vector2();
+
     public static final float MAX_SIZE = 3;
     public static final float MIN_SIZE = 0.5f;
     private static float SIZE = 2;  // the public shared size of all charges set in the settings
@@ -68,6 +71,10 @@ public class ChargeActor extends Actor {
     private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
 
     public ChargeActor(final ChargeHockeyGame game, final CHARGE charge_type, final DragCallback drag_callback) {
+        this(game, charge_type, drag_callback, null);
+    }
+
+    public ChargeActor(final ChargeHockeyGame game, final CHARGE charge_type, final DragCallback drag_callback, final SymmetryToolActor symmetry_tool) {
         super();
 
         this.charge_type = charge_type;
@@ -110,6 +117,11 @@ public class ChargeActor extends Actor {
                     if (ret) {
                         clearActions();
                         set_size(enlarge_factor * charge_size, true);
+
+                        if (partner != null) {
+                            partner.clearActions();
+                            partner.set_size(enlarge_factor * charge_size, true);
+                        }
                     }
                     return ret;
                 }
@@ -117,26 +129,39 @@ public class ChargeActor extends Actor {
                 @Override
                 public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                     set_size(charge_size, true);
+                    if (partner != null) {
+                        partner.set_size(charge_size, true);
+                    }
                     super.touchUp(event, x, y, pointer, button);
                 }
 
                 @Override
                 public void drag(InputEvent event, float dx, float dy, int pointer) {
                     moveBy(dx - getTouchDownX(), dy - getTouchDownY());
+
+                    // move the partner symmetrically
+                    if (partner != null && symmetry_tool.is_enabled()) {
+                        symmetry_tool.get_symmetrical_pos(tmp_vec.set(get_x(), get_y()));
+                        partner.set_position(tmp_vec.x, tmp_vec.y);
+                        drag_callback.drag(partner);
+                    }
+
                     drag_callback.drag(ChargeActor.this);
                 }
 
                 @Override
                 public void dragStart(InputEvent event, float x, float y, int pointer) {
                     drag_callback.drag_started(ChargeActor.this);
+                    if (partner != null)
+                        drag_callback.drag_started(partner);
                 }
 
                 @Override
                 public void dragStop(InputEvent event, float x, float y, int pointer) {
-                    Rectangle camera_rect = CameraController.get_camera_rect((OrthographicCamera) getStage().getCamera());
-                    // if the actor was dragged below the camera into the bottom hud part, remove it
-                    if (get_y() < camera_rect.getY() || !ChargeHockeyGame.WORLD_RECT.contains(get_x(), get_y()))
+                    if (check_out_of_bounds())
                         drag_callback.out_of_bounds(ChargeActor.this);
+                    if (partner != null && partner.check_out_of_bounds())
+                        drag_callback.out_of_bounds(partner);
                 }
             };
             drag_listener.setTapSquareSize(-1);
@@ -270,6 +295,19 @@ public class ChargeActor extends Actor {
 
     public boolean size_changed() {
         return !MathUtils.isEqual(radius * 2, SIZE, 0.001f);
+    }
+
+    public boolean check_out_of_bounds() {
+        Rectangle camera_rect = CameraController.get_camera_rect((OrthographicCamera) getStage().getCamera());
+        return (get_y() < camera_rect.getY() || !ChargeHockeyGame.WORLD_RECT.contains(get_x(), get_y()));
+    }
+
+    public void set_partner(ChargeActor charge) {
+        partner = charge;
+    }
+
+    public ChargeActor get_partner() {
+        return partner;
     }
 
     public static void set_charge_size(float size) {

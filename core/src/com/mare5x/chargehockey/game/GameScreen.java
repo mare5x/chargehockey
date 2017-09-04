@@ -107,7 +107,7 @@ public class GameScreen implements Screen {
                 toggle_playing();
                 game_logic.blink_collided_pucks();
             }
-        });
+        }, symmetry_tool);
         game_logic.charge_state_changed();  // initialize tracking
 
         hud_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
@@ -344,7 +344,7 @@ public class GameScreen implements Screen {
         @Override
         protected void on_zoom_change(float zoom, boolean zoom_level_changed) {
             if (zoom_level_changed) {
-                if (symmetry_tool.isVisible())
+                if (symmetry_tool.is_enabled())
                     symmetry_tool.update_size(zoom);
 
                 if (SHOW_GRID_LINES_SETTING) {
