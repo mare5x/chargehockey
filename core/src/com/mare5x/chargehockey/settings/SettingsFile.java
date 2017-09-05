@@ -19,14 +19,16 @@ public class SettingsFile {
         TRACE_PATH,
         EDITOR_GRID_LINES,
         GAME_GRID_LINES,
-        CHARGE_SIZE
+        CHARGE_SIZE,
+        GAME_SYMMETRY,
+        EDITOR_SYMMETRY
     }
 
     private static final String FILE_NAME = "mare5x.chargehockey.settings";
 
     private final Preferences prefs;
 
-    SettingsFile() {
+    public SettingsFile() {
         prefs = Gdx.app.getPreferences(FILE_NAME);
     }
 
@@ -49,6 +51,8 @@ public class SettingsFile {
         prefs.putBoolean(SETTINGS_KEY.GAME_GRID_LINES.name(), false);
         prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
         prefs.putFloat(SETTINGS_KEY.CHARGE_SIZE.name(), 2);
+        prefs.putBoolean(SETTINGS_KEY.GAME_SYMMETRY.name(), false);
+        prefs.putBoolean(SETTINGS_KEY.EDITOR_SYMMETRY.name(), false);
         prefs.flush();
     }
 
@@ -64,15 +68,15 @@ public class SettingsFile {
         return prefs.getFloat(key.name());
     }
 
-    void put(SETTINGS_KEY key, boolean val) {
+    public void put(SETTINGS_KEY key, boolean val) {
         prefs.putBoolean(key.name(), val);
     }
 
-    void put(SETTINGS_KEY key, float val) {
+    public void put(SETTINGS_KEY key, float val) {
         prefs.putFloat(key.name(), val);
     }
 
-    void save() {
+    public void save() {
         prefs.flush();
     }
 
@@ -106,6 +110,8 @@ public class SettingsFile {
         PuckActor.set_trace_path(settings.getBoolean(SETTINGS_KEY.TRACE_PATH));
         GameLogic.set_game_speed(settings.getFloat(SETTINGS_KEY.GAME_SPEED));
         EditorScreen.set_grid_lines_setting(settings.getBoolean(SETTINGS_KEY.EDITOR_GRID_LINES));
+        EditorScreen.set_symmetry_setting(settings.getBoolean(SETTINGS_KEY.EDITOR_SYMMETRY));
         GameScreen.set_grid_lines_setting(settings.getBoolean(SETTINGS_KEY.GAME_GRID_LINES));
+        GameScreen.set_symmetry_setting(settings.getBoolean(SETTINGS_KEY.GAME_SYMMETRY));
     }
 }

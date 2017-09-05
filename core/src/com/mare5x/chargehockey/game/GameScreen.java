@@ -32,6 +32,7 @@ import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.level.LevelSelectorScreen;
 import com.mare5x.chargehockey.notifications.NoChargesNotification;
+import com.mare5x.chargehockey.settings.SettingsFile;
 
 
 // todo add undo button
@@ -57,6 +58,7 @@ public class GameScreen implements Screen {
     private final SymmetryToolActor symmetry_tool;
 
     private static boolean SHOW_GRID_LINES_SETTING = false;
+    private static boolean SYMMETRY_TOOL_ENABLED_SETTING = false;
 
     private final PlayButton play_button;
 
@@ -86,6 +88,7 @@ public class GameScreen implements Screen {
 
         symmetry_tool = new SymmetryToolActor(game);
         symmetry_tool.update_size(camera.zoom);
+        symmetry_tool.set_enabled(SYMMETRY_TOOL_ENABLED_SETTING);
         game_stage.addActor(symmetry_tool);
 
         final WinDialog win_dialog = new WinDialog("WIN", game.skin);
@@ -225,6 +228,16 @@ public class GameScreen implements Screen {
         camera_controller.set_rendering(game_logic.is_playing());
     }
 
+    private void save_changes() {
+        save_charge_state(Level.SAVE_TYPE.AUTO);
+
+        boolean symmetry_enabled = symmetry_tool.is_enabled();
+        if (SYMMETRY_TOOL_ENABLED_SETTING != symmetry_enabled) {
+            SYMMETRY_TOOL_ENABLED_SETTING = symmetry_enabled;
+            SettingsFile.set_setting(SettingsFile.SETTINGS_KEY.GAME_SYMMETRY, SYMMETRY_TOOL_ENABLED_SETTING);
+        }
+    }
+
     void save_charge_state(Level.SAVE_TYPE save_type) {
         if (save_type == Level.SAVE_TYPE.QUICKSAVE || !level.save_file_exists() || game_logic.charge_state_changed() || level_finished_changed) {
             level.write_save_file(save_type, game_logic.get_charges());
@@ -319,7 +332,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-        save_charge_state(Level.SAVE_TYPE.AUTO);
+        save_changes();
     }
 
     @Override
@@ -329,14 +342,14 @@ public class GameScreen implements Screen {
 
     @Override
     public void hide() {
-        save_charge_state(Level.SAVE_TYPE.AUTO);
+        save_changes();
         if (game_logic.is_playing())
             toggle_playing();
     }
 
     @Override
     public void dispose() {
-        save_charge_state(Level.SAVE_TYPE.AUTO);
+        save_changes();
         fbo.dispose();
         grid_lines.dispose();
         game_stage.dispose();
@@ -345,6 +358,10 @@ public class GameScreen implements Screen {
 
     public static void set_grid_lines_setting(boolean value) {
         SHOW_GRID_LINES_SETTING = value;
+    }
+
+    public static void set_symmetry_setting(boolean value) {
+        SYMMETRY_TOOL_ENABLED_SETTING = value;
     }
 
     private class GameCameraController extends CameraController {

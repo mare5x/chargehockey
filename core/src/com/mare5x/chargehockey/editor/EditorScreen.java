@@ -53,9 +53,9 @@ public class EditorScreen implements Screen {
     private Level level;
 
     private static boolean SHOW_GRID_LINES_SETTING = true;
+    private static boolean SYMMETRY_TOOL_ENABLED_SETTING = false;
 
     private boolean show_grid = true;
-    private boolean prev_show_grid = show_grid;  // the previous show grid value, changes when saving level
     private boolean level_changed = false;
 
     private final GridItemSelectorButton grid_item_button;
@@ -103,6 +103,7 @@ public class EditorScreen implements Screen {
 
         symmetry_tool = new SymmetryToolActor(game);
         symmetry_tool.update_size(camera.zoom);
+        symmetry_tool.set_enabled(SYMMETRY_TOOL_ENABLED_SETTING);
         edit_stage.addActor(symmetry_tool);
 
         // add interactive pucks from the stored puck positions
@@ -154,7 +155,6 @@ public class EditorScreen implements Screen {
             }
         });
         show_grid = SHOW_GRID_LINES_SETTING;
-        prev_show_grid = show_grid;
         show_grid_button.setChecked(show_grid);
         show_grid_button.pad(10);
 
@@ -273,9 +273,14 @@ public class EditorScreen implements Screen {
             level.save_level(puck_actors);
             level.write_save_header();  // reset save file header
         }
-        if (prev_show_grid != show_grid) {
-            SettingsFile.set_setting(SETTINGS_KEY.EDITOR_GRID_LINES, show_grid);
-            prev_show_grid = show_grid;
+        if (SHOW_GRID_LINES_SETTING != show_grid || SYMMETRY_TOOL_ENABLED_SETTING != symmetry_tool.is_enabled()) {
+            SHOW_GRID_LINES_SETTING = show_grid;
+            SYMMETRY_TOOL_ENABLED_SETTING = symmetry_tool.is_enabled();
+
+            SettingsFile settings = new SettingsFile();
+            settings.put(SETTINGS_KEY.EDITOR_GRID_LINES, SHOW_GRID_LINES_SETTING);
+            settings.put(SETTINGS_KEY.EDITOR_SYMMETRY, SYMMETRY_TOOL_ENABLED_SETTING);
+            settings.save();
         }
     }
 
@@ -314,6 +319,10 @@ public class EditorScreen implements Screen {
 
     public static void set_grid_lines_setting(boolean value) {
         SHOW_GRID_LINES_SETTING = value;
+    }
+
+    public static void set_symmetry_setting(boolean value) {
+        SYMMETRY_TOOL_ENABLED_SETTING = value;
     }
 
     private class EditCameraController extends CameraController {
