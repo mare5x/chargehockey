@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
+import com.mare5x.chargehockey.actors.SymmetryToolActor;
 import com.mare5x.chargehockey.game.CameraController;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.GridCache;
@@ -47,6 +48,7 @@ public class EditorScreen implements Screen {
 
     private final LevelFrameBuffer fbo;
     private final GridCache grid_lines;
+    private final SymmetryToolActor symmetry_tool;
 
     private Level level;
 
@@ -61,6 +63,8 @@ public class EditorScreen implements Screen {
     private final EditIcon edit_icon;
 
     private Array<ChargeActor> puck_actors;
+
+    private final Vector2 tmp_v = new Vector2();
 
     // callback function for ChargeActor pucks
     private final ChargeActor.DragCallback drag_callback = new ChargeActor.DragCallback() {
@@ -97,6 +101,10 @@ public class EditorScreen implements Screen {
         grid_lines.set_show_grid_lines(SHOW_GRID_LINES_SETTING);
         grid_lines.update(camera.zoom);
 
+        symmetry_tool = new SymmetryToolActor(game);
+        symmetry_tool.update_size(camera.zoom);
+        edit_stage.addActor(symmetry_tool);
+
         // add interactive pucks from the stored puck positions
         puck_actors = new Array<ChargeActor>(level.get_puck_positions().size * 2);
         for (Vector2 puck_pos : level.get_puck_positions()) {
@@ -116,6 +124,15 @@ public class EditorScreen implements Screen {
             }
         });
         menu_button.pad(10);
+
+        Button symmetry_tool_button = new Button(game.skin, "symmetry_tool");
+        symmetry_tool_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                symmetry_tool.set_enabled(!symmetry_tool.is_enabled());
+            }
+        });
+        symmetry_tool_button.pad(10);
 
         grid_item_button = new GridItemSelectorButton();
         grid_item_button.addListener(new ClickListener() {
@@ -159,10 +176,14 @@ public class EditorScreen implements Screen {
         button_table.add(puck_button);
         button_table.add(show_grid_button);
 
-        hud_table.add(edit_icon).pad(15).expandX().left().size(Value.percentWidth(0.15f, hud_table));
-        hud_table.add(menu_button).pad(15).expandX().right().size(Value.percentWidth(0.15f, hud_table)).row();
-        hud_table.add().colspan(2).expand().fill().row();
-        hud_table.add(button_table).colspan(2).height(Value.percentHeight(0.2f, hud_table)).expandX().fill();
+        hud_table.row().size(Value.percentWidth(0.15f, hud_table)).pad(15);
+        hud_table.add(symmetry_tool_button).expandX().left();
+        hud_table.add(edit_icon).expandX().center();
+        hud_table.add(menu_button).expandX().right().row();
+
+        hud_table.defaults().colspan(3);
+        hud_table.add().expand().fill().row();
+        hud_table.add(button_table).height(Value.percentHeight(0.2f, hud_table)).expandX().fill();
 
         hud_stage.addActor(hud_table);
 
@@ -179,10 +200,24 @@ public class EditorScreen implements Screen {
         multiplexer = new InputMultiplexer(hud_stage, edit_stage, camera_controller.get_gesture_detector(), back_key_processor);
     }
 
-    private void place_tile(int row, int col, GRID_ITEM item) {
+    /** Places a tile at the given position, taking the symmetry tool into account. */
+    private void place_tile(float x, float y, GRID_ITEM item) {
+        int row1 = (int) y;
+        int col1 = (int) x;
+
+        int row2 = row1;
+        int col2 = col1;
+        if (symmetry_tool.is_enabled()) {
+            symmetry_tool.get_symmetrical_pos(tmp_v.set(x, y));
+            row2 = (int) tmp_v.y;
+            col2 = (int) tmp_v.x;
+        }
+
         // only update the fbo if a new tile was just placed
-        if (level.get_grid_item(row, col) != item) {
-            level.set_item(row, col, item);
+        if (level.get_grid_item(row1, col1) != item || level.get_grid_item(row2, col2) != item) {
+            level.set_item(row1, col1, item);
+            level.set_item(row2, col2, item);
+
             fbo.update(game.batch);
 
             level_changed = true;
@@ -282,8 +317,6 @@ public class EditorScreen implements Screen {
     }
 
     private class EditCameraController extends CameraController {
-        private final Vector2 tmp_coords = new Vector2();
-
         EditCameraController(OrthographicCamera camera, Stage stage) {
             super(camera, stage);
         }
@@ -291,7 +324,7 @@ public class EditorScreen implements Screen {
         @Override
         protected boolean on_tap(float x, float y, int count, int button) {
             // ignore taps outside of edit_stage's camera and outside the world
-            if (!point_in_view(x, y) || !ChargeHockeyGame.WORLD_RECT.contains(tmp_coords.set(x, y))) {
+            if (!point_in_view(x, y) || !ChargeHockeyGame.WORLD_RECT.contains(tmp_v.set(x, y))) {
                 return true;
             }
 
@@ -299,9 +332,6 @@ public class EditorScreen implements Screen {
 
             // finish moving
             if (is_moving()) return true;
-
-            int row = (int) y;
-            int col = (int) x;
 
             if (puck_button.isChecked()) {
                 ChargeActor charge = new ChargeActor(game, CHARGE.PUCK, drag_callback);
@@ -311,19 +341,22 @@ public class EditorScreen implements Screen {
                 level_changed = true;
             }
             else
-                place_tile(row, col, grid_item_button.get_selected_item());
+                place_tile(x, y, grid_item_button.get_selected_item());
 
             return true;
         }
 
         @Override
         protected void on_zoom_change(float zoom, boolean zoom_level_changed) {
-            if (!show_grid)
-                return;
+            if (zoom_level_changed) {
+                if (symmetry_tool.is_enabled())
+                    symmetry_tool.update_size(zoom);
 
-            int grid_line_spacing = GridCache.get_grid_line_spacing(zoom);
-            if (zoom_level_changed || grid_lines.get_grid_line_spacing() != grid_line_spacing) {
-                grid_lines.update(zoom, grid_line_spacing);
+                if (show_grid) {
+                    int grid_line_spacing = GridCache.get_grid_line_spacing(zoom);
+                    if (grid_lines.get_grid_line_spacing() != grid_line_spacing)
+                        grid_lines.update(zoom, grid_line_spacing);
+                }
             }
         }
 
@@ -335,10 +368,7 @@ public class EditorScreen implements Screen {
 
         @Override
         protected void on_long_press_held(float x, float y) {
-            int row = (int) y;
-            int col = (int) x;
-
-            place_tile(row, col, grid_item_button.get_selected_item());
+            place_tile(x, y, grid_item_button.get_selected_item());
         }
 
         @Override
