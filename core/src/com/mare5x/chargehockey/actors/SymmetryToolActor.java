@@ -1,5 +1,6 @@
 package com.mare5x.chargehockey.actors;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -67,6 +68,8 @@ public class SymmetryToolActor extends Actor {
         set_knob_position();
 
         DragListener drag_listener = new DragListener() {
+            OrthographicCamera camera;
+
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 localToStageCoordinates(tmp_v.set(x, y));
@@ -88,17 +91,33 @@ public class SymmetryToolActor extends Actor {
             }
 
             @Override
+            public void dragStart(InputEvent event, float x, float y, int pointer) {
+                camera = (OrthographicCamera) getStage().getCamera();
+            }
+
+            @Override
             public void drag(InputEvent event, float x, float y, int pointer) {
                 if (move_knob_active) {
-                    x = event.getStageX() - getTouchDownX();
-                    y = event.getStageY() - getTouchDownY();
+                    x = event.getStageX();
+                    y = event.getStageY();
+
+                    float round_x = MathUtils.round(x);
+                    float round_y = MathUtils.round(y);
+
+                    if (Math.abs(x - round_x) < 0.2f * Math.max(0.5f, camera.zoom))
+                        x = round_x;
+                    if (Math.abs(y - round_y) < 0.2f * Math.max(0.5f, camera.zoom))
+                        y = round_y;
 
                     // if i use moveby, the movement rockets off
-                    setPosition(x, y);
-
+                    set_center_position(x, y);
                 } else if (rotate_knob_active) {
                     float deg = MathUtils.radiansToDegrees * MathUtils.atan2(event.getStageY() - get_center_y(), event.getStageX() - get_center_x());
-                    setRotation(deg);
+                    float step_deg = MathUtils.round(deg / 15f) * 15;
+                    if (Math.abs(deg - step_deg) < 5 * Math.max(0.5f, camera.zoom))
+                        setRotation(step_deg);
+                    else
+                        setRotation(deg);
                 }
             }
 
