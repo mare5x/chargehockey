@@ -13,6 +13,28 @@ import com.mare5x.chargehockey.level.GridCache;
 
 
 public class SymmetryToolActor extends Actor {
+    public static class SymmetryToolState {
+        public float center_x, center_y, rotation;
+
+        public SymmetryToolState(float x, float y, float rotation) {
+            this.center_x = x;
+            this.center_y = y;
+            this.rotation = rotation;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            SymmetryToolState that = (SymmetryToolState) o;
+
+            return MathUtils.isEqual(that.center_x, center_x, 0.01f) &&
+                    MathUtils.isEqual(that.center_y, center_y, 0.01f) &&
+                    MathUtils.isEqual(that.rotation, rotation, 0.01f);
+        }
+    }
+
     private static final float length = (float) Math.hypot(ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
     private static final float knob_size = 2;  // world units
     private float axis_w;
@@ -145,6 +167,10 @@ public class SymmetryToolActor extends Actor {
         return getY() + knob_size / 2f;
     }
 
+    private void set_center_position(float x, float y) {
+        setPosition(x - length / 2f, y - knob_size / 2f);
+    }
+
     private void set_knob_position() {
         float cos = MathUtils.cosDeg(getRotation());
         float sin = MathUtils.sinDeg(getRotation());
@@ -200,5 +226,14 @@ public class SymmetryToolActor extends Actor {
         symmetry_axis.draw(batch, parentAlpha);
         move_knob.draw(batch, parentAlpha);
         rotate_knob.draw(batch, parentAlpha);
+    }
+
+    public SymmetryToolState get_state() {
+        return new SymmetryToolState(get_center_x(), get_center_y(), getRotation());
+    }
+
+    public void set_state(SymmetryToolState state) {
+        set_center_position(state.center_x, state.center_y);
+        setRotation(state.rotation);
     }
 }

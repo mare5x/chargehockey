@@ -111,6 +111,7 @@ public class GameScreen implements Screen {
                 game_logic.blink_collided_pucks();
             }
         }, symmetry_tool);
+        load_charge_state(Level.SAVE_TYPE.AUTO);
         game_logic.charge_state_changed();  // initialize tracking
 
         hud_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
@@ -239,16 +240,27 @@ public class GameScreen implements Screen {
     }
 
     void save_charge_state(Level.SAVE_TYPE save_type) {
-        if (save_type == Level.SAVE_TYPE.QUICKSAVE || !level.save_file_exists() || game_logic.charge_state_changed() || level_finished_changed) {
-            level.write_save_file(save_type, game_logic.get_charges());
+        SymmetryToolActor.SymmetryToolState symmetry_tool_state = symmetry_tool.get_state();
+        boolean symmetry_tool_changed = !symmetry_tool_state.equals(level.get_symmetry_tool_state());
+
+        if (save_type == Level.SAVE_TYPE.QUICKSAVE || level_finished_changed || symmetry_tool_changed
+                || !level.save_file_exists() || game_logic.charge_state_changed()) {
+            level.set_symmetry_tool_state(symmetry_tool_state);
             level_finished_changed = false;
+            level.write_save_file(save_type, game_logic.get_charges());
         }
     }
 
     boolean load_charge_state(Level.SAVE_TYPE save_type) {
         boolean success = game_logic.load_charge_state(save_type);
+
+        SymmetryToolActor.SymmetryToolState symmetry_tool_state = level.get_symmetry_tool_state();
+        if (symmetry_tool_state != null)
+            symmetry_tool.set_state(symmetry_tool_state);
+
         if (success)  // the level was reset so reset the fbo
             fbo.update(game.batch);
+
         return success;
     }
 

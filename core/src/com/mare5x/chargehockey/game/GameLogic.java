@@ -72,8 +72,6 @@ public class GameLogic {
             initial_pucks.add(initial_puck);
             game_stage.addActor(initial_puck);
         }
-
-        load_charge_state(Level.SAVE_TYPE.AUTO);
     }
 
     /** Add a charge of type charge_type to the center of the camera position. If the symmetry tool is

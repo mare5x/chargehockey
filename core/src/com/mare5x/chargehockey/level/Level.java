@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.StreamUtils;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
+import com.mare5x.chargehockey.actors.SymmetryToolActor.SymmetryToolState;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,6 +37,8 @@ public class Level {
 
     private final Grid grid;
     private Array<Vector2> puck_positions = new Array<Vector2>();  // (x, y) of the puck's center
+
+    private SymmetryToolState symmetry_tool_state;
 
     private boolean level_finished = false;
 
@@ -65,6 +68,14 @@ public class Level {
 
     public void set_level_finished(boolean finished) {
         level_finished = finished;
+    }
+
+    public SymmetryToolState get_symmetry_tool_state() {
+        return symmetry_tool_state;
+    }
+
+    public void set_symmetry_tool_state(SymmetryToolState state) {
+        symmetry_tool_state = state;
     }
 
     public void set_item(int row, int col, Grid.GRID_ITEM item) {
@@ -152,6 +163,7 @@ public class Level {
      * HEADER 0/1 FLAG if level finished
      * N (number of charges (lines))
      * CHARGE_TYPE(code) X Y
+     * (optional) symmetry tool x y rotation
      */
     public void write_save_file(SAVE_TYPE save_type, Array<ChargeActor> charge_actors) {
         Gdx.app.log("Level", "saving charge state");
@@ -167,6 +179,11 @@ public class Level {
                 ChargeState state = charge.get_state();
 
                 writer.write(String.format(Locale.US, "%s %f %f\n", state.type.code(), state.x, state.y));
+            }
+
+            if (symmetry_tool_state != null) {
+                writer.write(String.format(Locale.US, "%f %f %f\n",
+                        symmetry_tool_state.center_x, symmetry_tool_state.center_y, symmetry_tool_state.rotation));
             }
         } catch (IOException e) {
             file.delete();
@@ -190,10 +207,17 @@ public class Level {
 
             int n = Integer.parseInt(reader.readLine());
             Array<ChargeState> states = new Array<ChargeState>(n);
-
             for (int i = 0; i < n; i++) {
                 String[] split = reader.readLine().split(" ");
                 states.add(new ChargeState(CHARGE.from_code(split[0].charAt(0)), Float.parseFloat(split[1]), Float.parseFloat(split[2])));
+            }
+
+            // symmetry tool state
+            String symmetry_tool_s = reader.readLine();
+            if (symmetry_tool_s != null) {
+                String[] split = symmetry_tool_s.split(" ");
+                symmetry_tool_state = new SymmetryToolState(Float.parseFloat(split[0]),
+                        Float.parseFloat(split[1]), Float.parseFloat(split[2]));
             }
 
             return states;
