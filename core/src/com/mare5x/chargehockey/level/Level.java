@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.IntSet;
 import com.badlogic.gdx.utils.StreamUtils;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
@@ -161,8 +162,8 @@ public class Level {
 
     /** .save structure:
      * HEADER 0/1 FLAG if level finished
-     * N (number of charges (lines))
-     * CHARGE_TYPE(code) X Y
+     * N (number of charges)
+     * CHARGE_TYPE(code) X Y (optional: x y of partner)
      * (optional) symmetry tool x y rotation
      */
     public void write_save_file(SAVE_TYPE save_type, Array<ChargeActor> charge_actors) {
@@ -175,10 +176,24 @@ public class Level {
             writer.write(level_finished ? "1\n" : "0\n");
 
             writer.write(String.valueOf(charge_actors.size) + "\n");
+            IntSet written_ids = new IntSet(charge_actors.size);
             for (ChargeActor charge : charge_actors) {
-                ChargeState state = charge.get_state();
+                // partners get written together in the same line, so make sure not to write already written charges
+                if (!written_ids.contains(charge.get_id())) {
+                    ChargeState state = charge.get_state();
+                    writer.write(String.format(Locale.US, "%s %f %f", state.type.code(), state.x, state.y));
 
-                writer.write(String.format(Locale.US, "%s %f %f\n", state.type.code(), state.x, state.y));
+                    written_ids.add(charge.get_id());
+
+                    ChargeActor partner = charge.get_partner();
+                    if (partner != null) {
+                        state = partner.get_state();
+                        writer.write(String.format(Locale.US, " %s %f %f", state.type.code(), state.x, state.y));
+
+                        written_ids.add(partner.get_id());
+                    }
+                    writer.write("\n");
+                }
             }
 
             if (symmetry_tool_state != null) {
@@ -210,6 +225,10 @@ public class Level {
             for (int i = 0; i < n; i++) {
                 String[] split = reader.readLine().split(" ");
                 states.add(new ChargeState(CHARGE.from_code(split[0].charAt(0)), Float.parseFloat(split[1]), Float.parseFloat(split[2])));
+                if (split.length > 3) {  // this means it has a partner
+                    states.peek().partner = new ChargeState(CHARGE.from_code(split[3].charAt(0)), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+                    i++;
+                }
             }
 
             // symmetry tool state

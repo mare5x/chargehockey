@@ -137,6 +137,7 @@ public class GameLogic {
         if (partner != null) {
             partner.set_partner(null);
             charge.set_partner(null);
+            remove_charge(partner);
         }
         charge_actors.removeValue(charge, true);
         charge.clear();
@@ -432,7 +433,12 @@ public class GameLogic {
 
         reset();
         for (ChargeState charge_state : charge_states) {
-            add_charge(charge_state.type, charge_state.x, charge_state.y);
+            ChargeActor charge1 = add_charge(charge_state.type, charge_state.x, charge_state.y);
+            if (charge_state.partner != null) {
+                ChargeActor charge2 = add_charge(charge_state.partner.type, charge_state.partner.x, charge_state.partner.y);
+                charge1.set_partner(charge2);
+                charge2.set_partner(charge1);
+            }
         }
         return true;
     }

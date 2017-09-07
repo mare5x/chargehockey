@@ -42,11 +42,13 @@ public class ChargeActor extends Actor {
     public static class ChargeState {
         public CHARGE type;
         public float x, y;
+        public ChargeState partner;  // manually set the partner
 
         public ChargeState(CHARGE type, float x, float y) {
             this.type = type;
             this.x = x;
             this.y = y;
+            this.partner = null;
         }
     }
 
@@ -69,6 +71,9 @@ public class ChargeActor extends Actor {
     private float charge_size = 2 * radius;  // this is the effective size of the charge (not necessarily the current size), it's the size the charge gets reset to
     private static final float WEIGHT = 9.1e-31f;  // kg
     private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
+
+    private static int UID_COUNTER = 0;
+    private final int uid = ++UID_COUNTER;  // unique identifier for every charge (used in .save files)
 
     public ChargeActor(final ChargeHockeyGame game, final CHARGE charge_type, final DragCallback drag_callback) {
         this(game, charge_type, drag_callback, null);
@@ -308,6 +313,10 @@ public class ChargeActor extends Actor {
 
     public ChargeActor get_partner() {
         return partner;
+    }
+
+    public int get_id() {
+        return uid;
     }
 
     public static void set_charge_size(float size) {
