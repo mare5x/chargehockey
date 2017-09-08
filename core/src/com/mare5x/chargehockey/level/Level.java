@@ -87,6 +87,10 @@ public class Level {
         return grid.get_item(row, col);
     }
 
+    public void clear_grid() {
+        grid.clear();
+    }
+
     public boolean save_file_exists() {
         return LevelSelector.get_level_save_fhandle(level_type, name, SAVE_TYPE.AUTO).exists();
     }

@@ -224,6 +224,34 @@ public class EditorScreen implements Screen {
         }
     }
 
+    private void save_changes() {
+        if (level_changed) {
+            level_changed = false;
+
+            level.set_level_finished(false);  // reset the flag
+            level.save_level(puck_actors);
+            level.write_save_header();  // reset save file header
+        }
+        if (SHOW_GRID_LINES_SETTING != show_grid || SYMMETRY_TOOL_ENABLED_SETTING != symmetry_tool.is_enabled()) {
+            SHOW_GRID_LINES_SETTING = show_grid;
+            SYMMETRY_TOOL_ENABLED_SETTING = symmetry_tool.is_enabled();
+
+            SettingsFile settings = new SettingsFile();
+            settings.put(SETTINGS_KEY.EDITOR_GRID_LINES, SHOW_GRID_LINES_SETTING);
+            settings.put(SETTINGS_KEY.EDITOR_SYMMETRY, SYMMETRY_TOOL_ENABLED_SETTING);
+            settings.save();
+        }
+    }
+
+    void clear_level() {
+        level.clear_grid();
+        puck_actors.clear();
+
+        fbo.update(game.batch);
+
+        level_changed = true;
+    }
+
     @Override
     public void show() {
         Gdx.input.setInputProcessor(multiplexer);
@@ -263,25 +291,6 @@ public class EditorScreen implements Screen {
         camera_controller.resize(edit_stage.getViewport().getScreenWidth(), edit_stage.getViewport().getScreenHeight());
 
         Gdx.graphics.requestRendering();
-    }
-
-    private void save_changes() {
-        if (level_changed) {
-            level_changed = false;
-
-            level.set_level_finished(false);  // reset the flag
-            level.save_level(puck_actors);
-            level.write_save_header();  // reset save file header
-        }
-        if (SHOW_GRID_LINES_SETTING != show_grid || SYMMETRY_TOOL_ENABLED_SETTING != symmetry_tool.is_enabled()) {
-            SHOW_GRID_LINES_SETTING = show_grid;
-            SYMMETRY_TOOL_ENABLED_SETTING = symmetry_tool.is_enabled();
-
-            SettingsFile settings = new SettingsFile();
-            settings.put(SETTINGS_KEY.EDITOR_GRID_LINES, SHOW_GRID_LINES_SETTING);
-            settings.put(SETTINGS_KEY.EDITOR_SYMMETRY, SYMMETRY_TOOL_ENABLED_SETTING);
-            settings.save();
-        }
     }
 
     @Override
@@ -326,8 +335,12 @@ public class EditorScreen implements Screen {
     }
 
     private class EditCameraController extends CameraController {
+        private float prev_zoom;
+
         EditCameraController(OrthographicCamera camera, Stage stage) {
             super(camera, stage);
+
+            prev_zoom = camera.zoom;
         }
 
         @Override
@@ -356,8 +369,10 @@ public class EditorScreen implements Screen {
         }
 
         @Override
-        protected void on_zoom_change(float zoom, boolean zoom_level_changed) {
-            if (zoom_level_changed) {
+        protected void on_zoom_change(float zoom) {
+            if (Math.abs(zoom - prev_zoom) >= 0.1f) {
+                prev_zoom = zoom;
+
                 if (symmetry_tool.is_enabled())
                     symmetry_tool.update_size(zoom);
 

@@ -48,7 +48,7 @@ public class SettingsFile {
         prefs.putBoolean(SETTINGS_KEY.SHOW_FORCE_VECTORS.name(), true);
         prefs.putBoolean(SETTINGS_KEY.TRACE_PATH.name(), true);
         prefs.putBoolean(SETTINGS_KEY.EDITOR_GRID_LINES.name(), true);
-        prefs.putBoolean(SETTINGS_KEY.GAME_GRID_LINES.name(), false);
+        prefs.putBoolean(SETTINGS_KEY.GAME_GRID_LINES.name(), true);
         prefs.putFloat(SETTINGS_KEY.GAME_SPEED.name(), 1f);
         prefs.putFloat(SETTINGS_KEY.CHARGE_SIZE.name(), 2);
         prefs.putBoolean(SETTINGS_KEY.GAME_SYMMETRY.name(), false);

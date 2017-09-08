@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.game.GameScreen;
+import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 class EditorSubScreen extends BaseMenuScreen {
@@ -33,14 +34,23 @@ class EditorSubScreen extends BaseMenuScreen {
             }
         });
 
+        TextButton clear_button = make_text_button("CLEAR LEVEL");
+        clear_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                parent_screen.clear_level();
+            }
+        });
+
         // todo HELP screen
 
         TextButton selector_button = make_text_button("SELECT LEVEL");
         selector_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                set_screen(new EditorMenuScreen(game, parent_screen.get_level()));
-                parent_screen.dispose();
+                Level level = parent_screen.get_level();
+                parent_screen.dispose();  // first dispose so that the level changes get written before setting the new screen
+                set_screen(new EditorMenuScreen(game, level));
             }
         });
 
@@ -64,6 +74,7 @@ class EditorSubScreen extends BaseMenuScreen {
 
         add_text_button(resume_button).row();
         add_text_button(play_button).row();
+        add_text_button(clear_button).row();
         add_text_button(selector_button).row();
         add_text_button(menu_button).row();
         add_text_button(exit_button);

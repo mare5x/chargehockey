@@ -148,7 +148,7 @@ public class CameraController {
         return true;
     }
 
-    protected void on_zoom_change(float zoom, boolean zoom_level_changed) { }
+    protected void on_zoom_change(float zoom) { }
 
     public static Rectangle get_camera_rect(OrthographicCamera camera) {
         float x = camera.position.x - camera.viewportWidth / 2f * camera.zoom;
@@ -166,8 +166,6 @@ public class CameraController {
 
         private final Vector2 tmp_coords = new Vector2();
         private final Vector2 velocity = new Vector2();
-
-        private ZoomLevel tmp_zoom_level;
 
         private boolean is_stopping = false;
         private boolean is_moving_to_target = false;
@@ -466,8 +464,6 @@ public class CameraController {
             if (!Gdx.graphics.isContinuousRendering())
                 Gdx.graphics.setContinuousRendering(true);
 
-            tmp_zoom_level = ZoomLevel.get(camera.zoom);
-
             if (!is_zooming || zoom_target_val != target_val || zoom_to_interpolator != interpolator) {
                 is_zooming = true;
                 zoom_target_val = target_val;
@@ -486,7 +482,7 @@ public class CameraController {
             }
 
             calc_px_to_world_unit();
-            on_zoom_change(camera.zoom, ZoomLevel.get(camera.zoom) != tmp_zoom_level);
+            on_zoom_change(camera.zoom);
         }
 
         boolean is_moving() {

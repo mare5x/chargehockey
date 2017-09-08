@@ -377,13 +377,19 @@ public class GameScreen implements Screen {
     }
 
     private class GameCameraController extends CameraController {
+        private float prev_zoom;
+
         GameCameraController(OrthographicCamera camera, Stage stage) {
             super(camera, stage);
+
+            prev_zoom = camera.zoom;
         }
 
         @Override
-        protected void on_zoom_change(float zoom, boolean zoom_level_changed) {
-            if (zoom_level_changed) {
+        protected void on_zoom_change(float zoom) {
+            if (Math.abs(zoom - prev_zoom) >= 0.1f) {
+                prev_zoom = zoom;
+
                 if (symmetry_tool.is_enabled())
                     symmetry_tool.update_size(zoom);
 

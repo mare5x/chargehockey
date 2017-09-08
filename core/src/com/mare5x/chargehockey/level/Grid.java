@@ -127,4 +127,10 @@ public class Grid {
     int get_width() {
         return WIDTH;
     }
+
+    void clear() {
+        for (int i = 0; i < grid.size; i++) {
+            grid.set(i, GRID_ITEM.NULL);
+        }
+    }
 }
