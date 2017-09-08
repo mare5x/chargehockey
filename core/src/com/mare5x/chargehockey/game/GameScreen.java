@@ -130,6 +130,7 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 symmetry_tool.set_enabled(!symmetry_tool.is_enabled());
+                symmetry_tool.update_size(camera.zoom);
             }
         });
         symmetry_tool_button.pad(10);

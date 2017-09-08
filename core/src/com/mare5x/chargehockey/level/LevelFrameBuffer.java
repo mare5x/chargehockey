@@ -23,7 +23,7 @@ public class LevelFrameBuffer {
     private static final int _FBO_SIZE = 1024;
     private static final int _PREVIEW_FBO_SIZE = 256;
 
-    public static int FBO_SIZE;
+    static int FBO_SIZE;
     private static float WORLD_UNIT_TX;  // 1 world unit = world_unit_tx texels
     public static float ONE_TX; // 1 texel in world units
 

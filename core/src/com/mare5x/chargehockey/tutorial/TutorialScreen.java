@@ -261,6 +261,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
         Label zoom_tip = make_label("TIP: ZOOM BY PINCHING OR BY DOUBLE TAPPING");
         Label settings_tip = make_label("TIP: EXPLORE THE SETTINGS MENU");
         Label editor_tip = make_label("TIP: CREATE YOUR OWN LEVELS USING THE BUILT-IN CUSTOM EDITOR");
+        Label symmetry_tip = make_label("TIP: USE THE GRID AND THE SYMMETRY TOOL FOR PRECISE ACTIONS");
 
         table.clear();
 
@@ -276,6 +277,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
         table.add(zoom_tip).padTop(MIN_BUTTON_HEIGHT).fillX().row();
         table.add(settings_tip).fillX().row();
         table.add(editor_tip).fillX().row();
+        table.add(symmetry_tip).fillX().row();
 
         table.add().expand().fill();
         table.row().minHeight(MIN_BUTTON_HEIGHT).width(3 * MIN_BUTTON_HEIGHT).expandX();

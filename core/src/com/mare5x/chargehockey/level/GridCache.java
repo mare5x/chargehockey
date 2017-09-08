@@ -53,7 +53,9 @@ public class GridCache {
         else
             cache.beginCache();
 
-        // Draw the grid's lines (optional)
+        // todo subtract half size from position, so that the grid lines are actually centered
+        // todo fix grid tile sprite sizes so that they don't overlap
+
         // vertical lines
         grid_line_sprite.setSize(grid_line_sprite_size, ChargeHockeyGame.WORLD_HEIGHT);
         grid_line_sprite.setAlpha(0.5f * grid_line_alpha);
@@ -142,7 +144,7 @@ public class GridCache {
 
     public static float calculate_grid_line_size(float zoom) {
         return Math.max(LevelFrameBuffer.ONE_TX,
-                LevelFrameBuffer.FBO_SIZE / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()) * LevelFrameBuffer.ONE_TX * 1.5f * zoom);
+                (float) LevelFrameBuffer.FBO_SIZE / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()) * LevelFrameBuffer.ONE_TX * 1.5f * zoom);
     }
 
     private void set_grid_line_spacing(int spacing) {

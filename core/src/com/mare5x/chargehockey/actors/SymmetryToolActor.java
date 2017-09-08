@@ -13,6 +13,7 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.GridCache;
 
 
+// todo make it be actually centered
 public class SymmetryToolActor extends Actor {
     public static class SymmetryToolState {
         public float center_x, center_y, rotation;
@@ -37,7 +38,7 @@ public class SymmetryToolActor extends Actor {
     }
 
     private static final float length = (float) Math.hypot(ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
-    private static final float knob_size = 2;  // world units
+    private static final float knob_size = 2f;  // world units
     private float axis_w;
 
     private final Sprite symmetry_axis;
@@ -53,18 +54,11 @@ public class SymmetryToolActor extends Actor {
         move_knob = new Sprite(game.skin.getRegion("vertical_knob"));
         rotate_knob = new Sprite(game.skin.getRegion("rotate_knob"));
 
-        axis_w = GridCache.calculate_grid_line_size(1) * 1.5f;
-
         setBounds((ChargeHockeyGame.WORLD_WIDTH - length) / 2f, ChargeHockeyGame.WORLD_HEIGHT / 2f - knob_size / 2f, length, knob_size);
-        symmetry_axis.setBounds(getX(), get_center_y() - axis_w / 2f, length, axis_w);
         move_knob.setSize(knob_size, knob_size);
         rotate_knob.setSize(knob_size, knob_size);
 
-        symmetry_axis.setOriginCenter();
-        move_knob.setOriginCenter();
-        rotate_knob.setOriginCenter();
-        setOrigin(Align.center);
-
+        update_size(1);
         set_knob_position();
 
         DragListener drag_listener = new DragListener() {
@@ -201,7 +195,7 @@ public class SymmetryToolActor extends Actor {
 
     public void update_size(float zoom) {
         axis_w = GridCache.calculate_grid_line_size(zoom) * 1.5f;
-        symmetry_axis.setBounds(getX(), getY() + knob_size / 2f - axis_w / 2f, length, axis_w);
+        symmetry_axis.setBounds(getX(), get_center_y() - axis_w / 2f, length, axis_w);
 
         symmetry_axis.setOriginCenter();
         move_knob.setOriginCenter();
@@ -212,7 +206,7 @@ public class SymmetryToolActor extends Actor {
     @Override
     public void setPosition(float x, float y) {
         super.setPosition(x, y);
-        symmetry_axis.setPosition(x, y + knob_size / 2f - axis_w / 2f);
+        symmetry_axis.setPosition(x, get_center_y() - axis_w / 2f);
         set_knob_position();
     }
 
