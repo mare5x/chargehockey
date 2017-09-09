@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -84,6 +85,24 @@ public class EditorScreen implements Screen {
 
         @Override
         public void drag(ChargeActor charge) {
+            float x = charge.get_x();
+            float y = charge.get_y();
+
+            float round_x = MathUtils.round(x);
+            float round_y = MathUtils.round(y);
+
+            if (Math.abs(x - round_x) < 0.3f * Math.max(0.5f, camera.zoom))
+                x = round_x;
+            if (Math.abs(y - round_y) < 0.3f * Math.max(0.5f, camera.zoom))
+                y = round_y;
+
+            charge.set_position(x, y);
+
+            ChargeActor partner = charge.get_partner();
+            if (partner != null) {
+                symmetry_tool.get_symmetrical_pos(tmp_v.set(x, y));
+                partner.set_position(tmp_v.x, tmp_v.y);
+            }
         }
     };
 
