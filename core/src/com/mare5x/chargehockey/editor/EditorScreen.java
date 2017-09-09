@@ -70,15 +70,20 @@ public class EditorScreen implements Screen {
     private final ChargeActor.DragCallback drag_callback = new ChargeActor.DragCallback() {
         @Override
         public void out_of_bounds(ChargeActor charge) {
-            puck_actors.removeValue(charge, true);
-            charge.clear();
-            charge.remove();
-            level_changed = true;
+            ChargeActor partner = charge.get_partner();
+            remove_puck(charge);
+            if (partner != null && partner.check_out_of_bounds()) {
+                remove_puck(partner);
+            }
         }
 
         @Override
         public void drag_started(ChargeActor charge) {
             level_changed = true;
+        }
+
+        @Override
+        public void drag(ChargeActor charge) {
         }
     };
 
@@ -107,12 +112,15 @@ public class EditorScreen implements Screen {
         edit_stage.addActor(symmetry_tool);
 
         // add interactive pucks from the stored puck positions
-        puck_actors = new Array<ChargeActor>(level.get_puck_positions().size * 2);
-        for (Vector2 puck_pos : level.get_puck_positions()) {
-            ChargeActor puck = new ChargeActor(game, CHARGE.PUCK, drag_callback);
-            puck.set_position(puck_pos.x, puck_pos.y);
-            puck_actors.add(puck);
-            edit_stage.addActor(puck);
+        puck_actors = new Array<ChargeActor>(level.get_puck_states().size * 2);
+        for (ChargeActor.ChargeState puck_state: level.get_puck_states()) {
+            ChargeActor puck1 = add_puck(puck_state.x, puck_state.y);
+            if (puck_state.partner != null) {
+                ChargeActor puck2 = add_puck(puck_state.partner.x, puck_state.partner.y);
+
+                puck1.set_partner(puck2);
+                puck2.set_partner(puck1);
+            }
         }
 
         hud_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
@@ -199,6 +207,48 @@ public class EditorScreen implements Screen {
             }
         };
         multiplexer = new InputMultiplexer(hud_stage, edit_stage, camera_controller.get_gesture_detector(), back_key_processor);
+    }
+
+    private ChargeActor add_puck(float x, float y) {
+        ChargeActor puck = new ChargeActor(game, CHARGE.PUCK, drag_callback, symmetry_tool);
+        puck.set_position(x, y);
+        edit_stage.addActor(puck);
+        puck_actors.add(puck);
+
+        level_changed = true;
+
+        return puck;
+    }
+
+    private void place_puck(float x, float y) {
+        ChargeActor puck1 = add_puck(x, y);
+
+        if (symmetry_tool.is_enabled()) {
+            symmetry_tool.get_symmetrical_pos(tmp_v.set(x, y));
+
+            ChargeActor puck2 = add_puck(tmp_v.x, tmp_v.y);
+
+            puck1.set_partner(puck2);
+            puck2.set_partner(puck1);
+
+            if (puck2.check_out_of_bounds()) {
+                remove_puck(puck2);
+            }
+        }
+    }
+
+    private void remove_puck(ChargeActor puck) {
+        ChargeActor partner = puck.get_partner();
+        if (partner != null) {
+            partner.set_partner(null);
+            puck.set_partner(null);
+        }
+
+        puck_actors.removeValue(puck, true);
+        puck.clear();
+        puck.remove();
+
+        level_changed = true;
     }
 
     /** Places a tile at the given position, taking the symmetry tool into account. */
@@ -356,13 +406,8 @@ public class EditorScreen implements Screen {
             // finish moving
             if (is_moving()) return true;
 
-            if (puck_button.isChecked()) {
-                ChargeActor charge = new ChargeActor(game, CHARGE.PUCK, drag_callback);
-                charge.set_position(x, y);
-                edit_stage.addActor(charge);
-                puck_actors.add(charge);
-                level_changed = true;
-            }
+            if (puck_button.isChecked())
+                place_puck(x, y);
             else
                 place_tile(x, y, grid_item_button.get_selected_item());
 

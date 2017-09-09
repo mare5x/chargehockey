@@ -58,20 +58,26 @@ public class GameLogic {
         this.result_callback = result_callback;
         this.symmetry_tool = symmetry_tool;
 
-        for (Vector2 pos : level.get_puck_positions()) {
-            PuckActor puck = new PuckActor(game);
-            puck.set_position(pos.x, pos.y);
-
-            puck_actors.add(puck);
-            game_stage.addActor(puck);
-
-            ForcePuckActor initial_puck = new ForcePuckActor(game);
-            initial_puck.set_position(pos.x, pos.y);
-            initial_puck.set_alpha(1);
-            initial_puck.setVisible(false);
-            initial_pucks.add(initial_puck);
-            game_stage.addActor(initial_puck);
+        for (ChargeState state : level.get_puck_states()) {
+            add_puck(state.x, state.y);
+            if (state.partner != null)
+                add_puck(state.partner.x, state.partner.y);
         }
+    }
+
+    private void add_puck(float x, float y) {
+        PuckActor puck = new PuckActor(game);
+        puck.set_position(x, y);
+
+        puck_actors.add(puck);
+        game_stage.addActor(puck);
+
+        ForcePuckActor initial_puck = new ForcePuckActor(game);
+        initial_puck.set_position(x, y);
+        initial_puck.set_alpha(1);
+        initial_puck.setVisible(false);
+        initial_pucks.add(initial_puck);
+        game_stage.addActor(initial_puck);
     }
 
     /** Add a charge of type charge_type to the center of the camera position. If the symmetry tool is
@@ -370,11 +376,20 @@ public class GameLogic {
     }
 
     private void reset_pucks() {
-        for (int i = 0; i < level.get_puck_positions().size; i++) {
-            final Vector2 pos = level.get_puck_positions().get(i);
-            PuckActor puck = puck_actors.get(i);
-            puck.set_position(pos.x, pos.y);
+        PuckActor puck;
+        for (int i = 0; i < level.get_puck_states().size; i++) {
+            final ChargeState state = level.get_puck_states().get(i);
+            puck = puck_actors.get(i);
+            puck.set_position(state.x, state.y);
             puck.reset();
+
+            if (state.partner != null) {
+                i++;
+
+                puck = puck_actors.get(i);
+                puck.set_position(state.partner.x, state.partner.y);
+                puck.reset();
+            }
         }
         tmp_vec.setZero();
         force_vec.setZero();

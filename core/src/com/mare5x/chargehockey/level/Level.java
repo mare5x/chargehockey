@@ -2,7 +2,6 @@ package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntSet;
@@ -37,7 +36,7 @@ public class Level {
     private final LEVEL_TYPE level_type;
 
     private final Grid grid;
-    private Array<Vector2> puck_positions = new Array<Vector2>();  // (x, y) of the puck's center
+    private Array<ChargeState> puck_states = new Array<ChargeState>();  // (x, y) of the puck's center
 
     private SymmetryToolState symmetry_tool_state;
 
@@ -52,7 +51,7 @@ public class Level {
         if (LevelSelector.level_file_exists(level_type, level_name))
             load_level();
         else
-            save_level();  // this will create an empty/default valid level file
+            empty_level();
     }
 
     public final LEVEL_TYPE get_type() {
@@ -95,22 +94,19 @@ public class Level {
         return LevelSelector.get_level_save_fhandle(level_type, name, SAVE_TYPE.AUTO).exists();
     }
 
+    /** Creates a new empty level file. */
+    private void empty_level() {
+        save_level(new Array<ChargeActor>(0));
+    }
+
     /** LEVEL GRID SAVE STRUCTURE
      * WIDTH HEIGHT
      * WIDTH * HEIGHT GRID ITEM CODES (ONE LINE STRING)
      * N PUCKS
-     * X Y
-     * */
-    public void save_level(Array<ChargeActor> puck_actors) {
-        puck_positions.clear();
-        for (ChargeActor puck : puck_actors) {
-            puck_positions.add(new Vector2(puck.get_x(), puck.get_y()));
-        }
-        save_level();
-    }
-
-    /** Save the grid and puck positions of the currently loaded level. */
-    private void save_level() {
+     * X Y (optional: x y of partner) (partners are only for the editor)
+     *
+     * Save the grid and puck positions of the currently loaded level. */
+    public void save_level(final Array<ChargeActor> puck_actors) {
         Gdx.app.log("Level", "saving level data");
 
         FileHandle file = LevelSelector.get_level_grid_fhandle(level_type, name);
@@ -120,9 +116,22 @@ public class Level {
             writer.write(String.format(Locale.US, "%d %d\n", grid.get_width(), grid.get_height()));
             writer.write(grid.get_grid_string() + "\n");
 
-            writer.write(String.format(Locale.US, "%d\n", puck_positions.size));
-            for (Vector2 pos : puck_positions) {
-                writer.write(String.format(Locale.US, "%f %f\n", pos.x, pos.y));
+            writer.write(String.format(Locale.US, "%d\n", puck_actors.size));
+            IntSet written_ids = new IntSet(puck_actors.size);
+            for (ChargeActor puck : puck_actors) {
+                if (!written_ids.contains(puck.get_id())) {
+                    written_ids.add(puck.get_id());
+
+                    writer.write(String.format(Locale.US, "%f %f", puck.get_x(), puck.get_y()));
+
+                    ChargeActor partner = puck.get_partner();
+                    if (partner != null) {
+                        writer.write(String.format(Locale.US, " %f %f", partner.get_x(), partner.get_y()));
+
+                        written_ids.add(partner.get_id());
+                    }
+                    writer.write("\n");
+                }
             }
         } catch (IOException e) {
             file.delete();
@@ -150,12 +159,16 @@ public class Level {
             grid.load_from_grid_string(grid_str);
 
             int n_pucks = Integer.parseInt(reader.readLine());
-            puck_positions = new Array<Vector2>(n_pucks);
-
-            String[] pos;
+            puck_states = new Array<ChargeState>(n_pucks);
             for (int i = 0; i < n_pucks; i++) {
-                pos = reader.readLine().split(" ");
-                puck_positions.add(new Vector2(Float.parseFloat(pos[0]), Float.parseFloat(pos[1])));
+                String[] pos = reader.readLine().split(" ");
+
+                puck_states.add(new ChargeState(CHARGE.PUCK, Float.parseFloat(pos[0]), Float.parseFloat(pos[1])));
+
+                if (pos.length > 2) {
+                    puck_states.peek().partner = new ChargeState(CHARGE.PUCK, Float.parseFloat(pos[2]), Float.parseFloat(pos[3]));
+                    i++;
+                }
             }
         } catch (IOException e) {
             throw new GdxRuntimeException("Error reading level file", e);
@@ -285,7 +298,7 @@ public class Level {
         tmp_file.moveTo(save_file);  // replace the save file
     }
 
-    public final Array<Vector2> get_puck_positions() {
-        return puck_positions;
+    public final Array<ChargeState> get_puck_states() {
+        return puck_states;
     }
 }

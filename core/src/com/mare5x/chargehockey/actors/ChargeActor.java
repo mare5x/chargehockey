@@ -75,7 +75,7 @@ public class ChargeActor extends Actor {
     private static int UID_COUNTER = 0;
     private final int uid = ++UID_COUNTER;  // unique identifier for every charge (used in .save files)
 
-    public ChargeActor(final ChargeHockeyGame game, final CHARGE charge_type, final DragCallback drag_callback) {
+    ChargeActor(final ChargeHockeyGame game, final CHARGE charge_type, final DragCallback drag_callback) {
         this(game, charge_type, drag_callback, null);
     }
 

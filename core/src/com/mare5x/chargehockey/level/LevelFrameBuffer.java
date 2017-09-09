@@ -11,8 +11,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.Vector2;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 
@@ -109,9 +109,13 @@ public class LevelFrameBuffer {
         // Draw the pucks (optional)
         if (draw_pucks) {
             puck_sprite.setAlpha(puck_alpha);
-            for (Vector2 pos : level.get_puck_positions()) {
-                puck_sprite.setPosition(pos.x - PuckActor.RADIUS, pos.y - PuckActor.RADIUS);
+            for (ChargeActor.ChargeState state : level.get_puck_states()) {
+                puck_sprite.setPosition(state.x - PuckActor.RADIUS, state.y - PuckActor.RADIUS);
                 puck_sprite.draw(batch);
+                if (state.partner != null) {
+                    puck_sprite.setPosition(state.partner.x - PuckActor.RADIUS, state.partner.y - PuckActor.RADIUS);
+                    puck_sprite.draw(batch);
+                }
             }
         }
 
@@ -189,9 +193,13 @@ public class LevelFrameBuffer {
         batch.begin();
 
         puck_sprite.setAlpha(puck_alpha);
-        for (Vector2 pos : level.get_puck_positions()) {
-            puck_sprite.setPosition(pos.x - PuckActor.RADIUS, pos.y - PuckActor.RADIUS);
+        for (ChargeActor.ChargeState state : level.get_puck_states()) {
+            puck_sprite.setPosition(state.x - PuckActor.RADIUS, state.y - PuckActor.RADIUS);
             puck_sprite.draw(batch);
+            if (state.partner != null) {
+                puck_sprite.setPosition(state.partner.x - PuckActor.RADIUS, state.partner.y - PuckActor.RADIUS);
+                puck_sprite.draw(batch);
+            }
         }
 
         batch.end();
