@@ -53,49 +53,50 @@ public class GridCache {
         else
             cache.beginCache();
 
-        // todo subtract half size from position, so that the grid lines are actually centered
         // todo fix grid tile sprite sizes so that they don't overlap
+
+        float half_size = grid_line_sprite_size / 2f;
 
         // vertical lines
         grid_line_sprite.setSize(grid_line_sprite_size, ChargeHockeyGame.WORLD_HEIGHT);
         grid_line_sprite.setAlpha(0.5f * grid_line_alpha);
         for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col += grid_line_spacing) {
-            grid_line_sprite.setPosition(col, 0);
+            grid_line_sprite.setPosition(col - half_size, 0);
             cache.add(grid_line_sprite);
         }
         // fix for the line on the edge, so it stays on screen
-        grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH - grid_line_sprite_size, 0);
+        grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH - half_size, 0);
         cache.add(grid_line_sprite);
 
         grid_line_sprite.setAlpha(1f * grid_line_alpha);  // center vertical ilne
-        grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH / 2, 0);
+        grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH / 2 - half_size, 0);
         cache.add(grid_line_sprite);
 
         grid_line_sprite.setAlpha(0.8f * grid_line_alpha);  // quarter vertical lines
-        grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH / 4f, 0);
+        grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH / 4f - half_size, 0);
         cache.add(grid_line_sprite);
-        grid_line_sprite.setPosition(3 * ChargeHockeyGame.WORLD_WIDTH / 4f, 0);
+        grid_line_sprite.setPosition(3 * ChargeHockeyGame.WORLD_WIDTH / 4f - half_size, 0);
         cache.add(grid_line_sprite);
 
         // horizontal lines
         grid_line_sprite.setSize(ChargeHockeyGame.WORLD_WIDTH, grid_line_sprite_size);
 
         grid_line_sprite.setAlpha(1 * grid_line_alpha);  // center horizontal line
-        grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT / 2);
+        grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT / 2 - half_size);
         cache.add(grid_line_sprite);
 
         grid_line_sprite.setAlpha(0.8f * grid_line_alpha);  // quarter horizontal lines
-        grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT / 4f);
+        grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT / 4f - half_size);
         cache.add(grid_line_sprite);
-        grid_line_sprite.setPosition(0, 3 * ChargeHockeyGame.WORLD_HEIGHT / 4f);
+        grid_line_sprite.setPosition(0, 3 * ChargeHockeyGame.WORLD_HEIGHT / 4f - half_size);
         cache.add(grid_line_sprite);
 
         grid_line_sprite.setAlpha(0.5f * grid_line_alpha);
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row += grid_line_spacing) {
-            grid_line_sprite.setPosition(0, row);
+            grid_line_sprite.setPosition(0, row - half_size);
             cache.add(grid_line_sprite);
         }
-        grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT - grid_line_sprite_size);
+        grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT - half_size);
         cache.add(grid_line_sprite);
 
         grid_lines_id = cache.endCache();
@@ -144,7 +145,7 @@ public class GridCache {
 
     public static float calculate_grid_line_size(float zoom) {
         return Math.max(LevelFrameBuffer.ONE_TX,
-                (float) LevelFrameBuffer.FBO_SIZE / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()) * LevelFrameBuffer.ONE_TX * 1.5f * zoom);
+                (float) ChargeHockeyGame.WORLD_WIDTH * zoom / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
     }
 
     private void set_grid_line_spacing(int spacing) {

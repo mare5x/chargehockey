@@ -23,7 +23,7 @@ public class LevelFrameBuffer {
     private static final int _FBO_SIZE = 1024;
     private static final int _PREVIEW_FBO_SIZE = 256;
 
-    static int FBO_SIZE;
+    private static int FBO_SIZE;
     private static float WORLD_UNIT_TX;  // 1 world unit = world_unit_tx texels
     public static float ONE_TX; // 1 texel in world units
 
@@ -132,11 +132,7 @@ public class LevelFrameBuffer {
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT - 1; row++) {
             for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH - 1; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
-                if (item != GRID_ITEM.NULL) {
-                    Sprite sprite = game.grid_sprites.get(item);
-                    sprite.setPosition(col, row);
-                    sprite.draw(batch);
-                }
+                game.grid_sprites.draw_tile(batch, item, row, col);
             }
         }
         // specially draw the top and right border tiles, otherwise they get cut off by ONE_TX
@@ -146,22 +142,14 @@ public class LevelFrameBuffer {
         for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT - 1; row++) {
             int col = ChargeHockeyGame.WORLD_WIDTH - 1;
             GRID_ITEM item = level.get_grid_item(row, col);
-            if (item != GRID_ITEM.NULL) {
-                Sprite sprite = game.grid_sprites.get(item);
-                sprite.setPosition(col, row);
-                sprite.draw(batch);
-            }
+            game.grid_sprites.draw_tile(batch, item, row, col);
         }
         // top border
         game.grid_sprites.set_grid_tile_size(GRID_TILE_SIZE, GRID_TILE_SIZE - ONE_TX);
         for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH - 1; col++) {
             int row = ChargeHockeyGame.WORLD_HEIGHT - 1;
             GRID_ITEM item = level.get_grid_item(row, col);
-            if (item != GRID_ITEM.NULL) {
-                Sprite sprite = game.grid_sprites.get(item);
-                sprite.setPosition(col, row);
-                sprite.draw(batch);
-            }
+            game.grid_sprites.draw_tile(batch, item, row, col);
         }
         // top right
         GRID_ITEM item = level.get_grid_item(ChargeHockeyGame.WORLD_WIDTH - 1, ChargeHockeyGame.WORLD_HEIGHT - 1);

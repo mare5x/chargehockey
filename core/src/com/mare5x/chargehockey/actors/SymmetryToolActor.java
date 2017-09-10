@@ -38,7 +38,7 @@ public class SymmetryToolActor extends Actor {
     }
 
     private static final float length = (float) Math.hypot(ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
-    private static final float knob_size = 2f;  // world units
+    private static final float knob_size = 1.75f;  // world units
     private float axis_w;
 
     private final Sprite symmetry_axis;

@@ -102,7 +102,11 @@ public class GameLogic {
         ChargeActor charge = new ChargeActor(game, charge_type, new ChargeActor.DragCallback() {
             @Override
             public void out_of_bounds(ChargeActor charge) {
+                ChargeActor partner = charge.get_partner();
                 remove_charge(charge);
+                if (partner != null && partner.check_out_of_bounds()) {
+                    remove_charge(partner);
+                }
             }
 
             @Override
@@ -143,7 +147,6 @@ public class GameLogic {
         if (partner != null) {
             partner.set_partner(null);
             charge.set_partner(null);
-            remove_charge(partner);
         }
         charge_actors.removeValue(charge, true);
         charge.clear();
