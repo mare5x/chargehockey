@@ -116,6 +116,9 @@ public class Level {
             writer.write(String.format(Locale.US, "%d %d\n", grid.get_width(), grid.get_height()));
             writer.write(grid.get_grid_string() + "\n");
 
+            // update the puck states array here, so the Level can just be passed around instead of reloaded using load_level
+            puck_states.clear();
+
             writer.write(String.format(Locale.US, "%d\n", puck_actors.size));
             IntSet written_ids = new IntSet(puck_actors.size);
             for (ChargeActor puck : puck_actors) {
@@ -124,11 +127,15 @@ public class Level {
 
                     writer.write(String.format(Locale.US, "%f %f", puck.get_x(), puck.get_y()));
 
+                    puck_states.add(new ChargeState(CHARGE.PUCK, puck.get_x(), puck.get_y()));
+
                     ChargeActor partner = puck.get_partner();
                     if (partner != null) {
                         writer.write(String.format(Locale.US, " %f %f", partner.get_x(), partner.get_y()));
 
                         written_ids.add(partner.get_id());
+
+                        puck_states.peek().partner = new ChargeState(CHARGE.PUCK, partner.get_x(), partner.get_y());
                     }
                     writer.write("\n");
                 }

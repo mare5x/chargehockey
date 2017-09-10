@@ -73,7 +73,7 @@ public class EditorScreen implements Screen {
         public void out_of_bounds(ChargeActor charge) {
             ChargeActor partner = charge.get_partner();
             remove_puck(charge);
-            if (partner != null && partner.check_out_of_bounds()) {
+            if (partner != null && partner.check_out_of_world()) {
                 remove_puck(partner);
             }
         }
@@ -98,10 +98,12 @@ public class EditorScreen implements Screen {
 
             charge.set_position(x, y);
 
-            ChargeActor partner = charge.get_partner();
-            if (partner != null) {
-                symmetry_tool.get_symmetrical_pos(tmp_v.set(x, y));
-                partner.set_position(tmp_v.x, tmp_v.y);
+            if (symmetry_tool.is_enabled()) {
+                ChargeActor partner = charge.get_partner();
+                if (partner != null) {
+                    symmetry_tool.get_symmetrical_pos(tmp_v.set(x, y));
+                    partner.set_position(tmp_v.x, tmp_v.y);
+                }
             }
         }
     };
@@ -250,7 +252,7 @@ public class EditorScreen implements Screen {
             puck1.set_partner(puck2);
             puck2.set_partner(puck1);
 
-            if (puck2.check_out_of_bounds()) {
+            if (puck2.check_out_of_world()) {
                 remove_puck(puck2);
             }
         }
@@ -315,6 +317,11 @@ public class EditorScreen implements Screen {
 
     void clear_level() {
         level.clear_grid();
+
+        for (ChargeActor puck : puck_actors) {
+            puck.remove();
+            puck.clear();
+        }
         puck_actors.clear();
 
         fbo.update(game.batch);

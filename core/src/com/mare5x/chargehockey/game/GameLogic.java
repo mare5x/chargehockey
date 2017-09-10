@@ -91,7 +91,7 @@ public class GameLogic {
             charge1.set_partner(charge2);
             charge2.set_partner(charge1);
 
-            if (charge2.check_out_of_bounds())
+            if (charge2.check_out_of_world())
                 remove_charge(charge2);
         } else {
             add_charge(charge_type, game_stage.getCamera().position.x, game_stage.getCamera().position.y);
@@ -104,7 +104,7 @@ public class GameLogic {
             public void out_of_bounds(ChargeActor charge) {
                 ChargeActor partner = charge.get_partner();
                 remove_charge(charge);
-                if (partner != null && partner.check_out_of_bounds()) {
+                if (partner != null && partner.check_out_of_world()) {
                     remove_charge(partner);
                 }
             }

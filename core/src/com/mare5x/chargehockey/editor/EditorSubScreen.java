@@ -29,8 +29,9 @@ class EditorSubScreen extends BaseMenuScreen {
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                set_screen(new GameScreen(game, parent_screen.get_level()));
-                parent_screen.dispose();
+                Level level = parent_screen.get_level();
+                parent_screen.dispose();  // first dispose so that the level changes get written before setting the new screen
+                set_screen(new GameScreen(game, level));
             }
         });
 

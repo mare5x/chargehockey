@@ -165,7 +165,7 @@ public class ChargeActor extends Actor {
                 public void dragStop(InputEvent event, float x, float y, int pointer) {
                     if (check_out_of_bounds())
                         drag_callback.out_of_bounds(ChargeActor.this);
-                    if (partner != null && partner.check_out_of_bounds())
+                    if (partner != null && partner.check_out_of_world())
                         drag_callback.out_of_bounds(partner);
                 }
             };
@@ -302,9 +302,17 @@ public class ChargeActor extends Actor {
         return !MathUtils.isEqual(radius * 2, SIZE, 0.001f);
     }
 
-    public boolean check_out_of_bounds() {
+    private boolean check_out_of_bounds() {
+        return check_out_of_world() || check_below_view();
+    }
+
+    private boolean check_below_view() {
         Rectangle camera_rect = CameraController.get_camera_rect((OrthographicCamera) getStage().getCamera());
-        return (get_y() < camera_rect.getY() || !ChargeHockeyGame.WORLD_RECT.contains(get_x(), get_y()));
+        return get_y() < camera_rect.getY();
+    }
+
+    public boolean check_out_of_world() {
+        return !ChargeHockeyGame.WORLD_RECT.contains(get_x(), get_y());
     }
 
     public void set_partner(ChargeActor charge) {
