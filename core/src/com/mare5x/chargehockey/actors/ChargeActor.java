@@ -53,7 +53,7 @@ public class ChargeActor extends Actor {
     }
 
     public abstract static class DragCallback {
-        public abstract void out_of_bounds(ChargeActor charge);
+        public abstract void out_of_bounds(ChargeActor charge, boolean dragged);  // dragged tells whether charge was dragged physically or by symmetry
         public void drag(ChargeActor charge) {}
         public void drag_started(ChargeActor charge) {}
     }
@@ -164,9 +164,9 @@ public class ChargeActor extends Actor {
                 @Override
                 public void dragStop(InputEvent event, float x, float y, int pointer) {
                     if (check_out_of_bounds())
-                        drag_callback.out_of_bounds(ChargeActor.this);
+                        drag_callback.out_of_bounds(ChargeActor.this, true);
                     if (partner != null && partner.check_out_of_world())
-                        drag_callback.out_of_bounds(partner);
+                        drag_callback.out_of_bounds(partner, false);
                 }
             };
             drag_listener.setTapSquareSize(-1);

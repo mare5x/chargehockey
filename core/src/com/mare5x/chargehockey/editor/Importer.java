@@ -50,7 +50,13 @@ class Importer {
                 }
             }
             if (import_list.size > 0) {
-                show_notification(String.format(Locale.US, "IMPORTED %s", import_list.toString(", ")));
+                if (import_list.size < 10)
+                    if (import_list.size == 1)
+                        show_notification(String.format(Locale.US, "IMPORTED 1 LEVEL: %s", import_list.toString(", ")));
+                    else
+                        show_notification(String.format(Locale.US, "IMPORTED %d LEVELS: %s", import_list.size, import_list.toString(", ")));
+                else
+                    show_notification(String.format(Locale.US, "IMPORTED %d LEVELS", import_list.size));
             } else {
                 show_notification("YOU MUST PICK A VALID IMPORT LOCATION");
             }

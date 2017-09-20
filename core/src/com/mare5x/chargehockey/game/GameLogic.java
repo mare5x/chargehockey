@@ -101,10 +101,10 @@ public class GameLogic {
     private ChargeActor add_charge(CHARGE charge_type, float x, float y) {
         ChargeActor charge = new ChargeActor(game, charge_type, new ChargeActor.DragCallback() {
             @Override
-            public void out_of_bounds(ChargeActor charge) {
+            public void out_of_bounds(ChargeActor charge, boolean dragged) {
                 ChargeActor partner = charge.get_partner();
                 remove_charge(charge);
-                if (partner != null && partner.check_out_of_world()) {
+                if (partner != null && ((dragged && symmetry_tool.is_enabled()) || partner.check_out_of_world())) {
                     remove_charge(partner);
                 }
             }

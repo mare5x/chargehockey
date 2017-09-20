@@ -70,10 +70,10 @@ public class EditorScreen implements Screen {
     // callback function for ChargeActor pucks
     private final ChargeActor.DragCallback drag_callback = new ChargeActor.DragCallback() {
         @Override
-        public void out_of_bounds(ChargeActor charge) {
+        public void out_of_bounds(ChargeActor charge, boolean dragged) {
             ChargeActor partner = charge.get_partner();
             remove_puck(charge);
-            if (partner != null && partner.check_out_of_world()) {
+            if (partner != null && ((dragged && symmetry_tool.is_enabled()) || partner.check_out_of_world())) {
                 remove_puck(partner);
             }
         }

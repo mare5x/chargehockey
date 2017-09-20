@@ -49,7 +49,6 @@ public abstract class FilePicker {
             }
         });
 
-//        show_dir(Gdx.files.external(""));
         show_dir(get_root_path());
     }
 
