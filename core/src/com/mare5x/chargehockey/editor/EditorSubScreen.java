@@ -40,6 +40,7 @@ class EditorSubScreen extends BaseMenuScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 parent_screen.clear_level();
+                back_key_pressed();
             }
         });
 

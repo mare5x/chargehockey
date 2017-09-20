@@ -61,6 +61,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 parent_screen.restart_level();
+                set_screen(parent_screen);
             }
         });
 

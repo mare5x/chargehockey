@@ -380,19 +380,20 @@ public class GameLogic {
 
     private void reset_pucks() {
         PuckActor puck;
-        for (int i = 0; i < level.get_puck_states().size; i++) {
-            final ChargeState state = level.get_puck_states().get(i);
-            puck = puck_actors.get(i);
+        int puck_idx = 0;
+        for (final ChargeState state : level.get_puck_states()) {
+            puck = puck_actors.get(puck_idx);
             puck.set_position(state.x, state.y);
             puck.reset();
 
             if (state.partner != null) {
-                i++;
+                puck_idx++;
 
-                puck = puck_actors.get(i);
+                puck = puck_actors.get(puck_idx);
                 puck.set_position(state.partner.x, state.partner.y);
                 puck.reset();
             }
+            puck_idx++;
         }
         tmp_vec.setZero();
         force_vec.setZero();
