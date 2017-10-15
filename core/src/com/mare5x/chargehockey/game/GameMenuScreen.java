@@ -42,6 +42,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 parent_screen.save_charge_state(Level.SAVE_TYPE.QUICKSAVE);
+                show_notification("QUICKSAVED");
             }
         });
 
@@ -52,6 +53,8 @@ class GameMenuScreen extends ScrollableMenuScreen {
                 if (!parent_screen.load_charge_state(Level.SAVE_TYPE.QUICKSAVE)) {
                     // probably the file doesn't exist
                     show_notification("FAILED TO LOAD QUICKSAVE");
+                } else {
+                    set_screen(parent_screen);
                 }
             }
         });
