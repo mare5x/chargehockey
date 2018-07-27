@@ -7,6 +7,7 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.mare5x.chargehockey.editor.PermissionTools;
 
+// This is the entry point of the game.
 public class AndroidLauncher extends AndroidApplication {
     private AndroidChargeHockeyGame game;
 

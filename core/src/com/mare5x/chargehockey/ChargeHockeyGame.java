@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.TextureAtlasLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -36,6 +37,9 @@ abstract public class ChargeHockeyGame extends Game {
 
     public static final Rectangle WORLD_RECT = new Rectangle(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
+    private static final boolean LOG_FPS = true;
+    private static final FPSLogger fps_logger = new FPSLogger();
+
 	public SpriteBatch batch;
     public Skin skin;
     public TextureAtlas sprites;
@@ -47,7 +51,6 @@ abstract public class ChargeHockeyGame extends Game {
     public GridSprites grid_sprites;
 
     // platform specific abstract methods
-
     public abstract PermissionTools get_permission_tools();
 
     public abstract FilePicker get_file_picker();
@@ -109,6 +112,14 @@ abstract public class ChargeHockeyGame extends Game {
         menu_screen = new MenuScreen(this);
         setScreen(menu_screen);
 	}
+
+    @Override
+    public void render() {
+	    if (LOG_FPS)
+	        fps_logger.log();
+
+        super.render();
+    }
 
     @Override
 	public void dispose () {
