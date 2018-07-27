@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.game.CameraController;
+import com.mare5x.chargehockey.game.GameScreen;
 
 
 public class ChargeActor extends Actor {
@@ -137,7 +138,11 @@ public class ChargeActor extends Actor {
                     if (partner != null) {
                         partner.set_size(charge_size, true);
                     }
-                    super.touchUp(event, x, y, pointer, button);
+                    if (!isDragging()) {  // clicked (not dragged)
+                        dragStop(event, x, y, pointer);
+                        cancel();
+                    } else
+                        super.touchUp(event, x, y, pointer, button);
                 }
 
                 @Override
@@ -308,7 +313,7 @@ public class ChargeActor extends Actor {
 
     private boolean check_below_view() {
         Rectangle camera_rect = CameraController.get_camera_rect((OrthographicCamera) getStage().getCamera());
-        return get_y() < camera_rect.getY();
+        return get_y() < (camera_rect.getY() + GameScreen.CHARGE_ZONE_PERCENT_HEIGHT * camera_rect.getHeight());
     }
 
     public boolean check_out_of_world() {

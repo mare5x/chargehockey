@@ -98,7 +98,7 @@ public class GameLogic {
         }
     }
 
-    private ChargeActor add_charge(CHARGE charge_type, float x, float y) {
+    public ChargeActor add_charge(CHARGE charge_type, float x, float y) {
         ChargeActor charge = new ChargeActor(game, charge_type, new ChargeActor.DragCallback() {
             @Override
             public void out_of_bounds(ChargeActor charge, boolean dragged) {

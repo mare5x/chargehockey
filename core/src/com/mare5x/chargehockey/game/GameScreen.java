@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -39,6 +41,75 @@ import com.mare5x.chargehockey.settings.SettingsFile;
 public class GameScreen implements Screen {
     private enum WinDialogBUTTON {
         BACK, SHARE, NEXT
+    }
+
+    // Helper DragListener for adding charges
+    // Add a charge by dragging or by clicking on it to add it to the center
+    // Propagate the events down to the newly added charge (game_stage) so it can be dragged
+//    If click detection unnecessary:
+//        charge_neg_button.addCaptureListener(new DragListener() {
+//            @Override
+//            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+//                if (!game_logic.is_playing()) {
+//                    // x and y are in local button space coordinates
+//                    Vector2 coords = new Vector2(event.getStageX(), event.getStageY());
+//                    coords.y = Gdx.graphics.getHeight() - 1 - coords.y;  // (0,0) in top left corner
+//                    game_stage.screenToStageCoordinates(coords);
+//                    game_logic.add_charge(CHARGE.NEGATIVE, coords.x, coords.y);
+//                }
+//                event.stop();
+//                return false;
+//            }
+//        });
+    private class ChargeDragger extends DragListener {
+        private boolean clicked = true;
+        private Vector2 tmp_coords = new Vector2();
+        private CHARGE charge_type;
+
+        ChargeDragger(CHARGE type) {
+            charge_type = type;
+        }
+
+        @Override
+        public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            clicked = true;
+            return super.touchDown(event, x, y, pointer, button);
+        }
+
+        @Override
+        public void dragStart(InputEvent event, float x, float y, int pointer) {
+            if (!game_logic.is_playing()) {
+                // x and y are in local button space coordinates
+                hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
+                game_stage.screenToStageCoordinates(tmp_coords);
+                game_logic.add_charge(charge_type, tmp_coords.x, tmp_coords.y);
+
+                hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
+                game_stage.touchDown((int)tmp_coords.x, (int)tmp_coords.y, pointer, getButton());
+            }
+            clicked = false;
+        }
+
+        @Override
+        public void touchDragged(InputEvent event, float x, float y, int pointer) {
+            super.touchDragged(event, x, y, pointer);
+
+            hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
+            game_stage.touchDragged((int)tmp_coords.x, (int)tmp_coords.y, pointer);
+        }
+
+        @Override
+        public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+            super.touchUp(event, x, y, pointer, button);
+
+            if (clicked) {
+                if (!game_logic.is_playing())
+                    game_logic.add_charge(charge_type);
+            } else {
+                hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
+                game_stage.touchUp((int)tmp_coords.x, (int)tmp_coords.y, pointer, button);
+            }
+        }
     }
 
     private final ChargeHockeyGame game;
@@ -64,6 +135,10 @@ public class GameScreen implements Screen {
 
     private final InputMultiplexer multiplexer;
 
+    // the height of the rectangle at the bottom of the screen from where charges are added and to
+    // where they must be dragged to remove them
+    public static final float CHARGE_ZONE_PERCENT_HEIGHT = 0.15f;
+
     public GameScreen(final ChargeHockeyGame game, final Level level) {
         this.game = game;
         this.level = level;
@@ -72,8 +147,9 @@ public class GameScreen implements Screen {
 
         int w = Gdx.graphics.getWidth();
         int h = Gdx.graphics.getHeight();
-        float edit_aspect_ratio = w / (h * 0.8f);
-        game_stage = new Stage(new FillViewport(edit_aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
+        float aspect_ratio = w / (float)(h);
+        // the game_stage will span the whole screen (see resize())
+        game_stage = new Stage(new FillViewport(aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
 
@@ -136,23 +212,11 @@ public class GameScreen implements Screen {
         symmetry_tool_button.pad(10);
 
         Button charge_pos_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("charge_pos")));
-        charge_pos_button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!game_logic.is_playing())
-                    game_logic.add_charge(CHARGE.POSITIVE);
-            }
-        });
+        charge_pos_button.addListener(new ChargeDragger(CHARGE.POSITIVE));
         charge_pos_button.pad(10);
 
         Button charge_neg_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("charge_neg")));
-        charge_neg_button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!game_logic.is_playing())
-                    game_logic.add_charge(CHARGE.NEGATIVE);
-            }
-        });
+        charge_neg_button.addListener(new ChargeDragger(CHARGE.NEGATIVE));
         charge_neg_button.pad(10);
 
         play_button = new PlayButton();
@@ -168,8 +232,8 @@ public class GameScreen implements Screen {
         hud_table.setFillParent(true);
 
         Table button_table = new Table();
-        button_table.setBackground(game.skin.getDrawable("pixels/px_black"));
-        button_table.defaults().size(Value.percentHeight(0.6f, button_table)).space(24);
+        button_table.setBackground(game.skin.getDrawable("pixels/px_grey_opaque"));
+        button_table.defaults().size(Value.percentWidth(0.15f, hud_table)).space(Value.percentWidth(0.125f, hud_table));
         button_table.add(play_button);
         button_table.add(charge_pos_button);
         button_table.add(charge_neg_button);
@@ -178,7 +242,7 @@ public class GameScreen implements Screen {
         hud_table.add(menu_button).pad(15).expandX().right().size(Value.percentWidth(0.15f, hud_table)).row();
         hud_table.defaults().colspan(2);
         hud_table.add().expand().fill().row();
-        hud_table.add(button_table).height(Value.percentHeight(0.2f, hud_table)).expandX().fill();
+        hud_table.add(button_table).height(Value.percentHeight(CHARGE_ZONE_PERCENT_HEIGHT, hud_table)).expandX().fill();
 
         hud_stage.addActor(hud_table);
 
@@ -334,7 +398,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        game_stage.getViewport().setScreenBounds(0, (int) (height * 0.2f), width, (int) (height * 0.8f));
+        game_stage.getViewport().setScreenBounds(0, 0, width, height);
 
         hud_stage.getViewport().setScreenBounds(0, 0, width, height);
 

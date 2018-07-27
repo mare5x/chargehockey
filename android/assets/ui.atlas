@@ -241,7 +241,7 @@ vertical_knob
   index: -1
 
 ui2.png
-size: 16,8
+size: 32,8
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -280,23 +280,30 @@ pixels/px_grey
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_purple
+pixels/px_grey_opaque
   rotate: false
   xy: 8, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_white
+pixels/px_purple
   rotate: false
   xy: 11, 5
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_white_opaque
+pixels/px_white
   rotate: false
   xy: 11, 2
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+pixels/px_white_opaque
+  rotate: false
+  xy: 14, 5
   size: 1, 1
   orig: 1, 1
   offset: 0, 0

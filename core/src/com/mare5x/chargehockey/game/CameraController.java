@@ -150,10 +150,11 @@ public class CameraController {
 
     protected void on_zoom_change(float zoom) { }
 
+    /* Return the Rectangle of the current camera view in world coordinates. */
     public static Rectangle get_camera_rect(OrthographicCamera camera) {
         float x = camera.position.x - camera.viewportWidth / 2f * camera.zoom;
         float y = camera.position.y - camera.viewportHeight / 2f * camera.zoom;
-        return new Rectangle(x, y, camera.viewportWidth, camera.viewportHeight);
+        return new Rectangle(x, y, camera.viewportWidth * camera.zoom, camera.viewportHeight * camera.zoom);
     }
 
     private class CameraControllerImpl extends GestureDetector.GestureAdapter {
