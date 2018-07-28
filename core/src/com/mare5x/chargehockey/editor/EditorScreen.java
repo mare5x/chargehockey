@@ -18,7 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -36,6 +36,8 @@ import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.notifications.EditorPaintTipNotification;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
+
+import static com.mare5x.chargehockey.game.GameScreen.CHARGE_ZONE_PERCENT_HEIGHT;
 
 
 public class EditorScreen implements Screen {
@@ -114,9 +116,10 @@ public class EditorScreen implements Screen {
 
         camera = new OrthographicCamera();
 
-        float edit_aspect_ratio = Gdx.graphics.getWidth() / (Gdx.graphics.getHeight() * 0.8f);
-        edit_stage = new Stage(new FillViewport(edit_aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
+        float aspect_ratio = Gdx.graphics.getWidth() / (float)Gdx.graphics.getHeight();
+        edit_stage = new Stage(new FillViewport(aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
+        camera.zoom = 0.8f;
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
@@ -188,10 +191,53 @@ public class EditorScreen implements Screen {
         show_grid_button.setChecked(show_grid);
         show_grid_button.pad(10);
 
-        puck_button = new Button();
-        TextureRegionDrawable puck_drawable_on = new TextureRegionDrawable(game.sprites.findRegion("puck"));
-        Drawable puck_drawable_off = puck_drawable_on.tint(game.skin.getColor("grey"));
-        puck_button.setStyle(new Button.ButtonStyle(puck_drawable_off, puck_drawable_off, puck_drawable_on));
+        puck_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("puck")));
+        // Helper DragListener for adding pucks with the puck button (see GameScreen for ChargeDragger)
+        // Add a puck by dragging or by clicking on it to add it to the center
+        // Propagate the events down to the newly added puck (edit_stage) so it can be dragged
+        puck_button.addListener(new DragListener() {
+            private boolean clicked = true;
+            private Vector2 tmp_coords = new Vector2();
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                clicked = true;
+                return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void dragStart(InputEvent event, float x, float y, int pointer) {
+                // x and y are in local button space coordinates
+                hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
+                edit_stage.screenToStageCoordinates(tmp_coords);
+                place_puck(tmp_coords.x, tmp_coords.y, true);
+
+                hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
+                edit_stage.touchDown((int)tmp_coords.x, (int)tmp_coords.y, pointer, getButton());
+
+                clicked = false;
+            }
+
+            @Override
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                super.touchDragged(event, x, y, pointer);
+
+                hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
+                edit_stage.touchDragged((int)tmp_coords.x, (int)tmp_coords.y, pointer);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+
+                if (clicked) {
+                    place_puck();
+                } else {
+                    hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
+                    edit_stage.touchUp((int)tmp_coords.x, (int)tmp_coords.y, pointer, button);
+                }
+            }
+        });
         puck_button.pad(10);
 
         edit_icon = new EditIcon();
@@ -200,8 +246,8 @@ public class EditorScreen implements Screen {
         hud_table.setFillParent(true);
 
         Table button_table = new Table();
-        button_table.setBackground(game.skin.getDrawable("pixels/px_black"));
-        button_table.defaults().size(Value.percentHeight(0.6f, button_table)).space(24);
+        button_table.setBackground(game.skin.getDrawable("pixels/px_grey_opaque"));
+        button_table.defaults().size(Value.percentWidth(0.15f, hud_table)).space(Value.percentWidth(0.125f, hud_table));
         button_table.add(grid_item_button);
         button_table.add(puck_button);
         button_table.add(show_grid_button);
@@ -213,7 +259,7 @@ public class EditorScreen implements Screen {
 
         hud_table.defaults().colspan(3);
         hud_table.add().expand().fill().row();
-        hud_table.add(button_table).height(Value.percentHeight(0.2f, hud_table)).expandX().fill();
+        hud_table.add(button_table).height(Value.percentHeight(CHARGE_ZONE_PERCENT_HEIGHT, hud_table)).expandX().fill();
 
         hud_stage.addActor(hud_table);
 
@@ -241,7 +287,14 @@ public class EditorScreen implements Screen {
         return puck;
     }
 
-    private void place_puck(float x, float y) {
+    /* Add a puck to the center of the screen. */
+    private void place_puck() {
+        place_puck(edit_stage.getCamera().position.x, edit_stage.getCamera().position.y, false);
+    }
+
+    /** Place a puck at the given position, keeping the symmetry tool and dragging in mind.
+     *  Dragging determines whether to perform out of bounds checking now or when dragging is finished. */
+    private void place_puck(float x, float y, boolean dragged) {
         ChargeActor puck1 = add_puck(x, y);
 
         if (symmetry_tool.is_enabled()) {
@@ -252,10 +305,12 @@ public class EditorScreen implements Screen {
             puck1.set_partner(puck2);
             puck2.set_partner(puck1);
 
-            if (puck2.check_out_of_world()) {
+            if (!dragged && puck2.check_out_of_world())
                 remove_puck(puck2);
-            }
         }
+
+        if (!dragged && puck1.check_out_of_world())
+            remove_puck(puck1);
     }
 
     private void remove_puck(ChargeActor puck) {
@@ -361,7 +416,7 @@ public class EditorScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        edit_stage.getViewport().setScreenBounds(0, (int) (height * 0.2f), width, (int) (height * 0.8f));
+        edit_stage.getViewport().setScreenBounds(0, 0, width, height);
 
         hud_stage.getViewport().setScreenBounds(0, 0, width, height);
 
@@ -432,10 +487,7 @@ public class EditorScreen implements Screen {
             // finish moving
             if (is_moving()) return true;
 
-            if (puck_button.isChecked())
-                place_puck(x, y);
-            else
-                place_tile(x, y, grid_item_button.get_selected_item());
+            place_tile(x, y, grid_item_button.get_selected_item());
 
             return true;
         }
