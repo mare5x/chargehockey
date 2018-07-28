@@ -80,25 +80,39 @@ public class GameLogic {
         game_stage.addActor(initial_puck);
     }
 
-    /** Add a charge of type charge_type to the center of the camera position. If the symmetry tool is
-     * enabled, it appropriately connects the two added charges. */
-    void add_charge(CHARGE charge_type) {
+    /** Place a charge at the center of the screen, keeping the symmetry tool in mind. */
+    void place_charge(CHARGE charge_type) {
+        place_charge(charge_type, game_stage.getCamera().position.x, game_stage.getCamera().position.y, false);
+    }
+
+    /** Place a charge at the given position, keeping the symmetry tool in mind. */
+    void place_charge(CHARGE charge_type, float x, float y) {
+        place_charge(charge_type, x, y, true);
+    }
+
+    /** Place a charge at the given position, keeping the symmetry tool and dragging in mind.
+     *  Dragging determines whether to perform out of bounds checking now or when dragging is finished. */
+    void place_charge(CHARGE charge_type, float x, float y, boolean dragged) {
+        ChargeActor charge1;
         if (symmetry_tool.is_enabled()) {
-            ChargeActor charge1 = add_charge(charge_type, game_stage.getCamera().position.x, game_stage.getCamera().position.y);
+            charge1 = add_charge(charge_type, x, y);
             symmetry_tool.get_symmetrical_pos(tmp_vec.set(charge1.get_x(), charge1.get_y()));
             ChargeActor charge2 = add_charge(charge_type, tmp_vec.x, tmp_vec.y);
 
             charge1.set_partner(charge2);
             charge2.set_partner(charge1);
 
-            if (charge2.check_out_of_world())
+            if (!dragged && charge2.check_out_of_world())
                 remove_charge(charge2);
         } else {
-            add_charge(charge_type, game_stage.getCamera().position.x, game_stage.getCamera().position.y);
+            charge1 = add_charge(charge_type, x, y);
         }
+
+        if (!dragged && charge1.check_out_of_world())
+            remove_charge(charge1);
     }
 
-    public ChargeActor add_charge(CHARGE charge_type, float x, float y) {
+    private ChargeActor add_charge(CHARGE charge_type, float x, float y) {
         ChargeActor charge = new ChargeActor(game, charge_type, new ChargeActor.DragCallback() {
             @Override
             public void out_of_bounds(ChargeActor charge, boolean dragged) {

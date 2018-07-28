@@ -82,7 +82,7 @@ public class GameScreen implements Screen {
                 // x and y are in local button space coordinates
                 hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
                 game_stage.screenToStageCoordinates(tmp_coords);
-                game_logic.add_charge(charge_type, tmp_coords.x, tmp_coords.y);
+                game_logic.place_charge(charge_type, tmp_coords.x, tmp_coords.y);
 
                 hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
                 game_stage.touchDown((int)tmp_coords.x, (int)tmp_coords.y, pointer, getButton());
@@ -104,7 +104,7 @@ public class GameScreen implements Screen {
 
             if (clicked) {
                 if (!game_logic.is_playing())
-                    game_logic.add_charge(charge_type);
+                    game_logic.place_charge(charge_type);
             } else {
                 hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
                 game_stage.touchUp((int)tmp_coords.x, (int)tmp_coords.y, pointer, button);
@@ -145,9 +145,7 @@ public class GameScreen implements Screen {
 
         camera = new OrthographicCamera();
 
-        int w = Gdx.graphics.getWidth();
-        int h = Gdx.graphics.getHeight();
-        float aspect_ratio = w / (float)(h);
+        float aspect_ratio = Gdx.graphics.getWidth() / (float)(Gdx.graphics.getHeight());
         // the game_stage will span the whole screen (see resize())
         game_stage = new Stage(new FillViewport(aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
         camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
