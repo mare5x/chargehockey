@@ -45,6 +45,8 @@ public abstract class BaseMenuScreen implements Screen {
 
         stage.addActor(table);
 
+        stage.setDebugAll(true);
+
         InputAdapter back_key_processor = new InputAdapter() {  // same as return button
             @Override
             public boolean keyUp(int keycode) {
@@ -57,11 +59,7 @@ public abstract class BaseMenuScreen implements Screen {
         input_multiplexer = new InputMultiplexer(stage, back_key_processor);
     }
 
-    protected void add_back_button() {
-        add_back_button(1);
-    }
-
-    protected void add_back_button(int colspan) {
+    private Button make_back_button() {
         Button back_button = new Button(game.skin, "back");
         back_button.addListener(new ClickListener() {
             @Override
@@ -70,8 +68,22 @@ public abstract class BaseMenuScreen implements Screen {
             }
         });
         back_button.pad(10);
+        return back_button;
+    }
 
-        table.add(back_button).colspan(colspan).pad(15).size(2 * MIN_BUTTON_HEIGHT, MIN_BUTTON_HEIGHT).left().top().row();
+    protected void add_back_button() {
+        add_back_button(1);
+    }
+
+    protected void add_back_button(int colspan) {
+        add_back_button(colspan, true);
+    }
+
+    protected void add_back_button(int colspan, boolean new_row) {
+        Button back_button = make_back_button();
+        table.add(back_button).colspan(colspan).pad(15).size(2 * MIN_BUTTON_HEIGHT * 0.75f, MIN_BUTTON_HEIGHT * 0.75f).left().top();
+        if (new_row)
+            table.row();
     }
 
     abstract protected void back_key_pressed();

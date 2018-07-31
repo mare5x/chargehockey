@@ -24,19 +24,32 @@ public class LevelSelector {
     private Level selected_level = null;
 
     public LevelSelector(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
+        this(game, level_type, false);
+    }
+
+    public LevelSelector(final ChargeHockeyGame game, LEVEL_TYPE level_type, boolean edit_mode) {
         this.level_type = level_type;
 
-        LevelList.SelectionListener selection_listener = new LevelList.SelectionListener() {
+        LevelList.LevelListCallback selection_listener = new LevelList.LevelListCallback() {
             @Override
-            public void changed(String selected) {
-                selected_level = load_selected_level(true);
+            public void changed(String level_name) {
+                load_level(level_name);
                 if (selected_level != null) {
                     preview_fbo.set_level(selected_level);
                     preview_fbo.update(game.batch);
                 }
             }
+
+            @Override
+            public boolean delete_requested(String level_name, boolean selected) {
+                if (selected)
+                    remove_selected_level(false);
+                else
+                    remove_level_data(level_name);
+                return true;
+            }
         };
-        list = new LevelList(game, selection_listener, level_type);
+        list = new LevelList(game, selection_listener, level_type, edit_mode);
 
         scroll_pane = new ScrollPane(list, game.skin);
         scroll_pane.setScrollingDisabled(true, false);
@@ -62,22 +75,32 @@ public class LevelSelector {
     }
 
     public void remove_selected_level() {
-        String name = get_selected_name();
-        if (name != null) {
-            FileHandle dir = get_level_dir_fhandle(level_type, name);
+        remove_selected_level(true);
+    }
+
+    private void remove_selected_level(boolean remove_entry) {
+        if (selected_level == null) return;
+
+        if (remove_entry) list.remove_selected_entry();
+        preview_fbo.clear();
+        remove_level_data(selected_level.get_name());
+
+        selected_level = null;
+    }
+
+    /* Warning! the level data gets permanently removed. */
+    private void remove_level_data(String level_name) {
+        if (level_name != null) {
+            FileHandle dir = get_level_dir_fhandle(level_type, level_name);
             if (dir.exists())
                 dir.deleteDirectory();
-
-            list.remove_selected_level();
-            preview_fbo.clear();
         }
-        selected_level = null;
     }
 
     public void add_level(String level_name) {
         if (!level_name.isEmpty()) {
             if (!list.contains(level_name)) {
-                list.add_level(level_name, false);
+                list.add_entry(level_name, false);
             } else {
                 list.select(level_name);
             }
@@ -99,11 +122,15 @@ public class LevelSelector {
         if (selected_level != null)
             return selected_level;
 
-        final String level_name = get_selected_name();
-        if (level_name != null) {
-            return new Level(level_name, level_type);
-        }
-        return null;
+        final String level_name = list.get_selected_name();
+        return load_level(level_name);
+    }
+
+    private Level load_level(String level_name) {
+        selected_level = null;
+        if (level_name != null)
+            selected_level = new Level(level_name, level_type);
+        return selected_level;
     }
 
     public void select(String level_name) {
@@ -121,12 +148,12 @@ public class LevelSelector {
 
     /** Returns whether any level is currently selected. */
     public boolean is_selected() {
-        return list.get_selected_name() != null;
+        return list.is_selected();
     }
 
     /** Returns whether there are any levels in the level list. */
     public boolean is_empty() {
-        return list.get_level_list_size() == 0;
+        return list.is_empty();
     }
 
     /** Returns the number of levels. */

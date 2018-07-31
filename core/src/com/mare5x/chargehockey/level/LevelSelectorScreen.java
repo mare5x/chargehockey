@@ -40,7 +40,7 @@ public class LevelSelectorScreen extends BaseMenuScreen {
 
         add_back_button();
         table.add(level_selector.get_selector_table()).pad(5, 15, 5, 15).expand().fill().row();
-        table.add(play_button).pad(15).size(Value.percentWidth(0.3f, table));
+        table.add(play_button).pad(15).size(1.75f * MIN_BUTTON_HEIGHT).padBottom(Value.percentHeight(0.05f, table));
 
         if (level_selector.is_empty()) {
             show_notification("NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.", 3);

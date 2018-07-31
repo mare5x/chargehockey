@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -35,16 +34,7 @@ class EditorMenuScreen extends BaseMenuScreen {
 
         input_dialog = new InputDialog("ADD LEVEL", game.skin);
 
-        level_selector = new LevelSelector(game, LEVEL_TYPE.CUSTOM);
-
-        Button back_button = new Button(game.skin, "back");
-        back_button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                back_key_pressed();
-            }
-        });
-        back_button.pad(10);
+        level_selector = new LevelSelector(game, LEVEL_TYPE.CUSTOM, true);
 
         Button play_button = new Button(game.skin, "play");
         play_button.addListener(new ClickListener() {
@@ -76,26 +66,11 @@ class EditorMenuScreen extends BaseMenuScreen {
         });
         add_button.pad(10);
 
-        Button remove_button = new Button(game.skin, "remove");
-        remove_button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                level_selector.remove_selected_level();
-            }
-        });
-        remove_button.pad(10);
-
-        Table left_subtable = new Table();
-
-        Value twidth = Value.percentWidth(0.9f, left_subtable);
-
-        left_subtable.add(add_button).padBottom(30).size(twidth).expand().row();
-        left_subtable.add(remove_button).size(twidth).expand();
-
-        add_back_button();
-        table.add(left_subtable).pad(15).width(Value.percentWidth(0.25f, table)).expandY().fillY();
+        add_back_button(1, false);
+        table.add(add_button).pad(15).size(MIN_BUTTON_HEIGHT).expandX().right().row();
+        table.defaults().colspan(2);
         table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
-        table.add(play_button).pad(15).colspan(2).size(Value.percentWidth(0.3f, table));
+        table.add(play_button).pad(15).size(1.75f * MIN_BUTTON_HEIGHT);
 
         if (level_selector.is_empty()) {
             remove_notification();
