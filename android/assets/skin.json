@@ -67,6 +67,14 @@
             "up": "grid_off",
             "down": "grid_on",
             "checked": "grid_on"
+        },
+
+        "star": {
+            "up": "star"
+        },
+
+        "star_empty": {
+            "up": "star_empty"
         }
     },
 

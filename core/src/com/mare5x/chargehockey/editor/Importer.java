@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.StreamUtils;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
-import com.mare5x.chargehockey.level.LevelSelector;
 import com.mare5x.chargehockey.notifications.TextNotification;
 
 import java.io.BufferedReader;
@@ -64,7 +63,7 @@ class Importer {
             String extension = path.extension();
             String name = path.nameWithoutExtension();
             if (extension.equals("grid")) {
-                path.copyTo(LevelSelector.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name));
+                path.copyTo(Level.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name));
                 show_notification(String.format(Locale.US, "IMPORTED %s", name));
             } else if (extension.equals("save")) {
                 if (import_save(path, Level.SAVE_TYPE.AUTO))
@@ -97,7 +96,7 @@ class Importer {
     private boolean import_level(FileHandle grid_path) {
         if (grid_path.extension().equals("grid")) {
             String name = grid_path.nameWithoutExtension();
-            grid_path.copyTo(LevelSelector.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name));
+            grid_path.copyTo(Level.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name));
 
             FileHandle save_file = grid_path.sibling(name + ".save");
             if (save_file.exists())
@@ -115,8 +114,8 @@ class Importer {
     /** NOTE: Assumes that path points to an existing, valid .save file. */
     private boolean import_save(FileHandle path, Level.SAVE_TYPE save_type) {
         String name = path.nameWithoutExtension();
-        if (LevelSelector.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name).exists()) {  // a save file without a grid would be useless
-            FileHandle save_path = LevelSelector.get_level_save_fhandle(LEVEL_TYPE.CUSTOM, name, save_type);
+        if (Level.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name).exists()) {  // a save file without a grid would be useless
+            FileHandle save_path = Level.get_level_save_fhandle(LEVEL_TYPE.CUSTOM, name, save_type);
 
             // manually copy the save file, but first reset the save file header, so that the
             // level completion flag gets reset. this is necessary because once the flag is set, it's 'permanent'

@@ -45,7 +45,7 @@ public abstract class BaseMenuScreen implements Screen {
 
         stage.addActor(table);
 
-        stage.setDebugAll(true);
+//        stage.setDebugAll(true);
 
         InputAdapter back_key_processor = new InputAdapter() {  // same as return button
             @Override

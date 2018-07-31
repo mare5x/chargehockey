@@ -42,7 +42,7 @@ class LevelList extends VerticalGroup {
         }
 
         private boolean check_if_finished(String name, LEVEL_TYPE level_type) {
-            FileHandle save_file = LevelSelector.get_level_save_fhandle(level_type, name);
+            FileHandle save_file = Level.get_level_save_fhandle(level_type, name);
             if (!save_file.exists()) return false;
 
             BufferedReader reader = save_file.reader(8, "UTF-8");
@@ -68,10 +68,7 @@ class LevelList extends VerticalGroup {
 
     class LevelListEntry extends Table {
         private final TextButton name_button;
-        private final String name;
-
-        private boolean long_pressed = false;  // so the clicked and longpress listeners don't interfere
-        private boolean in_delete_state = false;
+        private String name;
 
         LevelListEntry(String name, boolean level_finished) {
             this.name = name;
@@ -83,72 +80,39 @@ class LevelList extends VerticalGroup {
             name_button.addListener(new ActorGestureListener() {
                 @Override
                 public boolean longPress(Actor actor, float x, float y) {
-                    if (!edit_mode_enabled) return false;
-
-                    long_pressed = true;
-                    if (selected_entry == LevelListEntry.this) {
-                        if (is_in_delete_state())
-                            unselect();
-                        else
-                            prepare_delete();
-                    } else {
-                        if (selected_entry != null)
-                            selected_entry.unselect();
-
-                        LevelListEntry.this.prepare_delete();
+                    if (select_on_long_press)
                         LevelList.this.select(LevelListEntry.this);
-                    }
+                    callbacks.long_pressed(get_name());
                     return false;
                 }
             });
             name_button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    if (!edit_mode_enabled) {
-                        LevelList.this.select(LevelListEntry.this);
-                        return;
-                    }
-                    if (!long_pressed && in_delete_state && selected_entry == LevelListEntry.this) {
-                        if (callbacks.delete_requested(get_name(), true))
-                            remove_entry(LevelListEntry.this);
-                    } else {
-                        LevelList.this.select(LevelListEntry.this);
-                    }
-                    long_pressed = false;
+                    LevelList.this.select(LevelListEntry.this);
                 }
             });
 
             add(name_button).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.6f, LevelList.this)).padRight(10).expandX().fill();
 
-            if (level_finished) {
-                add(new Image(game.skin.getDrawable("star"))).size(MIN_BUTTON_HEIGHT);
-            } else {
-                add(new Image(game.skin.getDrawable("star_empty"))).size(MIN_BUTTON_HEIGHT);
-            }
+            add(new Image(game.skin.getDrawable(level_finished ? "star" : "star_empty"))).size(MIN_BUTTON_HEIGHT);
 
             pad(5);
         }
 
         final String get_name() { return name; }
 
+        void set_name(String new_name) {
+            name = new_name;
+            name_button.setText(new_name);
+        }
+
         int get_index() {
             return LevelList.this.getChildren().indexOf(LevelListEntry.this, true);
         }
 
-        boolean is_in_delete_state() { return in_delete_state; }
-
-        void prepare_delete() {
-            name_button.setText("DELETE");
-            in_delete_state = true;
-        }
-
         void unselect() {
             name_button.setChecked(false);
-
-            if (edit_mode_enabled && in_delete_state) {
-                name_button.setText(name);
-                in_delete_state = false;
-            }
         }
 
         void select() {
@@ -156,25 +120,25 @@ class LevelList extends VerticalGroup {
         }
     }
 
-    interface LevelListCallback {
-        void changed(String level_name);  // Called whenever the selection changes
-        boolean delete_requested(String level_name, boolean selected);  // Only called in edit mode, return true to remove the entry
+    abstract static class LevelListCallback {
+        abstract void changed(String level_name);  // Called whenever the selection changes
+        void long_pressed(String level_name) {  }  // select_on_long_press determines if this entry gets selected
     }
 
     private final ChargeHockeyGame game;
     private final LevelListCallback callbacks;
 
     private LevelListEntry selected_entry = null;
-    private boolean edit_mode_enabled;  // if in edit mode, allow deletion of entries by long pressing
 
-    LevelList(ChargeHockeyGame game, LevelListCallback callbacks, LEVEL_TYPE type, boolean edit_mode) {
+    private boolean select_on_long_press = false;
+
+    LevelList(ChargeHockeyGame game, LevelListCallback callbacks, LEVEL_TYPE type) {
         super();
 
         this.game = game;
         this.callbacks = callbacks;
-        this.edit_mode_enabled = edit_mode;
 
-        FileHandle dir = LevelSelector.get_levels_dir_fhandle(type);
+        FileHandle dir = Level.get_levels_dir_fhandle(type);
         if (!dir.exists())
             dir.mkdirs();
 
@@ -187,6 +151,8 @@ class LevelList extends VerticalGroup {
 
         invalidateHierarchy();
     }
+
+    void set_select_on_long_press(boolean select_on_long_press) { this.select_on_long_press = select_on_long_press; }
 
     private LevelListEntry add_entry(LevelData level) {
         LevelListEntry entry = new LevelListEntry(level.name(), level.is_finished());
@@ -225,6 +191,15 @@ class LevelList extends VerticalGroup {
         if (entry == selected_entry)
             selected_entry = null;
         invalidateHierarchy();
+    }
+
+    void rename_selected_entry(String new_name) {
+        if (selected_entry != null)
+            rename_entry(selected_entry, new_name);
+    }
+
+    private void rename_entry(LevelListEntry entry, String new_name) {
+        entry.set_name(new_name);
     }
 
     String get_selected_name() {

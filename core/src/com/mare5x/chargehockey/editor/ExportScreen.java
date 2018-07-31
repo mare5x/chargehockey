@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelector;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
@@ -82,7 +83,7 @@ class ExportScreen extends BaseMenuScreen {
 
     private void export_all(FileHandle target) {
         try {
-            LevelSelector.get_levels_dir_fhandle(LEVEL_TYPE.CUSTOM).copyTo(target);
+            Level.get_levels_dir_fhandle(LEVEL_TYPE.CUSTOM).copyTo(target);
             show_notification(String.format(Locale.US, "EXPORTED TO: %s", target.file().getAbsolutePath()));
         } catch (GdxRuntimeException e) {
             e.printStackTrace();
@@ -96,7 +97,7 @@ class ExportScreen extends BaseMenuScreen {
         target = target.child(level_name);
 
         try {
-            LevelSelector.get_level_dir_fhandle(LEVEL_TYPE.CUSTOM, level_name).copyTo(target);
+            Level.get_level_dir_fhandle(LEVEL_TYPE.CUSTOM, level_name).copyTo(target);
             show_notification(String.format(Locale.US, "EXPORTED TO: %s", target.file().getAbsolutePath()));
         } catch (GdxRuntimeException e) {
             e.printStackTrace();

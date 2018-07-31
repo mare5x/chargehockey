@@ -6,9 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
@@ -18,7 +21,8 @@ import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
 
 
 class EditorMenuScreen extends BaseMenuScreen {
-    private final InputDialog input_dialog;
+    private final AddInputDialog add_input_dialog;
+    private final EditInputDialog edit_input_dialog;
     private final LevelSelector level_selector;
 
     private enum DIALOG_BUTTON {
@@ -32,9 +36,16 @@ class EditorMenuScreen extends BaseMenuScreen {
     EditorMenuScreen(final ChargeHockeyGame game, final Level selected_level) {
         super(game);
 
-        input_dialog = new InputDialog("ADD LEVEL", game.skin);
+        add_input_dialog = new AddInputDialog(stage, "ADD LEVEL", game.skin);
+        edit_input_dialog = new EditInputDialog(stage, "EDIT LEVEL", game.skin);
 
-        level_selector = new LevelSelector(game, LEVEL_TYPE.CUSTOM, true);
+        level_selector = new LevelSelector(game, LEVEL_TYPE.CUSTOM) {
+            @Override
+            public void on_long_press(String level_name) {
+                edit_input_dialog.show(level_name);
+            }
+        };
+        level_selector.set_select_on_long_press(true);
 
         Button play_button = new Button(game.skin, "play");
         play_button.addListener(new ClickListener() {
@@ -61,7 +72,7 @@ class EditorMenuScreen extends BaseMenuScreen {
         add_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                input_dialog.show(stage);
+                add_input_dialog.show();
             }
         });
         add_button.pad(10);
@@ -92,11 +103,14 @@ class EditorMenuScreen extends BaseMenuScreen {
         dispose();
     }
 
-    private class InputDialog extends Dialog {
-        private final TextField name_input;
+    private class AddInputDialog extends Dialog {
+        final TextField name_input;
+        final Stage stage;
 
-        InputDialog(String title, Skin skin) {
+        AddInputDialog(Stage stage, String title, Skin skin) {
             super(title, skin);
+
+            this.stage = stage;
 
             setModal(true);
             setResizable(false);
@@ -107,14 +121,17 @@ class EditorMenuScreen extends BaseMenuScreen {
             getTitleTable().clear();
 
             name_input = new TextField("LEVEL NAME", game.skin);
-            getContentTable().add(name_input).space(15).width(get_input_width());
+            name_input.setAlignment(Align.center);
+
+            Table content_table = getContentTable();
+            content_table.add(name_input).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width()).row();
 
             Button cancel_button = new Button(game.skin, "cancel");
             cancel_button.pad(10);
             Button confirm_button = new Button(game.skin, "confirm");
             confirm_button.pad(10);
 
-            getButtonTable().defaults().size(Value.percentWidth(0.125f, table)).padTop(15).space(15).expandX().center();
+            getButtonTable().defaults().size(MIN_BUTTON_HEIGHT).padTop(15).space(15).expandX().center();
             button(cancel_button, DIALOG_BUTTON.CANCEL);
             button(confirm_button, DIALOG_BUTTON.CONFIRM);
         }
@@ -124,7 +141,7 @@ class EditorMenuScreen extends BaseMenuScreen {
             return stage.getWidth() * 0.8f;
         }
 
-        private Value get_input_width() {
+        Value get_input_width() {
             return new Value() {
                 @Override
                 public float get(Actor context) {
@@ -133,11 +150,16 @@ class EditorMenuScreen extends BaseMenuScreen {
             };
         }
 
-        @Override
-        public Dialog show(Stage stage) {
+        public Dialog show() {
+            return show("LEVEL NAME");
+        }
+
+        public Dialog show(String level_name) {
             super.show(stage);
 
             super.setPosition(stage.getWidth() / 2 - getWidth() / 2, (float) (stage.getHeight() * 0.8 - getHeight()));
+
+            name_input.setText(level_name);
 
             name_input.selectAll();  // select everything, so it's ready to be overwritten
             stage.setKeyboardFocus(name_input);
@@ -149,11 +171,52 @@ class EditorMenuScreen extends BaseMenuScreen {
         @Override
         protected void result(Object object) {
             if (object.equals(DIALOG_BUTTON.CONFIRM)) {
-                level_selector.add_level(name_input.getText());
+                on_confirm();
             }
-
-            name_input.getOnscreenKeyboard().show(false);
             hide();
+        }
+
+        @Override
+        public void hide() {
+            name_input.getOnscreenKeyboard().show(false);
+            super.hide();
+        }
+
+        protected void on_confirm() {
+            level_selector.add_level(name_input.getText());
+        }
+    }
+
+    private class EditInputDialog extends AddInputDialog {
+        String level_name;
+
+        EditInputDialog(Stage stage, String title, Skin skin) {
+            super(stage, title, skin);
+
+            TextButton delete_button = make_text_button("DELETE");
+            delete_button.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    level_selector.remove_selected_level();
+                    hide();
+                }
+            });
+//            TextButton export_button = make_text_button("EXPORT");
+
+            Table content_table = getContentTable();
+            content_table.add(delete_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width()).row();
+//            content_table.add(export_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width());
+        }
+
+        @Override
+        public Dialog show(String level_name) {
+            this.level_name = level_name;
+            return super.show(level_name);
+        }
+
+        @Override
+        protected void on_confirm() {
+            level_selector.rename_selected_level(name_input.getText());
         }
     }
 }

@@ -17,6 +17,12 @@ import java.io.Writer;
 import java.util.Locale;
 
 
+/** A Level contains everything necessary to load, display and save a level (grid, pucks, ...).
+ *  Each level is organized into a directory based on its type (EASY; MEDIUM ...). The level's
+ *  directory contains multiples files. The .grid file stores the grid and puck information.
+ *  The .save file stores the location of all placed charges - it is saved AUTOmatically. The optional
+ *  .csave file is quicksave .save file. The name of the directory and all files is the unique name
+ *  of the level.*/
 public class Level {
     public enum LEVEL_TYPE {
         EASY, MEDIUM, HARD, CUSTOM
@@ -32,7 +38,7 @@ public class Level {
 
     public static final String DEFAULT_HEADER = "0\n";
 
-    private final String name;
+    private String name;
     private final LEVEL_TYPE level_type;
 
     private final Grid grid;
@@ -91,7 +97,7 @@ public class Level {
     }
 
     public boolean save_file_exists() {
-        return LevelSelector.get_level_save_fhandle(level_type, name, SAVE_TYPE.AUTO).exists();
+        return get_level_save_fhandle(level_type, name, SAVE_TYPE.AUTO).exists();
     }
 
     /** Creates a new empty level file. */
@@ -109,7 +115,7 @@ public class Level {
     public void save_level(final Array<ChargeActor> puck_actors) {
         Gdx.app.log("Level", "saving level data");
 
-        FileHandle file = LevelSelector.get_level_grid_fhandle(level_type, name);
+        FileHandle file = get_level_grid_fhandle(level_type, name);
         Writer writer = file.writer(false, "UTF-8");
 
         try {
@@ -152,7 +158,7 @@ public class Level {
     private void load_level() {
         Gdx.app.log("Level", "loading level");
 
-        FileHandle file = LevelSelector.get_level_grid_fhandle(level_type, name);
+        FileHandle file = get_level_grid_fhandle(level_type, name);
         if (!file.exists())
             return;
 
@@ -193,7 +199,7 @@ public class Level {
     public void write_save_file(SAVE_TYPE save_type, Array<ChargeActor> charge_actors) {
         Gdx.app.log("Level", "saving charge state");
 
-        FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name, save_type);
+        FileHandle file = get_level_save_fhandle(level_type, name, save_type);
         Writer writer = file.writer(false, "UTF-8");
 
         try {
@@ -235,7 +241,7 @@ public class Level {
     public Array<ChargeState> load_save_file(SAVE_TYPE save_type) {
         Gdx.app.log("Level", "loading charge state");
 
-        FileHandle file = LevelSelector.get_level_save_fhandle(level_type, name, save_type);
+        FileHandle file = get_level_save_fhandle(level_type, name, save_type);
         if (!file.exists()) {
             return null;
         }
@@ -274,7 +280,7 @@ public class Level {
     /** NOTE: use this only when you want to write the header without changing the rest of
      * the .save file because this method is SLOW and inefficient. */
     public void write_save_header() {
-        FileHandle save_file = LevelSelector.get_level_save_fhandle(level_type, name);
+        FileHandle save_file = get_level_save_fhandle(level_type, name);
         if (!save_file.exists())
             return;
 
@@ -305,7 +311,64 @@ public class Level {
         tmp_file.moveTo(save_file);  // replace the save file
     }
 
+    public void rename(String new_name) {
+        FileHandle old_grid = get_level_grid_fhandle(level_type, name);
+        if (old_grid.exists()) {
+            FileHandle new_grid = get_level_grid_fhandle(level_type, new_name);
+            old_grid.moveTo(new_grid);
+        }
+
+        FileHandle old_save = get_level_save_fhandle(level_type, name, SAVE_TYPE.AUTO);
+        if (old_save.exists()) {
+            FileHandle new_save = get_level_save_fhandle(level_type, new_name, SAVE_TYPE.AUTO);
+            old_save.moveTo(new_save);
+        }
+
+        FileHandle old_csave = get_level_save_fhandle(level_type, name, SAVE_TYPE.QUICKSAVE);
+        if (old_csave.exists()) {
+            FileHandle new_csave = get_level_save_fhandle(level_type, new_name, SAVE_TYPE.QUICKSAVE);
+            old_csave.moveTo(new_csave);
+        }
+
+        FileHandle old_dir = get_level_dir_fhandle(level_type, name);
+        if (old_dir.exists()) {
+            FileHandle new_dir = get_level_dir_fhandle(level_type, new_name);
+            old_dir.moveTo(new_dir);
+        }
+
+        name = new_name;
+    }
+
     public final Array<ChargeState> get_puck_states() {
         return puck_states;
+    }
+
+    public static FileHandle get_level_grid_fhandle(LEVEL_TYPE level_type, String level_name) {
+        if (level_type == LEVEL_TYPE.CUSTOM)
+            return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.grid", level_type.name(), level_name, level_name));
+        return Gdx.files.internal(String.format(Locale.US, "LEVELS/%s/%s/%s.grid", level_type.name(), level_name, level_name));
+    }
+
+    /** Gets the level's save file, which is always in Gdx.files.local, since it has to be writable. */
+    public static FileHandle get_level_save_fhandle(LEVEL_TYPE level_type, String name) {
+        return get_level_save_fhandle(level_type, name, SAVE_TYPE.AUTO);
+    }
+
+    public static FileHandle get_level_save_fhandle(LEVEL_TYPE level_type, String name, SAVE_TYPE save_type) {
+        if (save_type == SAVE_TYPE.QUICKSAVE)
+            return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.csave", level_type.name(), name, name));
+        return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/%s.save", level_type.name(), name, name));  // AUTO
+    }
+
+    public static FileHandle get_level_dir_fhandle(LEVEL_TYPE level_type, String name) {
+        if (level_type == LEVEL_TYPE.CUSTOM)
+            return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/%s/", level_type.name(), name));
+        return Gdx.files.internal(String.format(Locale.US, "LEVELS/%s/%s/", level_type.name(), name));
+    }
+
+    public static FileHandle get_levels_dir_fhandle(LEVEL_TYPE level_type) {
+        if (level_type == LEVEL_TYPE.CUSTOM)
+            return Gdx.files.local(String.format(Locale.US, "LEVELS/%s/", level_type));
+        return Gdx.files.internal(String.format(Locale.US, "LEVELS/%s/", level_type));
     }
 }
