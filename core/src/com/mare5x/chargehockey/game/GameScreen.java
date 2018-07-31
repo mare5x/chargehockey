@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -26,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.actors.SymmetryToolActor;
@@ -138,6 +140,8 @@ public class GameScreen implements Screen {
     // the height of the rectangle at the bottom of the screen from where charges are added and to
     // where they must be dragged to remove them
     public static final float CHARGE_ZONE_PERCENT_HEIGHT = 0.15f;
+    public static final String CHARGE_ZONE_BG = "pixels/px_grey_opaque";
+    public static final String CHARGE_ZONE_ACTIVE_BG = "pixels/px_darkgrey_opaque";
 
     public GameScreen(final ChargeHockeyGame game, final Level level) {
         this.game = game;
@@ -167,9 +171,11 @@ public class GameScreen implements Screen {
 
         final WinDialog win_dialog = new WinDialog("WIN", game.skin);
 
-        game_logic = new GameLogic(game, game_stage, level, new GameLogic.ResultCallback() {
+        final Table button_table = new Table();
+
+        game_logic = new GameLogic(game, game_stage, level, new GameLogic.GameCallbacks() {
             @Override
-            public void win() {
+            public void result_win() {
                 if (!level.get_level_finished()) {
                     level.set_level_finished(true);
                     level_finished_changed = true;
@@ -180,9 +186,19 @@ public class GameScreen implements Screen {
             }
 
             @Override
-            public void loss() {
+            public void result_loss() {
                 toggle_playing();
                 game_logic.blink_collided_pucks();
+            }
+
+            @Override
+            public void charge_zone_enter(ChargeActor charge) {
+                button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_ACTIVE_BG));
+            }
+
+            @Override
+            public void charge_zone_exit(ChargeActor charge) {
+                button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_BG));
             }
         }, symmetry_tool);
         load_charge_state(Level.SAVE_TYPE.AUTO);
@@ -229,8 +245,7 @@ public class GameScreen implements Screen {
         Table hud_table = new Table();
         hud_table.setFillParent(true);
 
-        Table button_table = new Table();
-        button_table.setBackground(game.skin.getDrawable("pixels/px_grey_opaque"));
+        button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_BG));
         button_table.defaults().size(Value.percentWidth(0.15f, hud_table)).space(Value.percentWidth(0.125f, hud_table));
         button_table.add(play_button);
         button_table.add(charge_pos_button);

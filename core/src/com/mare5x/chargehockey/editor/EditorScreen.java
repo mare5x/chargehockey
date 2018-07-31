@@ -37,6 +37,8 @@ import com.mare5x.chargehockey.notifications.EditorPaintTipNotification;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 
+import static com.mare5x.chargehockey.game.GameScreen.CHARGE_ZONE_ACTIVE_BG;
+import static com.mare5x.chargehockey.game.GameScreen.CHARGE_ZONE_BG;
 import static com.mare5x.chargehockey.game.GameScreen.CHARGE_ZONE_PERCENT_HEIGHT;
 
 
@@ -58,7 +60,7 @@ public class EditorScreen implements Screen {
     private static boolean SHOW_GRID_LINES_SETTING = true;
     private static boolean SYMMETRY_TOOL_ENABLED_SETTING = false;
 
-    private boolean show_grid = true;
+    private boolean show_grid;
     private boolean level_changed = false;
 
     private final GridItemSelectorButton grid_item_button;
@@ -69,6 +71,7 @@ public class EditorScreen implements Screen {
 
     private final Vector2 tmp_v = new Vector2();
 
+    private final Table button_table = new Table();
     // callback function for ChargeActor pucks
     private final ChargeActor.DragCallback drag_callback = new ChargeActor.DragCallback() {
         @Override
@@ -107,6 +110,16 @@ public class EditorScreen implements Screen {
                     partner.set_position(tmp_v.x, tmp_v.y);
                 }
             }
+        }
+
+        @Override
+        public void charge_zone_enter(ChargeActor charge) {
+            button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_ACTIVE_BG));
+        }
+
+        @Override
+        public void charge_zone_exit(ChargeActor charge) {
+            button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_BG));
         }
     };
 
@@ -245,17 +258,19 @@ public class EditorScreen implements Screen {
         Table hud_table = new Table();
         hud_table.setFillParent(true);
 
-        Table button_table = new Table();
-        button_table.setBackground(game.skin.getDrawable("pixels/px_grey_opaque"));
-        button_table.defaults().size(Value.percentWidth(0.15f, hud_table)).space(Value.percentWidth(0.125f, hud_table));
-        button_table.add(grid_item_button);
-        button_table.add(puck_button);
-        button_table.add(show_grid_button);
+        button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_BG));
+        button_table.defaults().size(Value.percentWidth(0.15f, hud_table)).space(Value.percentWidth(0.125f, hud_table)).expandX().pad(15);
+        button_table.add(grid_item_button).left();
+        button_table.add(puck_button).right();
+        button_table.pad(0, 15, 0, 15);
 
         hud_table.row().size(Value.percentWidth(0.15f, hud_table)).pad(15);
         hud_table.add(symmetry_tool_button).expandX().left();
         hud_table.add(edit_icon).expandX().center();
         hud_table.add(menu_button).expandX().right().row();
+
+        hud_table.row().size(Value.percentWidth(0.15f, hud_table)).pad(15);
+        hud_table.add(show_grid_button).colspan(3).expandX().right().row();
 
         hud_table.defaults().colspan(3);
         hud_table.add().expand().fill().row();

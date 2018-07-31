@@ -235,15 +235,15 @@ public class TutorialScreen extends ScrollableMenuScreen {
 
         Table button_table = new Table();
         button_table.setBackground(game.skin.getDrawable("pixels/px_darkbrown"));
+        button_table.defaults().size(Value.percentWidth(0.15f, table)).space(Value.percentWidth(0.125f, table));
         button_table.pad(15);
-        button_table.defaults().space(15).size(MIN_BUTTON_HEIGHT);
         button_table.add(play_img);
         button_table.add(pos_img);
         button_table.add(neg_img);
 
         Label ui_label_1 = make_label("CLICK ON");
-        Label ui_label_2 = make_label("TO ADD THE DESIRED CHARGE TO THE CENTER OF THE SCREEN");
-        Label ui_label_3 = make_label("DRAG THE CHARGE TO A DESIRED POSITION AND WHEN YOU ARE READY TO RUN THE SIMULATION, PRESS");
+        Label ui_label_2 = make_label("AND DRAG THE DESIRED CHARGE TO YOUR DESIRED POSITION (OR CLICK ON IT TO ADD IT TO THE CENTER OF THE SCREEN)");
+        Label ui_label_3 = make_label("WHEN YOU ARE READY TO RUN THE SIMULATION, PRESS");
         Label ui_label_4 = make_label("TO REMOVE A CHARGE, DRAG IT TO THE BOTTOM OF THE SCREEN");
 
         Table ui_tutorial_table = new Table();

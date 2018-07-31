@@ -259,51 +259,65 @@ pixels/px_darkbrown
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_green
+pixels/px_darkgrey
   rotate: false
   xy: 5, 5
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_green_down
+pixels/px_darkgrey_opaque
   rotate: false
   xy: 5, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_grey
+pixels/px_green
   rotate: false
   xy: 8, 5
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_grey_opaque
+pixels/px_green_down
   rotate: false
   xy: 8, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_purple
+pixels/px_grey
   rotate: false
   xy: 11, 5
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_white
+pixels/px_grey_opaque
   rotate: false
   xy: 11, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-pixels/px_white_opaque
+pixels/px_purple
   rotate: false
   xy: 14, 5
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+pixels/px_white
+  rotate: false
+  xy: 14, 2
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+pixels/px_white_opaque
+  rotate: false
+  xy: 17, 5
   size: 1, 1
   orig: 1, 1
   offset: 0, 0

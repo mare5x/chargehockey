@@ -57,6 +57,8 @@ public class ChargeActor extends Actor {
         public abstract void out_of_bounds(ChargeActor charge, boolean dragged);  // dragged tells whether charge was dragged physically or by symmetry
         public void drag(ChargeActor charge) {}
         public void drag_started(ChargeActor charge) {}
+        public void charge_zone_enter(ChargeActor charge) {}
+        public void charge_zone_exit(ChargeActor charge) {}
     }
 
     private final CHARGE charge_type;
@@ -105,6 +107,8 @@ public class ChargeActor extends Actor {
             DragListener drag_listener = new DragListener() {
                 private final float max_zoom = CameraController.ZoomLevel.MAX.get_amount();
                 private final float min_zoom = CameraController.ZoomLevel.MIN.get_amount();
+
+                private boolean in_charge_zone = false;
 
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -157,6 +161,18 @@ public class ChargeActor extends Actor {
                     }
 
                     drag_callback.drag(ChargeActor.this);
+
+                    if (check_in_charge_zone()) {
+                        if (!in_charge_zone) {
+                            in_charge_zone = true;
+                            drag_callback.charge_zone_enter(ChargeActor.this);
+                        }
+                    } else {
+                        if (in_charge_zone) {
+                            in_charge_zone = false;
+                            drag_callback.charge_zone_exit(ChargeActor.this);
+                        }
+                    }
                 }
 
                 @Override
@@ -168,6 +184,11 @@ public class ChargeActor extends Actor {
 
                 @Override
                 public void dragStop(InputEvent event, float x, float y, int pointer) {
+                    if (check_in_charge_zone()) {
+                        in_charge_zone = false;
+                        drag_callback.charge_zone_exit(ChargeActor.this);
+                    }
+
                     if (check_out_of_bounds())
                         drag_callback.out_of_bounds(ChargeActor.this, true);
                     if (partner != null && partner.check_out_of_world())
@@ -308,10 +329,10 @@ public class ChargeActor extends Actor {
     }
 
     private boolean check_out_of_bounds() {
-        return check_out_of_world() || check_below_view();
+        return check_out_of_world() || check_in_charge_zone();
     }
 
-    private boolean check_below_view() {
+    private boolean check_in_charge_zone() {
         Rectangle camera_rect = CameraController.get_camera_rect((OrthographicCamera) getStage().getCamera());
         return get_y() < (camera_rect.getY() + GameScreen.CHARGE_ZONE_PERCENT_HEIGHT * camera_rect.getHeight());
     }
