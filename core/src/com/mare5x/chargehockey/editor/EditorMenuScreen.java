@@ -216,7 +216,9 @@ class EditorMenuScreen extends BaseMenuScreen {
 
         @Override
         protected void on_confirm() {
-            level_selector.rename_selected_level(name_input.getText());
+            if (!level_selector.rename_selected_level(name_input.getText())) {
+                show_notification("ERROR RENAMING LEVEL");
+            }
         }
     }
 }

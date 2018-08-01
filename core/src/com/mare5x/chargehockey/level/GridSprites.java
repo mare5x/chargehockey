@@ -42,7 +42,7 @@ public class GridSprites {
         puck_sprite = game.sprites.createSprite("puck");
         puck_sprite.setSize(PuckActor.SIZE, PuckActor.SIZE);
 
-        grid_line = new Sprite(game.skin.getRegion("pixels/px_purple"));
+        grid_line = new Sprite(game.skin.getRegion("pixels/px_darkgrey"));
     }
 
     void set_preview(boolean value) {

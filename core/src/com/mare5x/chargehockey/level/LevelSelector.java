@@ -130,11 +130,15 @@ public class LevelSelector {
         return selected_level;
     }
 
-    public void rename_selected_level(String new_name) {
-        if (selected_level != null) {
-            selected_level.rename(new_name);
-            list.rename_selected_entry(new_name);
-        }
+    // Returns true on success
+    public boolean rename_selected_level(String new_name) {
+        if (selected_level == null || new_name.isEmpty()) return false;
+        if (list.contains(new_name)) return false;
+
+        selected_level.rename(new_name);
+        list.rename_selected_entry(new_name);
+
+        return true;
     }
 
     public void select(String level_name) {
