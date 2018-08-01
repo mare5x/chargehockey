@@ -133,6 +133,7 @@ public class LevelSelector {
     // Returns true on success
     public boolean rename_selected_level(String new_name) {
         if (selected_level == null || new_name.isEmpty()) return false;
+        if (new_name.equals(selected_level.get_name())) return true;
         if (list.contains(new_name)) return false;
 
         selected_level.rename(new_name);

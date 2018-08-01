@@ -155,6 +155,12 @@
         "default": {
             "hScrollKnob": "pixels/px_white",
             "vScrollKnob": "pixels/px_white"
+        },
+
+        "border": {
+            "hScrollKnob": "pixels/px_white",
+            "vScrollKnob": "pixels/px_white",
+            "background": "button_up"
         }
     },
 

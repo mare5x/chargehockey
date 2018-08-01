@@ -4,11 +4,11 @@ package com.mare5x.chargehockey.editor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.actors.ScrollableLabel;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 class FilePickerScreen extends BaseMenuScreen {
@@ -27,9 +27,7 @@ class FilePickerScreen extends BaseMenuScreen {
 
         this.parent_screen = parent_screen;
 
-        final Label path_label = new Label("", game.skin);
-//        path_label.setFontScale(0.81f);
-        path_label.setWrap(true);
+        final ScrollableLabel path_label = new ScrollableLabel(game);
 
         final FilePicker file_picker;
         if (filter != null)
@@ -80,7 +78,7 @@ class FilePickerScreen extends BaseMenuScreen {
         });
 
         add_back_button(2);
-        table.add(path_label).colspan(2).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.9f, table)).center().row();
+        table.add(path_label.get()).colspan(2).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.9f, table)).center().row();
         table.add(file_picker.get_display()).colspan(2).pad(15).expand().fill().row();
         table.add(back_button).pad(15).height(MIN_BUTTON_HEIGHT).fillX();
         table.add(result_button).pad(15).height(MIN_BUTTON_HEIGHT).expandX().fillX();
