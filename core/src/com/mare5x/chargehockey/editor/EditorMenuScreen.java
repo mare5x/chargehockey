@@ -1,5 +1,6 @@
 package com.mare5x.chargehockey.editor;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,6 +19,8 @@ import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelector;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
+
+import java.util.Locale;
 
 
 class EditorMenuScreen extends BaseMenuScreen {
@@ -54,7 +57,7 @@ class EditorMenuScreen extends BaseMenuScreen {
                 final Level level = level_selector.load_selected_level();
                 if (level != null) {
                     EditorScreen editor = new EditorScreen(game, level);
-                    set_screen(editor);
+                    set_screen(editor, true);
                     if (level_selector.get_level_count() == 1)
                         editor.show_paint_tip();
                 } else if (level_selector.is_empty()) {
@@ -95,13 +98,11 @@ class EditorMenuScreen extends BaseMenuScreen {
 
     @Override
     protected void back_key_pressed() {
-        set_screen(new CustomMenuScreen(game));
+        set_screen(new CustomMenuScreen(game), true);
     }
 
     @Override
-    public void hide() {
-        dispose();
-    }
+    public void hide() { }  // DISPOSE IN SET_SCREEN
 
     private class AddInputDialog extends Dialog {
         final TextField name_input;
@@ -201,11 +202,28 @@ class EditorMenuScreen extends BaseMenuScreen {
                     hide();
                 }
             });
-//            TextButton export_button = make_text_button("EXPORT");
+            TextButton export_button = make_text_button("EXPORT");
+            export_button.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Exporter exporter = new Exporter(game, EditorMenuScreen.this, new Exporter.ExporterCallback() {
+                        @Override
+                        public void on_success(FileHandle path) {
+                            show_notification(String.format(Locale.US, "EXPORTED TO: %s", path.file().getAbsolutePath()));
+                        }
+
+                        @Override
+                        public void on_failure(FileHandle path) {
+                            show_notification("FAILED TO EXPORT");
+                        }
+                    });
+                    exporter.export(level_name);
+                }
+            });
 
             Table content_table = getContentTable();
             content_table.add(delete_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width()).row();
-//            content_table.add(export_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width());
+            content_table.add(export_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width());
         }
 
         @Override
