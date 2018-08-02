@@ -19,6 +19,7 @@ class ExportScreen extends BaseMenuScreen {
         super(game);
 
         selector = new LevelSelector(game, LEVEL_TYPE.CUSTOM);
+        selector.set_multiple_select(true);
 
         final Exporter exporter = new Exporter(game, this, new Exporter.ExporterCallback() {
             @Override
@@ -39,7 +40,7 @@ class ExportScreen extends BaseMenuScreen {
                 if (custom_levels_check()) {
                     // something has to be selected
                     if (selector.is_selected())
-                        exporter.export(selector.get_selected_name());
+                        exporter.export(selector.get_selected_names());
                     else
                         show_notification("FIRST, SELECT A LEVEL");
                 }

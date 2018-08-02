@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
@@ -26,10 +27,14 @@ public class LevelSelector {
         LevelList.LevelListCallback selection_listener = new LevelList.LevelListCallback() {
             @Override
             public void changed(String level_name) {
-                load_level(level_name);
-                if (selected_level != null) {
-                    preview_fbo.set_level(selected_level);
-                    preview_fbo.update(game.batch);
+                if (level_name != null) {
+                    load_level(level_name);
+                    if (selected_level != null) {
+                        preview_fbo.set_level(selected_level);
+                        preview_fbo.update(game.batch);
+                    }
+                } else {
+                    preview_fbo.clear();
                 }
             }
 
@@ -56,6 +61,10 @@ public class LevelSelector {
         list.set_select_on_long_press(select_on_long_press);
     }
 
+    public void set_multiple_select(boolean multiple_select) {
+        list.set_multi_select_enabled(multiple_select);
+    }
+
     public Table get_selector_table() {
         Image preview_image = new Image(preview_fbo.get_texture_region());
         preview_image.setScaling(Scaling.fit);
@@ -69,6 +78,10 @@ public class LevelSelector {
 
     public String get_selected_name() {
         return list.get_selected_name();
+    }
+
+    public Array<String> get_selected_names() {
+        return list.get_selected_names();
     }
 
     public void remove_selected_level() {
@@ -167,6 +180,6 @@ public class LevelSelector {
 
     /** Returns the number of levels. */
     public int get_level_count() {
-        return list.get_level_list_size();
+        return list.get_size();
     }
 }

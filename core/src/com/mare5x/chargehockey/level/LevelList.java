@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.Sort;
@@ -69,6 +70,7 @@ class LevelList extends VerticalGroup {
     class LevelListEntry extends Table {
         private final TextButton name_button;
         private String name;
+        private boolean selected;
 
         LevelListEntry(String name, boolean level_finished) {
             this.name = name;
@@ -111,12 +113,23 @@ class LevelList extends VerticalGroup {
             return LevelList.this.getChildren().indexOf(LevelListEntry.this, true);
         }
 
+        boolean is_selected() { return selected; }
+
         void unselect() {
+            selected = false;
+            --entries_selected;
             name_button.setChecked(false);
         }
 
         void select() {
+            selected = true;
+            ++entries_selected;
             name_button.setChecked(true);
+        }
+
+        void toggle() {
+            if (is_selected()) unselect();
+            else select();
         }
     }
 
@@ -128,9 +141,11 @@ class LevelList extends VerticalGroup {
     private final ChargeHockeyGame game;
     private final LevelListCallback callbacks;
 
+    private int entries_selected = 0;
     private LevelListEntry selected_entry = null;
 
     private boolean select_on_long_press = false;
+    private boolean multi_select_enabled = false;  // allows multiple entries to be selected
 
     LevelList(ChargeHockeyGame game, LevelListCallback callbacks, LEVEL_TYPE type) {
         super();
@@ -154,6 +169,8 @@ class LevelList extends VerticalGroup {
 
     void set_select_on_long_press(boolean select_on_long_press) { this.select_on_long_press = select_on_long_press; }
 
+    void set_multi_select_enabled(boolean multi_select_enabled) { this.multi_select_enabled = multi_select_enabled; }
+
     private LevelListEntry add_entry(LevelData level) {
         LevelListEntry entry = new LevelListEntry(level.name(), level.is_finished());
         addActor(entry);
@@ -173,11 +190,19 @@ class LevelList extends VerticalGroup {
     }
 
     private void select(LevelListEntry entry) {
-        entry.select();
+        if (multi_select_enabled) entry.toggle();
+        else entry.select();
+
         if (entry != selected_entry) {
-            if (selected_entry != null) selected_entry.unselect();
+            if (selected_entry != null && !multi_select_enabled) selected_entry.unselect();
             selected_entry = entry;
             callbacks.changed(entry.get_name());
+        }
+
+        // only in multi select mode can an entry be unselected
+        if (!entry.is_selected()) {
+            selected_entry = null;
+            callbacks.changed(null);
         }
     }
 
@@ -208,8 +233,23 @@ class LevelList extends VerticalGroup {
         return null;
     }
 
+    Array<String> get_selected_names() {
+        Array<String> names = new Array<String>();
+
+        SnapshotArray<Actor> entries = getChildren();
+        Actor[] items = entries.begin();
+        for (int i = 0, n = entries.size; i < n; ++i) {
+            LevelListEntry entry = (LevelListEntry) items[i];
+            if (entry.is_selected())
+                names.add(entry.get_name());
+        }
+        entries.end();
+
+        return names;
+    }
+
     boolean is_selected() {
-        return selected_entry != null;
+        return entries_selected > 0;
     }
 
     boolean is_empty() {
@@ -221,14 +261,14 @@ class LevelList extends VerticalGroup {
     }
 
     private int find_index(String level_name) {
-        SnapshotArray<Actor> array = getChildren();
-        Actor[] items = array.begin();
-        for (int i = 0, n = array.size; i < n; ++i) {
+        SnapshotArray<Actor> entries = getChildren();
+        Actor[] items = entries.begin();
+        for (int i = 0, n = entries.size; i < n; ++i) {
             LevelListEntry entry = (LevelListEntry) items[i];
             if (entry.get_name().equals(level_name))
                 return i;
         }
-        array.end();
+        entries.end();
         return -1;
     }
 
@@ -237,7 +277,8 @@ class LevelList extends VerticalGroup {
         return new Rectangle(xy.x, xy.y, selected_entry.getPrefWidth(), selected_entry.getPrefHeight());
     }
 
-    int get_level_list_size() {
+    /* Returns the number of entries in the list. */
+    int get_size() {
         return getChildren().size;
     }
 }

@@ -1,6 +1,7 @@
 package com.mare5x.chargehockey.editor;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.editor.FilePickerScreen.FilePickerCallback;
@@ -20,6 +21,7 @@ class Exporter {
     };
 
     interface ExporterCallback {
+        // path is the level directory if exporting a single level and the parent directory otherwise
         void on_success(FileHandle path);
         void on_failure(FileHandle path);
     }
@@ -42,45 +44,68 @@ class Exporter {
         show_file_picker(new FilePickerCallback() {
             @Override
             public void on_result(FileHandle path) {
-                export(level_name, path);
+                if (export(level_name, path))
+                    exporter_callback.on_success(path.child(level_name));
+                else
+                    exporter_callback.on_failure(path.child(level_name));
             }
         });
     }
 
-    /* Export a single custom level to the destination. */
-    private void export(String level_name, FileHandle dest) {
+    /* Export a single custom level to the destination. Returns true on success. */
+    private boolean export(String level_name, FileHandle dest) {
         dest = dest.child(level_name);
 
         try {
             Level.get_level_dir_fhandle(Level.LEVEL_TYPE.CUSTOM, level_name).copyTo(dest);
-            exporter_callback.on_success(dest);
+            return true;
         } catch (GdxRuntimeException e) {
             e.printStackTrace();
-            exporter_callback.on_failure(dest);
+            return false;
         }
     }
 
-    void export(String[] levels) {
+    void export(final Array<String> levels) {
+        show_file_picker(new FilePickerCallback() {
+            @Override
+            public void on_result(FileHandle path) {
+                if (export(levels, path))
+                    exporter_callback.on_success(path);
+                else
+                    exporter_callback.on_failure(path);
+            }
+        });
+    }
 
+    /* Export multiple levels to the destination, which must be a directory. */
+    private boolean export(Array<String> levels, FileHandle dest) {
+        boolean success = true;
+        for (String level_name : levels) {
+            success &= export(level_name, dest);
+        }
+        return success;
     }
 
     void export_all() {
         show_file_picker(new FilePickerCallback() {
             @Override
             public void on_result(FileHandle path) {
-                export_all(path);
+                if (export_all(path))
+                    exporter_callback.on_success(path);
+                else
+                    exporter_callback.on_failure(path);
             }
         });
     }
 
-    /* Export all custom levels to the destination. */
-    private void export_all(FileHandle dest) {
+    /* Export all custom levels to the destination. Returns true on success. */
+    private boolean export_all(FileHandle dest) {
         try {
             Level.get_levels_dir_fhandle(Level.LEVEL_TYPE.CUSTOM).copyTo(dest);
-            exporter_callback.on_success(dest);
+            return true;
         } catch (GdxRuntimeException e) {
             e.printStackTrace();
-            exporter_callback.on_failure(dest);
+            return false;
         }
     }
 }
