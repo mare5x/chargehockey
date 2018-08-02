@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.editor.PermissionTools;
 import com.mare5x.chargehockey.notifications.Notification;
 import com.mare5x.chargehockey.notifications.TextNotification;
 
@@ -147,6 +148,24 @@ public abstract class BaseMenuScreen implements Screen {
                 if (dispose) dispose();
             }
         });
+    }
+
+    /** Sets the screen only if we have access to the storage permission, otherwise it attempts to
+     *  gain access. */
+    public void set_screen_permission_check(final Screen screen) {
+        // get file storage access permission on android
+        PermissionTools permission_tools = game.get_permission_tools();
+        if (!permission_tools.check_storage_permission()) {
+            permission_tools.request_storage_permission(new PermissionTools.RequestCallback() {
+                public void granted() {
+                    set_screen(screen);
+                }
+
+                public void denied() { }  // ignore
+            });
+        } else {
+            set_screen(screen);
+        }
     }
 
     protected void fade_in() {

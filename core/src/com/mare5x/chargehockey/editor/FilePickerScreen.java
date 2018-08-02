@@ -17,11 +17,13 @@ class FilePickerScreen extends BaseMenuScreen {
     }
 
     private final Screen parent_screen;
+    private final FilePicker file_picker;
 
     public FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback) {
         this(game, parent_screen, callback, null);
     }
 
+    // MUST HAVE STORAGE PERMISSIONS! (set screen with set_screen_permission_check())
     FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback, FilePicker.FileFilter filter) {
         super(game);
 
@@ -29,7 +31,6 @@ class FilePickerScreen extends BaseMenuScreen {
 
         final ScrollableLabel path_label = new ScrollableLabel(game);
 
-        final FilePicker file_picker;
         if (filter != null)
             file_picker = game.get_file_picker(filter);
         else
@@ -41,20 +42,6 @@ class FilePickerScreen extends BaseMenuScreen {
             }
         });
         path_label.setText(file_picker.get_current_path().file().getAbsolutePath());
-
-        // get file storage access permission on android
-        PermissionTools permission_tools = game.get_permission_tools();
-        if (!permission_tools.check_storage_permission()) {
-            permission_tools.request_storage_permission(new PermissionTools.RequestCallback() {
-                public void granted() {
-                    file_picker.refresh();
-                }
-
-                public void denied() {
-                    back_key_pressed();
-                }
-            });
-        }
 
         TextButton back_button = make_text_button("BACK", false);
         back_button.addListener(new ClickListener() {
@@ -82,6 +69,12 @@ class FilePickerScreen extends BaseMenuScreen {
         table.add(file_picker.get_display()).colspan(2).pad(15).expand().fill().row();
         table.add(back_button).pad(15).height(MIN_BUTTON_HEIGHT).fillX();
         table.add(result_button).pad(15).height(MIN_BUTTON_HEIGHT).expandX().fillX();
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        file_picker.refresh();
     }
 
     @Override

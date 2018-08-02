@@ -37,7 +37,7 @@ class Exporter {
     }
 
     private void show_file_picker(FilePickerCallback on_result) {
-        parent_screen.set_screen(new FilePickerScreen(game, parent_screen, on_result, export_filter));
+        parent_screen.set_screen_permission_check(new FilePickerScreen(game, parent_screen, on_result, export_filter));
     }
 
     void export(final String level_name) {

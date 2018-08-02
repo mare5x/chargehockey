@@ -6,15 +6,16 @@ import com.mare5x.chargehockey.editor.FilePicker;
 import com.mare5x.chargehockey.editor.PermissionTools;
 
 class AndroidChargeHockeyGame extends ChargeHockeyGame {
-    private final AndroidApplication activity;
+    private final AndroidPermissionTools permission_tools;
 
     AndroidChargeHockeyGame(AndroidApplication activity) {
-        this.activity = activity;
+        permission_tools = new AndroidPermissionTools(activity);
     }
 
     @Override
     public PermissionTools get_permission_tools() {
-        return new AndroidPermissionTools(activity);
+        // permission_tools must not be newly allocated since the object holds the result callback
+        return permission_tools;
     }
 
     @Override

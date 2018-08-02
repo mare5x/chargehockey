@@ -37,7 +37,7 @@ public class CustomMenuScreen extends BaseMenuScreen {
         import_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                set_screen(new FilePickerScreen(game, CustomMenuScreen.this, import_callback, Importer.get_filter()));
+                set_screen_permission_check(new FilePickerScreen(game, CustomMenuScreen.this, import_callback, Importer.get_filter()));
             }
         });
 

@@ -12,17 +12,7 @@ import com.mare5x.chargehockey.editor.PermissionTools;
 class AndroidPermissionTools implements PermissionTools {
     private final AndroidApplication activity;
 
-    private RequestCallback request_callback = new RequestCallback() {
-        @Override
-        public void granted() {
-
-        }
-
-        @Override
-        public void denied() {
-
-        }
-    };
+    private RequestCallback request_callback;
 
     AndroidPermissionTools(AndroidApplication activity) {
         this.activity = activity;
@@ -39,11 +29,14 @@ class AndroidPermissionTools implements PermissionTools {
 
     @Override
     public void request_storage_permission(RequestCallback callback) {
+        if (callback == null)
+            return;
+
+        request_callback = callback;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             activity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
         }
-        if (callback != null)
-            request_callback = callback;
     }
 
     RequestCallback get_last_request_callback() {
