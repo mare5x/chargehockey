@@ -19,7 +19,7 @@ class FilePickerScreen extends BaseMenuScreen {
     private final Screen parent_screen;
     private final FilePicker file_picker;
 
-    public FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback) {
+    FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback) {
         this(game, parent_screen, callback, null);
     }
 

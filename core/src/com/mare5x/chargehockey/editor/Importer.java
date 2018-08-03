@@ -2,13 +2,12 @@ package com.mare5x.chargehockey.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StreamUtils;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
-import com.mare5x.chargehockey.notifications.TextNotification;
+import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,13 +15,8 @@ import java.io.Writer;
 import java.util.Locale;
 
 
-/** Class that handles importing custom levels. */
-class Importer {
-    private final ChargeHockeyGame game;
-    private final Stage stage;
-
-    private TextNotification notification = null;
-
+/* Class that handles importing custom levels. */
+abstract class Importer {
     private static final FilePicker.FileFilter import_filter = new FilePicker.FileFilter() {
         @Override
         public boolean is_valid(FileHandle path) {
@@ -31,16 +25,27 @@ class Importer {
         }
     };
 
-    Importer(ChargeHockeyGame game, Stage stage) {
+    private final ChargeHockeyGame game;
+    private final BaseMenuScreen parent_screen;
+
+    Importer(final ChargeHockeyGame game, BaseMenuScreen parent_screen) {
         this.game = game;
-        this.stage = stage;
+        this.parent_screen = parent_screen;
     }
 
-    static FilePicker.FileFilter get_filter() {
-        return import_filter;
+    void run() {
+        parent_screen.set_screen_permission_check(new FilePickerScreen(game, parent_screen, new FilePickerScreen.FilePickerCallback() {
+            @Override
+            public void on_result(FileHandle path) {
+                handle_result(handle_import(path));
+            }
+        }, import_filter));
     }
 
-    void handle_import(FileHandle path) {
+    abstract void handle_result(String msg);
+
+    /* Returns a message string suitable for display. */
+    private String handle_import(FileHandle path) {
         if (path.isDirectory()) {
             Array<String> import_list = new Array<String>();
             for (FileHandle child : path.list()) {
@@ -51,32 +56,31 @@ class Importer {
             if (import_list.size > 0) {
                 if (import_list.size < 10)
                     if (import_list.size == 1)
-                        show_notification(String.format(Locale.US, "IMPORTED 1 LEVEL: %s", import_list.toString(", ")));
+                        return String.format(Locale.US, "IMPORTED LEVEL: %s", import_list.toString(", "));
                     else
-                        show_notification(String.format(Locale.US, "IMPORTED %d LEVELS: %s", import_list.size, import_list.toString(", ")));
+                        return String.format(Locale.US, "IMPORTED %d LEVELS: %s", import_list.size, import_list.toString(", "));
                 else
-                    show_notification(String.format(Locale.US, "IMPORTED %d LEVELS", import_list.size));
+                    return String.format(Locale.US, "IMPORTED %d LEVELS", import_list.size);
             } else {
-                show_notification("YOU MUST PICK A VALID IMPORT LOCATION");
+                return "YOU MUST PICK A VALID IMPORT LOCATION";
             }
         } else {
             String extension = path.extension();
-            String name = path.nameWithoutExtension();
             if (extension.equals("grid")) {
-                path.copyTo(Level.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, name));
-                show_notification(String.format(Locale.US, "IMPORTED %s", name));
+                path.copyTo(Level.get_level_grid_fhandle(LEVEL_TYPE.CUSTOM, path.nameWithoutExtension()));
+                return String.format(Locale.US, "IMPORTED %s", path.name());
             } else if (extension.equals("save")) {
                 if (import_save(path, Level.SAVE_TYPE.AUTO))
-                    show_notification(String.format(Locale.US, "IMPORTED %s", name));
+                    return String.format(Locale.US, "IMPORTED %s", path.name());
                 else
-                    show_notification("CAN'T IMPORT SAVE FILE. MAKE SURE THE LEVEL EXISTS.");
+                    return "CAN'T IMPORT SAVE FILE. MAKE SURE THE LEVEL EXISTS.";
             } else if (extension.equals("csave")) {
                 if (import_save(path, Level.SAVE_TYPE.QUICKSAVE))
-                    show_notification(String.format(Locale.US, "IMPORTED %s", name));
+                    return String.format(Locale.US, "IMPORTED %s", path.name());
                 else
-                    show_notification("CAN'T IMPORT SAVE FILE. MAKE SURE THE LEVEL EXISTS.");
+                    return "CAN'T IMPORT SAVE FILE. MAKE SURE THE LEVEL EXISTS.";
             } else {
-                show_notification("YOU MUST PICK A VALID IMPORT LOCATION");
+                return "YOU MUST PICK A VALID IMPORT LOCATION";
             }
         }
     }
@@ -140,13 +144,5 @@ class Importer {
             return true;
         }
         return false;
-    }
-
-    // copy in BaseMenuScreen
-    private void show_notification(String message) {
-        if (notification != null)
-            notification.remove();  // get rid of the old notification
-        notification = new TextNotification(game, stage, message);
-        notification.show();
     }
 }

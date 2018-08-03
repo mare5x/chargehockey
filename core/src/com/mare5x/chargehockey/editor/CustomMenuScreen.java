@@ -1,7 +1,6 @@
 package com.mare5x.chargehockey.editor;
 
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -10,20 +9,8 @@ import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 
 public class CustomMenuScreen extends BaseMenuScreen {
-    private final FilePickerScreen.FilePickerCallback import_callback;
-    private final Importer importer;
-
     public CustomMenuScreen(final ChargeHockeyGame game) {
         super(game);
-
-        importer = new Importer(game, stage);
-
-        import_callback = new FilePickerScreen.FilePickerCallback() {
-            @Override
-            public void on_result(FileHandle path) {
-                importer.handle_import(path);
-            }
-        };
 
         TextButton edit_button = make_text_button("EDIT");
         edit_button.addListener(new ClickListener() {
@@ -37,7 +24,13 @@ public class CustomMenuScreen extends BaseMenuScreen {
         import_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                set_screen_permission_check(new FilePickerScreen(game, CustomMenuScreen.this, import_callback, Importer.get_filter()));
+                Importer importer = new Importer(game, CustomMenuScreen.this) {
+                    @Override
+                    void handle_result(String msg) {
+                        show_notification(msg);
+                    }
+                };
+                importer.run();
             }
         });
 
