@@ -3,13 +3,15 @@ package com.mare5x.chargehockey.menus;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.editor.CustomMenuScreen;
 import com.mare5x.chargehockey.game.PlayMenuScreen;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsScreen;
+
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.MAX_BUTTON_WIDTH;
 
 
 public class MenuScreen extends BaseMenuScreen {
@@ -48,7 +50,7 @@ public class MenuScreen extends BaseMenuScreen {
             }
         });
 
-        table.add(play_button).expandX().pad(15).size(Value.percentWidth(0.6f, table)).row();
+        table.add(play_button).expandX().pad(CELL_PAD).size(MAX_BUTTON_WIDTH).row();
         add_text_button(edit_button).row();
         add_text_button(settings_button).row();
         add_text_button(exit_button);

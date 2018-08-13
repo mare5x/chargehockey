@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -14,20 +15,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.editor.PermissionTools;
 import com.mare5x.chargehockey.notifications.Notification;
 import com.mare5x.chargehockey.notifications.TextNotification;
 
+import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.MAX_BUTTON_WIDTH;
+import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
+
 
 // todo minWidth maxWidth constraints ...
 public abstract class BaseMenuScreen implements Screen {
-    public static float MIN_BUTTON_HEIGHT = Gdx.graphics.getWidth() * 0.125f;
-
     protected final ChargeHockeyGame game;
     protected final Stage stage;
     private final InputMultiplexer input_multiplexer;
@@ -39,14 +42,14 @@ public abstract class BaseMenuScreen implements Screen {
     protected BaseMenuScreen(final ChargeHockeyGame game) {
         this.game = game;
 
-        stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
+        stage = new Stage(new ScreenViewport(), game.batch);
 
         table = new Table(game.skin);
         table.setFillParent(true);
 
         stage.addActor(table);
 
-//        stage.setDebugAll(true);
+        stage.setDebugAll(true);
 
         InputAdapter back_key_processor = new InputAdapter() {  // same as return button
             @Override
@@ -68,7 +71,7 @@ public abstract class BaseMenuScreen implements Screen {
                 back_key_pressed();
             }
         });
-        back_button.pad(10);
+        back_button.pad(ACTOR_PAD);
         return back_button;
     }
 
@@ -82,7 +85,7 @@ public abstract class BaseMenuScreen implements Screen {
 
     protected void add_back_button(int colspan, boolean new_row) {
         Button back_button = make_back_button();
-        table.add(back_button).colspan(colspan).pad(15).size(2 * MIN_BUTTON_HEIGHT * 0.75f, MIN_BUTTON_HEIGHT * 0.75f).left().top();
+        table.add(back_button).colspan(colspan).pad(CELL_PAD).size(2 * MIN_BUTTON_HEIGHT * 0.75f, MIN_BUTTON_HEIGHT * 0.75f).left().top();
         if (new_row)
             table.row();
     }
@@ -94,15 +97,23 @@ public abstract class BaseMenuScreen implements Screen {
     }
 
     protected TextButton make_text_button(String text, boolean wrap) {
+        return make_text_button(game, text, wrap);
+    }
+
+    public static TextButton make_text_button(ChargeHockeyGame game, String text, boolean wrap) {
         TextButton button = new TextButton(text, game.skin);
-        button.pad(10);
+        button.pad(ACTOR_PAD);
         button.getLabel().setWrap(wrap);
         return button;
     }
 
     /** Adds the button to the table using the default height, width and padding. */
     protected Cell<TextButton> add_text_button(TextButton button) {
-        return table.add(button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.6f, table));
+        return add_button_to_table(table, button);
+    }
+
+    public static <T extends Actor> Cell<T> add_button_to_table(Table table, T button) {
+        return table.add(button).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(MAX_BUTTON_WIDTH);
     }
 
     protected Label make_label(String text) {
@@ -193,7 +204,7 @@ public abstract class BaseMenuScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, false);
+        stage.getViewport().update(width, height, true);
 
         Gdx.graphics.requestRendering();
     }

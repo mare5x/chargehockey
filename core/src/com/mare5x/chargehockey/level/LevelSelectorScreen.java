@@ -9,6 +9,10 @@ import com.mare5x.chargehockey.game.GameScreen;
 import com.mare5x.chargehockey.game.PlayMenuScreen;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
+import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
+
 
 public class LevelSelectorScreen extends BaseMenuScreen {
     public LevelSelectorScreen(final ChargeHockeyGame game, Level selected_level) {
@@ -36,11 +40,11 @@ public class LevelSelectorScreen extends BaseMenuScreen {
                 }
             }
         });
-        play_button.pad(10);
+        play_button.pad(ACTOR_PAD);
 
         add_back_button();
         table.add(level_selector.get_selector_table()).pad(5, 15, 5, 15).expand().fill().row();
-        table.add(play_button).pad(15).size(1.75f * MIN_BUTTON_HEIGHT).padBottom(Value.percentHeight(0.05f, table));
+        table.add(play_button).pad(CELL_PAD).size(1.75f * MIN_BUTTON_HEIGHT).padBottom(Value.percentHeight(0.05f, table));
 
         if (level_selector.is_empty()) {
             show_notification("NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.", 3);

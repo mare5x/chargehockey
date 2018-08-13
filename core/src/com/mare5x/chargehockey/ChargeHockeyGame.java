@@ -16,7 +16,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
@@ -25,18 +24,12 @@ import com.mare5x.chargehockey.editor.FilePicker;
 import com.mare5x.chargehockey.editor.PermissionTools;
 import com.mare5x.chargehockey.level.GridSprites;
 import com.mare5x.chargehockey.menus.MenuScreen;
+import com.mare5x.chargehockey.settings.GameDefaults;
 import com.mare5x.chargehockey.settings.SettingsFile;
 
 import java.util.Locale;
 
 abstract public class ChargeHockeyGame extends Game {
-    public static float DENSITY;
-    public static final float FONT_SIZE = 24;  // dp units
-    public static final int WORLD_WIDTH = 64;
-    public static final int WORLD_HEIGHT = 64;
-
-    public static final Rectangle WORLD_RECT = new Rectangle(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
-
     private static final boolean LOG_FPS = true;
     private static final FPSLogger fps_logger = new FPSLogger();
 
@@ -59,8 +52,6 @@ abstract public class ChargeHockeyGame extends Game {
 
 	@Override
 	public void create () {
-        DENSITY = Gdx.graphics.getDensity();
-
         Gdx.input.setCatchBackKey(true);
 
         Gdx.graphics.setContinuousRendering(false);
@@ -75,7 +66,7 @@ abstract public class ChargeHockeyGame extends Game {
 
         FreetypeFontLoader.FreeTypeFontLoaderParameter font_param = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         font_param.fontFileName = "OpenSans-Regular.ttf";
-        font_param.fontParameters.size = (int)(DENSITY * FONT_SIZE);
+        font_param.fontParameters.size = (int)(GameDefaults.DENSITY * GameDefaults.FONT_SIZE);
         font_param.fontParameters.borderWidth = 0.5f;  // make the font bold
         Gdx.app.log("font", String.format(Locale.US, "size: %d", font_param.fontParameters.size));
 

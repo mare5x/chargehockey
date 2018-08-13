@@ -12,6 +12,8 @@ import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 import java.util.Locale;
 
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+
 class ExportScreen extends BaseMenuScreen {
     private final LevelSelector selector;
 
@@ -57,7 +59,7 @@ class ExportScreen extends BaseMenuScreen {
         });
 
         add_back_button();
-        table.add(selector.get_selector_table()).pad(15).expand().fill().row();
+        table.add(selector.get_selector_table()).pad(CELL_PAD).expand().fill().row();
         add_text_button(export_button).row();
         add_text_button(export_all_button);
 

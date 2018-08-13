@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -23,8 +22,9 @@ import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import static com.mare5x.chargehockey.menus.BaseMenuScreen.MIN_BUTTON_HEIGHT;
-
+import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.MAX_BUTTON_WIDTH;
+import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 /* A group of LevelListEntry entries. */
 class LevelList extends VerticalGroup {
@@ -95,7 +95,7 @@ class LevelList extends VerticalGroup {
                 }
             });
 
-            add(name_button).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.6f, LevelList.this)).padRight(10).expandX().fill();
+            add(name_button).minHeight(MIN_BUTTON_HEIGHT).width(MAX_BUTTON_WIDTH).padRight(ACTOR_PAD);
 
             add(new Image(game.skin.getDrawable(level_finished ? "star" : "star_empty"))).size(MIN_BUTTON_HEIGHT);
 

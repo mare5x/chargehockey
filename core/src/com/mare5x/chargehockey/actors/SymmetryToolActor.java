@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.level.GridCache;
 
 
@@ -37,7 +38,7 @@ public class SymmetryToolActor extends Actor {
         }
     }
 
-    private static final float length = (float) Math.hypot(ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
+    private static final float length = (float) Math.hypot(Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT);
     private static final float knob_size = 1.75f;  // world units
     private float axis_w;
 
@@ -54,7 +55,7 @@ public class SymmetryToolActor extends Actor {
         move_knob = new Sprite(game.skin.getRegion("vertical_knob"));
         rotate_knob = new Sprite(game.skin.getRegion("rotate_knob"));
 
-        setBounds((ChargeHockeyGame.WORLD_WIDTH - length) / 2f, ChargeHockeyGame.WORLD_HEIGHT / 2f - knob_size / 2f, length, knob_size);
+        setBounds((Grid.WORLD_WIDTH - length) / 2f, Grid.WORLD_HEIGHT / 2f - knob_size / 2f, length, knob_size);
         move_knob.setSize(knob_size, knob_size);
         rotate_knob.setSize(knob_size, knob_size);
 
@@ -118,9 +119,9 @@ public class SymmetryToolActor extends Actor {
             @Override
             public void dragStop(InputEvent event, float x, float y, int pointer) {
                 // handle out of bounds
-                if (!ChargeHockeyGame.WORLD_RECT.contains(get_center_x(), get_center_y())) {
-                    x = MathUtils.clamp(get_center_x(), 1, ChargeHockeyGame.WORLD_WIDTH - 1);
-                    y = MathUtils.clamp(get_center_y(), 1, ChargeHockeyGame.WORLD_HEIGHT - 1);
+                if (!Grid.WORLD_RECT.contains(get_center_x(), get_center_y())) {
+                    x = MathUtils.clamp(get_center_x(), 1, Grid.WORLD_WIDTH - 1);
+                    y = MathUtils.clamp(get_center_y(), 1, Grid.WORLD_HEIGHT - 1);
                     setPosition(x - length / 2f, y - knob_size / 2f);
                 }
             }

@@ -22,25 +22,29 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.viewport.FillViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.SymmetryToolActor;
 import com.mare5x.chargehockey.game.CameraController;
+import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.GridCache;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.notifications.EditorPaintTipNotification;
+import com.mare5x.chargehockey.settings.GameDefaults;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 
-import static com.mare5x.chargehockey.game.GameScreen.CHARGE_ZONE_ACTIVE_BG;
-import static com.mare5x.chargehockey.game.GameScreen.CHARGE_ZONE_BG;
-import static com.mare5x.chargehockey.game.GameScreen.CHARGE_ZONE_PERCENT_HEIGHT;
-
+import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_ACTIVE_BG;
+import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_BG;
+import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_HEIGHT;
+import static com.mare5x.chargehockey.settings.GameDefaults.IMAGE_BUTTON_SIZE;
 
 public class EditorScreen implements Screen {
     private final ChargeHockeyGame game;
@@ -129,10 +133,14 @@ public class EditorScreen implements Screen {
 
         camera = new OrthographicCamera();
 
-        float aspect_ratio = Gdx.graphics.getWidth() / (float)Gdx.graphics.getHeight();
-        edit_stage = new Stage(new FillViewport(aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
-        camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
+        edit_stage = new Stage(new ExtendViewport(Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT, camera), game.batch);
+        camera.position.set(Grid.WORLD_WIDTH / 2, Grid.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
+
+        hud_stage = new Stage(new ScreenViewport(), game.batch);
+
+//        hud_stage.setDebugAll(true);
+//        edit_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
@@ -160,8 +168,6 @@ public class EditorScreen implements Screen {
             }
         }
 
-        hud_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
-
         Button menu_button = new Button(game.skin, "menu");
         menu_button.addListener(new ClickListener() {
             @Override
@@ -169,7 +175,7 @@ public class EditorScreen implements Screen {
                 game.setScreen(new EditorSubScreen(game, EditorScreen.this));
             }
         });
-        menu_button.pad(10);
+        menu_button.pad(ACTOR_PAD);
 
         Button symmetry_tool_button = new Button(game.skin, "symmetry_tool");
         symmetry_tool_button.addListener(new ClickListener() {
@@ -179,7 +185,7 @@ public class EditorScreen implements Screen {
                 symmetry_tool.update_size(camera.zoom);
             }
         });
-        symmetry_tool_button.pad(10);
+        symmetry_tool_button.pad(ACTOR_PAD);
 
         grid_item_button = new GridItemSelectorButton();
         grid_item_button.addListener(new ClickListener() {
@@ -189,7 +195,7 @@ public class EditorScreen implements Screen {
                 puck_button.setChecked(false);
             }
         });
-        grid_item_button.pad(10);
+        grid_item_button.pad(ACTOR_PAD);
 
         final Button show_grid_button = new Button(game.skin, "grid");
         show_grid_button.addListener(new ClickListener() {
@@ -202,7 +208,7 @@ public class EditorScreen implements Screen {
         });
         show_grid = SHOW_GRID_LINES_SETTING;
         show_grid_button.setChecked(show_grid);
-        show_grid_button.pad(10);
+        show_grid_button.pad(ACTOR_PAD);
 
         puck_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("puck")));
         // Helper DragListener for adding pucks with the puck button (see GameScreen for ChargeDragger)
@@ -251,7 +257,7 @@ public class EditorScreen implements Screen {
                 }
             }
         });
-        puck_button.pad(10);
+        puck_button.pad(ACTOR_PAD);
 
         edit_icon = new EditIcon();
 
@@ -259,22 +265,22 @@ public class EditorScreen implements Screen {
         hud_table.setFillParent(true);
 
         button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_BG));
-        button_table.defaults().size(Value.percentWidth(0.15f, hud_table)).space(Value.percentWidth(0.125f, hud_table)).expandX().pad(15);
+        button_table.defaults().size(IMAGE_BUTTON_SIZE).space(Value.percentWidth(0.125f, hud_table)).expandX();
         button_table.add(grid_item_button).left();
         button_table.add(puck_button).right();
-        button_table.pad(0, 15, 0, 15);
+        button_table.pad(0, CELL_PAD, 0, CELL_PAD);
 
-        hud_table.row().size(Value.percentWidth(0.15f, hud_table)).pad(15);
-        hud_table.add(symmetry_tool_button).expandX().left();
-        hud_table.add(edit_icon).expandX().center();
-        hud_table.add(menu_button).expandX().right().row();
+        hud_table.row().size(IMAGE_BUTTON_SIZE).pad(CELL_PAD).expandX();
+        hud_table.add(symmetry_tool_button).left();
+        hud_table.add(edit_icon).center();
+        hud_table.add(menu_button).right().row();
 
-        hud_table.row().size(Value.percentWidth(0.15f, hud_table)).pad(15);
+        hud_table.row().size(IMAGE_BUTTON_SIZE).pad(CELL_PAD);
         hud_table.add(show_grid_button).colspan(3).expandX().right().row();
 
         hud_table.defaults().colspan(3);
         hud_table.add().expand().fill().row();
-        hud_table.add(button_table).height(Value.percentHeight(CHARGE_ZONE_PERCENT_HEIGHT, hud_table)).expandX().fill();
+        hud_table.add(button_table).height(CHARGE_ZONE_HEIGHT).expandX().fill();
 
         hud_stage.addActor(hud_table);
 
@@ -418,7 +424,7 @@ public class EditorScreen implements Screen {
         grid_lines.render();
 
         game.batch.begin();
-        fbo.render(game.batch, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
+        fbo.render(game.batch, 0, 0, Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT);
         game.batch.end();
 
         edit_stage.act();
@@ -431,9 +437,10 @@ public class EditorScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        edit_stage.getViewport().setScreenBounds(0, 0, width, height);
+        GameDefaults.resize(width, height);
 
-        hud_stage.getViewport().setScreenBounds(0, 0, width, height);
+        edit_stage.getViewport().update(width, height);
+        hud_stage.getViewport().update(width, height, true);
 
         camera_controller.resize(edit_stage.getViewport().getScreenWidth(), edit_stage.getViewport().getScreenHeight());
 
@@ -493,7 +500,7 @@ public class EditorScreen implements Screen {
         @Override
         protected boolean on_tap(float x, float y, int count, int button) {
             // ignore taps outside of edit_stage's camera and outside the world
-            if (!point_in_view(x, y) || !ChargeHockeyGame.WORLD_RECT.contains(tmp_v.set(x, y))) {
+            if (!point_in_view(x, y) || !Grid.WORLD_RECT.contains(tmp_v.set(x, y))) {
                 return true;
             }
 

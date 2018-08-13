@@ -18,6 +18,10 @@ import com.mare5x.chargehockey.actors.ForcePuckActor;
 import com.mare5x.chargehockey.game.PlayMenuScreen;
 import com.mare5x.chargehockey.menus.ScrollableMenuScreen;
 
+import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
+
 public class TutorialScreen extends ScrollableMenuScreen {
     private final TextureAtlas.AtlasRegion puck_region;
     private final Image pos_img;
@@ -58,7 +62,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
 
         add_back_button();
 
-        table.defaults().pad(15);
+        table.defaults().pad(CELL_PAD);
         table.add(welcome_label).expandX().fill().row();
         table.add(sub_title).expandX().fill().row();
         table.add().expand().fill().row();
@@ -71,7 +75,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
 
     private Table get_intro_goal() {
         Table goal_table = new Table();
-        goal_table.pad(10);
+        goal_table.pad(ACTOR_PAD);
         goal_table.setBackground(game.skin.getDrawable("button_up"));
 
         Image goal_img = new Image(game.sprites.findRegion("grid/grid_goal"));
@@ -82,7 +86,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
         Label goal_3 = make_label("WITHOUT HITTING THE WALLS");
         Label goal_4 = make_label("PUCKS ARE MOVED USING CHARGES");
 
-        goal_table.defaults().minHeight(MIN_BUTTON_HEIGHT).space(15);
+        goal_table.defaults().minHeight(MIN_BUTTON_HEIGHT).space(CELL_PAD);
         goal_table.add(goal_1).fill().width(get_label_width(Value.percentWidth(0.6f, goal_table)));
         goal_table.add(new Image(puck_region)).colspan(2).center().size(MIN_BUTTON_HEIGHT);
         goal_table.row();
@@ -156,7 +160,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
         Label pos_label = make_label("POSITIVELY CHARGED PUCKS GET REPELLED FROM POSITIVELY CHARGED CHARGES");
 
         Table pos_charge_tutorial = new Table();
-        pos_charge_tutorial.defaults().minHeight(MIN_BUTTON_HEIGHT).space(15);
+        pos_charge_tutorial.defaults().minHeight(MIN_BUTTON_HEIGHT).space(CELL_PAD);
         pos_charge_tutorial.add(pos_label).fill().expandX().width(Value.percentWidth(0.95f, pos_charge_tutorial)).colspan(5).row();
         pos_charge_tutorial.add().expandX();
         pos_charge_tutorial.add(pos_img).size(MIN_BUTTON_HEIGHT);
@@ -168,7 +172,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
         Label neg_label = make_label("POSITIVELY CHARGED PUCKS GET ATTRACTED TO NEGATIVELY CHARGED CHARGES");
 
         Table neg_charge_tutorial = new Table();
-        neg_charge_tutorial.defaults().minHeight(MIN_BUTTON_HEIGHT).space(15);
+        neg_charge_tutorial.defaults().minHeight(MIN_BUTTON_HEIGHT).space(CELL_PAD);
         neg_charge_tutorial.add(neg_label).fill().expandX().width(Value.percentWidth(0.95f, neg_charge_tutorial)).colspan(5).row();
         neg_charge_tutorial.add().expandX();
         neg_charge_tutorial.add(neg_img).size(MIN_BUTTON_HEIGHT);
@@ -182,7 +186,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
 
         table.clear();
 
-        table.defaults().colspan(2).pad(15);
+        table.defaults().colspan(2).pad(CELL_PAD);
 
         add_back_button();
 
@@ -236,20 +240,20 @@ public class TutorialScreen extends ScrollableMenuScreen {
         Table button_table = new Table();
         button_table.setBackground(game.skin.getDrawable("pixels/px_darkbrown"));
         button_table.defaults().size(Value.percentWidth(0.15f, table)).space(Value.percentWidth(0.125f, table));
-        button_table.pad(15);
+        button_table.pad(CELL_PAD);
         button_table.add(play_img);
         button_table.add(pos_img);
         button_table.add(neg_img);
 
-        Label ui_label_1 = make_label("CLICK ON");
+        Label ui_label_1 = make_label("PRESS ON");
         Label ui_label_2 = make_label("AND DRAG THE DESIRED CHARGE TO YOUR DESIRED POSITION (OR CLICK ON IT TO ADD IT TO THE CENTER OF THE SCREEN)");
         Label ui_label_3 = make_label("WHEN YOU ARE READY TO RUN THE SIMULATION, PRESS");
         Label ui_label_4 = make_label("TO REMOVE A CHARGE, DRAG IT TO THE BOTTOM OF THE SCREEN");
 
         Table ui_tutorial_table = new Table();
         ui_tutorial_table.setBackground(game.skin.getDrawable("button_up"));
-        ui_tutorial_table.pad(15);
-        ui_tutorial_table.defaults().minHeight(MIN_BUTTON_HEIGHT).space(15).pad(10);
+        ui_tutorial_table.pad(CELL_PAD);
+        ui_tutorial_table.defaults().minHeight(MIN_BUTTON_HEIGHT).space(CELL_PAD).pad(ACTOR_PAD);
         ui_tutorial_table.add(ui_label_1).fillX().width(get_label_width(Value.percentWidth(0.6f, ui_tutorial_table))).colspan(2);
         ui_tutorial_table.add(pos_img_2).size(MIN_BUTTON_HEIGHT);
         ui_tutorial_table.add(neg_img_2).size(MIN_BUTTON_HEIGHT).row();
@@ -265,7 +269,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
 
         table.clear();
 
-        table.defaults().colspan(2).pad(15);
+        table.defaults().colspan(2).pad(CELL_PAD);
 
         add_back_button();
 
@@ -293,7 +297,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
 
         table.clear();
 
-        table.add(have_fun).pad(15).width(Value.percentWidth(0.6f, table));
+        table.add(have_fun).pad(CELL_PAD).width(Value.percentWidth(0.6f, table));
 
         fade_in();
 

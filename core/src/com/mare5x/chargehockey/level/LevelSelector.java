@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
+import com.mare5x.chargehockey.settings.GameDefaults;
 
 public class LevelSelector {
     private final LEVEL_TYPE level_type;
@@ -70,7 +71,7 @@ public class LevelSelector {
         preview_image.setScaling(Scaling.fit);
 
         Table selector_table = new Table();
-        selector_table.add(scroll_pane).expand().fill().padBottom(10).row();
+        selector_table.add(scroll_pane).expand().fill().padBottom(GameDefaults.ACTOR_PAD).row();
         selector_table.add(preview_image).size(Value.percentHeight(0.5f, selector_table));
 
         return selector_table;

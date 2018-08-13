@@ -11,6 +11,9 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.ScrollableLabel;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
+
 class FilePickerScreen extends BaseMenuScreen {
     interface FilePickerCallback {
         void on_result(FileHandle path);
@@ -65,10 +68,10 @@ class FilePickerScreen extends BaseMenuScreen {
         });
 
         add_back_button(2);
-        table.add(path_label.get()).colspan(2).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.9f, table)).center().row();
-        table.add(file_picker.get_display()).colspan(2).pad(15).expand().fill().row();
-        table.add(back_button).pad(15).height(MIN_BUTTON_HEIGHT).fillX();
-        table.add(result_button).pad(15).height(MIN_BUTTON_HEIGHT).expandX().fillX();
+        table.add(path_label.get()).colspan(2).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.9f, table)).center().row();
+        table.add(file_picker.get_display()).colspan(2).pad(CELL_PAD).expand().fill().row();
+        table.add(back_button).pad(CELL_PAD).height(MIN_BUTTON_HEIGHT).fillX();
+        add_text_button(result_button).expandX();
     }
 
     @Override

@@ -6,11 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.settings.GameDefaults;
+
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
 
 
 /** "ADD A NEW LEVEL USING '+'.\nREMOVE A LEVEL USING '-'. */
 public class EditorNoLevelsNotification extends Notification {
-    private static final float img_size = ChargeHockeyGame.FONT_SIZE * ChargeHockeyGame.DENSITY * 1.5f;
+    private static final float img_size = GameDefaults.FONT_SIZE * GameDefaults.DENSITY * 1.5f;
 
     public EditorNoLevelsNotification(ChargeHockeyGame game, Stage stage) {
         super(game, stage);
@@ -21,7 +24,7 @@ public class EditorNoLevelsNotification extends Notification {
         Image add_img = new Image(game.skin.getRegion("add_up"));
         Image remove_img = new Image(game.skin.getRegion("remove_up"));
 
-        columnDefaults(0).width(get_label_width()).space(15);
+        columnDefaults(0).width(get_label_width()).space(CELL_PAD);
         add(add_label);
         add(add_img).size(img_size);
         row();

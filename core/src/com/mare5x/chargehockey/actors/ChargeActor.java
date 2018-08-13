@@ -12,7 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.game.CameraController;
-import com.mare5x.chargehockey.game.GameScreen;
+import com.mare5x.chargehockey.level.Grid;
+import com.mare5x.chargehockey.settings.GameDefaults;
 
 
 public class ChargeActor extends Actor {
@@ -334,11 +335,11 @@ public class ChargeActor extends Actor {
 
     private boolean check_in_charge_zone() {
         Rectangle camera_rect = CameraController.get_camera_rect((OrthographicCamera) getStage().getCamera());
-        return get_y() < (camera_rect.getY() + GameScreen.CHARGE_ZONE_PERCENT_HEIGHT * camera_rect.getHeight());
+        return get_y() < (camera_rect.getY() + GameDefaults.CHARGE_ZONE_PERCENT_HEIGHT * camera_rect.getHeight());
     }
 
     public boolean check_out_of_world() {
-        return !ChargeHockeyGame.WORLD_RECT.contains(get_x(), get_y());
+        return !Grid.WORLD_RECT.contains(get_x(), get_y());
     }
 
     public void set_partner(ChargeActor charge) {

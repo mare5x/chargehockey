@@ -11,8 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.settings.GameDefaults;
 
-import static com.mare5x.chargehockey.menus.BaseMenuScreen.MIN_BUTTON_HEIGHT;
+import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 // todo keep track of added notification; display multiple notifications simulataneously
 public abstract class Notification extends Table {
@@ -44,7 +45,7 @@ public abstract class Notification extends Table {
         });
 
         // set table defaults
-        pad(ChargeHockeyGame.FONT_SIZE * 0.5f * ChargeHockeyGame.DENSITY);
+        pad(GameDefaults.FONT_SIZE * 0.5f * GameDefaults.DENSITY);
         defaults().maxWidth(getMaxWidth()).minHeight(getMinHeight());
     }
 

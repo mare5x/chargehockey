@@ -17,10 +17,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.ChargeActor;
+import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.menus.ScrollableMenuScreen;
 import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 
 import java.util.Locale;
+
+import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 
 // todo add load defaults button confirmation
@@ -61,15 +66,16 @@ public class SettingsScreen extends ScrollableMenuScreen {
         add_back_button();
         table.add().expand().row();
 
-        game_speed_slider.add_to_table(table);
-        charge_size_slider.add_to_table(table);
-        game_grid_lines.add_to_table(table);
-        velocity_checkbox.add_to_table(table);
-        acceleration_checkbox.add_to_table(table);
-        forces_checkbox.add_to_table(table);
-        trace_path_checkbox.add_to_table(table);
+        table.defaults().pad(CELL_PAD).width(Value.percentWidth(0.8f, table));
+        table.add(game_speed_slider).row();
+        table.add(charge_size_slider).row();
+        table.add(game_grid_lines).row();
+        table.add(velocity_checkbox).row();
+        table.add(acceleration_checkbox).row();
+        table.add(forces_checkbox).row();
+        table.add(trace_path_checkbox).row();
 
-        table.add(defaults_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).center().fillX().row();
+        BaseMenuScreen.add_button_to_table(table, defaults_button).row();
 
         table.add().expand();
     }
@@ -104,16 +110,6 @@ public class SettingsScreen extends ScrollableMenuScreen {
     }
 
     @Override
-    public void resize(int width, int height) {
-        super.resize(width, height);
-
-        game_speed_slider.set_knob_size(width * 0.125f);
-        charge_size_slider.set_knob_size(width * 0.125f);
-
-        Gdx.graphics.requestRendering();
-    }
-
-    @Override
     public void pause() {
         super.pause();
 
@@ -137,10 +133,9 @@ public class SettingsScreen extends ScrollableMenuScreen {
 
             checkbox = new Button(game.skin, "checkbox");
             checkbox.setChecked(checked);
-            checkbox.pad(10);
+            checkbox.pad(ACTOR_PAD);
 
-            text_button = new TextButton(label, game.skin);
-            text_button.pad(10);
+            text_button = BaseMenuScreen.make_text_button(game, label, true);
             text_button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -148,15 +143,8 @@ public class SettingsScreen extends ScrollableMenuScreen {
                 }
             });
 
-            text_button.getLabel().setWrap(true);
-
-            add(text_button).space(15).minHeight(MIN_BUTTON_HEIGHT).center();
-            add(checkbox).space(15).size(MIN_BUTTON_HEIGHT).expandX().center();
-        }
-
-        void add_to_table(Table parent) {
-            getCell(text_button).width(Value.percentWidth(0.6f, parent));
-            parent.add(this).pad(15).fillX().expandX().row();
+            BaseMenuScreen.add_button_to_table(this, text_button).pad(0);
+            add(checkbox).space(CELL_PAD).size(MIN_BUTTON_HEIGHT).expandX().right();
         }
 
         void set_checked(boolean checked) {
@@ -190,15 +178,10 @@ public class SettingsScreen extends ScrollableMenuScreen {
                 }
             });
 
-            add(label).space(15).fill().center();
-            add(slider).space(15).expandX().center();
-        }
+            add(label).fill().width(GameDefaults.MIN_DIMENSION * 0.4f);
+            add(slider).space(CELL_PAD).expandX().fillX();
 
-        void add_to_table(Table parent) {
-            getCell(label).width(Value.percentWidth(0.4f, parent));
-            getCell(slider).width(Value.percentWidth(0.4f, parent));
-
-            parent.add(this).pad(15).fillX().expandX().row();
+            set_knob_size_impl(MIN_BUTTON_HEIGHT);
         }
 
         void set_text(String text) {
@@ -213,10 +196,14 @@ public class SettingsScreen extends ScrollableMenuScreen {
             return slider.getValue();
         }
 
-        void set_knob_size(float size) {
+        private void set_knob_size_impl(float size) {
             // work around knob size
             slider.getStyle().knob.setMinHeight(size);
             slider.getStyle().knob.setMinWidth(size);
+        }
+
+        void set_knob_size(float size) {
+            set_knob_size_impl(size);
         }
 
         /** Registers the built in label to display the formatted format string using the
@@ -257,19 +244,18 @@ public class SettingsScreen extends ScrollableMenuScreen {
             reset();
             remove();
 
-            add(label).space(15).fill().center();
-            add(slider).space(15).expandX().center();
-            add(charge).space(15).size(Value.percentHeight(1, slider)).expandX().center();
+            add(label).fill().width(GameDefaults.MIN_DIMENSION * 0.4f);
+            add(slider).space(CELL_PAD).expandX().fillX();
+            add(charge).space(CELL_PAD).size(Value.percentHeight(1, slider));
+
+            set_charge_size_impl(MIN_BUTTON_HEIGHT);
         }
 
         private void scale_charge() {
             charge.setScale(0.5f + slider.getPercent() * 0.5f);  // scale includes [0.5, 1.0]
         }
 
-        @Override
-        void set_knob_size(float size) {
-            super.set_knob_size(size);
-
+        private void set_charge_size_impl(float size) {
             // necessary hack to make the charge be centered in the cell
             charge.setSize(size, size);
             charge.setOrigin(Align.center);
@@ -277,10 +263,10 @@ public class SettingsScreen extends ScrollableMenuScreen {
         }
 
         @Override
-        void add_to_table(Table parent) {
-            getCell(label).width(Value.percentWidth(0.4f, parent));
-            getCell(slider).width(Value.percentWidth(0.3f, parent));
-            parent.add(this).pad(15).fillX().expandX().row();
+        void set_knob_size(float size) {
+            super.set_knob_size(size);
+
+            set_charge_size_impl(size);
         }
     }
 }

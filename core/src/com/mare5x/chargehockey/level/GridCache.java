@@ -42,7 +42,7 @@ public class GridCache {
         else
             cache.beginCache();
 
-        cache.add(bg, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
+        cache.add(bg, 0, 0, Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT);
 
         background_id = cache.endCache();
     }
@@ -58,45 +58,45 @@ public class GridCache {
         float half_size = grid_line_sprite_size / 2f;
 
         // vertical lines
-        grid_line_sprite.setSize(grid_line_sprite_size, ChargeHockeyGame.WORLD_HEIGHT);
+        grid_line_sprite.setSize(grid_line_sprite_size, Grid.WORLD_HEIGHT);
         grid_line_sprite.setAlpha(0.5f * grid_line_alpha);
-        for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH; col += grid_line_spacing) {
+        for (int col = 0; col < Grid.WORLD_WIDTH; col += grid_line_spacing) {
             grid_line_sprite.setPosition(col - half_size, 0);
             cache.add(grid_line_sprite);
         }
         // fix for the line on the edge, so it stays on screen
-        grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH - half_size, 0);
+        grid_line_sprite.setPosition(Grid.WORLD_WIDTH - half_size, 0);
         cache.add(grid_line_sprite);
 
         grid_line_sprite.setAlpha(1f * grid_line_alpha);  // center vertical ilne
-        grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH / 2 - half_size, 0);
+        grid_line_sprite.setPosition(Grid.WORLD_WIDTH / 2 - half_size, 0);
         cache.add(grid_line_sprite);
 
         grid_line_sprite.setAlpha(0.8f * grid_line_alpha);  // quarter vertical lines
-        grid_line_sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH / 4f - half_size, 0);
+        grid_line_sprite.setPosition(Grid.WORLD_WIDTH / 4f - half_size, 0);
         cache.add(grid_line_sprite);
-        grid_line_sprite.setPosition(3 * ChargeHockeyGame.WORLD_WIDTH / 4f - half_size, 0);
+        grid_line_sprite.setPosition(3 * Grid.WORLD_WIDTH / 4f - half_size, 0);
         cache.add(grid_line_sprite);
 
         // horizontal lines
-        grid_line_sprite.setSize(ChargeHockeyGame.WORLD_WIDTH, grid_line_sprite_size);
+        grid_line_sprite.setSize(Grid.WORLD_WIDTH, grid_line_sprite_size);
 
         grid_line_sprite.setAlpha(1 * grid_line_alpha);  // center horizontal line
-        grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT / 2 - half_size);
+        grid_line_sprite.setPosition(0, Grid.WORLD_HEIGHT / 2 - half_size);
         cache.add(grid_line_sprite);
 
         grid_line_sprite.setAlpha(0.8f * grid_line_alpha);  // quarter horizontal lines
-        grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT / 4f - half_size);
+        grid_line_sprite.setPosition(0, Grid.WORLD_HEIGHT / 4f - half_size);
         cache.add(grid_line_sprite);
-        grid_line_sprite.setPosition(0, 3 * ChargeHockeyGame.WORLD_HEIGHT / 4f - half_size);
+        grid_line_sprite.setPosition(0, 3 * Grid.WORLD_HEIGHT / 4f - half_size);
         cache.add(grid_line_sprite);
 
         grid_line_sprite.setAlpha(0.5f * grid_line_alpha);
-        for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT; row += grid_line_spacing) {
+        for (int row = 0; row < Grid.WORLD_HEIGHT; row += grid_line_spacing) {
             grid_line_sprite.setPosition(0, row - half_size);
             cache.add(grid_line_sprite);
         }
-        grid_line_sprite.setPosition(0, ChargeHockeyGame.WORLD_HEIGHT - half_size);
+        grid_line_sprite.setPosition(0, Grid.WORLD_HEIGHT - half_size);
         cache.add(grid_line_sprite);
 
         grid_lines_id = cache.endCache();
@@ -145,11 +145,11 @@ public class GridCache {
 
     public static float calculate_grid_line_size(float zoom) {
         return Math.max(LevelFrameBuffer.ONE_TX,
-                (float) ChargeHockeyGame.WORLD_WIDTH * zoom / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+                (float) Grid.WORLD_WIDTH * zoom / Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
     }
 
     private void set_grid_line_spacing(int spacing) {
-        grid_line_spacing = MathUtils.clamp(spacing, 1, ChargeHockeyGame.WORLD_WIDTH / 2);
+        grid_line_spacing = MathUtils.clamp(spacing, 1, Grid.WORLD_WIDTH / 2);
     }
 
     public int get_grid_line_spacing() {

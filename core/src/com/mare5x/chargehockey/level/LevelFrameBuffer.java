@@ -54,7 +54,7 @@ public class LevelFrameBuffer {
         this.level = level;
 
         FBO_SIZE = size;
-        WORLD_UNIT_TX = FBO_SIZE / ChargeHockeyGame.WORLD_WIDTH;  // 1 world unit = world_unit_tx texels
+        WORLD_UNIT_TX = FBO_SIZE / Grid.WORLD_WIDTH;  // 1 world unit = world_unit_tx texels
         ONE_TX = 1 / WORLD_UNIT_TX;  // 1 texel
         GRID_TILE_SIZE = 1 + ONE_TX;
 
@@ -70,7 +70,7 @@ public class LevelFrameBuffer {
         fbo_region = new TextureRegion(fbo.getColorBufferTexture());
         fbo_region.flip(false, true);  // FBO uses lower left, TextureRegion uses upper-left
 
-        fbo_camera = new OrthographicCamera(ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
+        fbo_camera = new OrthographicCamera(Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT);
         fbo_camera.position.set(fbo_camera.viewportWidth / 2, fbo_camera.viewportHeight / 2, 0);  // center camera
         fbo_camera.update();
 
@@ -129,8 +129,8 @@ public class LevelFrameBuffer {
     private void draw_grid(final SpriteBatch batch) {
         // Draw the grid
         game.grid_sprites.set_grid_tile_size(GRID_TILE_SIZE);
-        for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT - 1; row++) {
-            for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH - 1; col++) {
+        for (int row = 0; row < Grid.WORLD_HEIGHT - 1; row++) {
+            for (int col = 0; col < Grid.WORLD_WIDTH - 1; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
                 game.grid_sprites.draw_tile(batch, item, row, col);
             }
@@ -139,24 +139,24 @@ public class LevelFrameBuffer {
         // note: this makes the border sprites squished by ONE_TX
         // right border
         game.grid_sprites.set_grid_tile_size(GRID_TILE_SIZE - ONE_TX, GRID_TILE_SIZE);
-        for (int row = 0; row < ChargeHockeyGame.WORLD_HEIGHT - 1; row++) {
-            int col = ChargeHockeyGame.WORLD_WIDTH - 1;
+        for (int row = 0; row < Grid.WORLD_HEIGHT - 1; row++) {
+            int col = Grid.WORLD_WIDTH - 1;
             GRID_ITEM item = level.get_grid_item(row, col);
             game.grid_sprites.draw_tile(batch, item, row, col);
         }
         // top border
         game.grid_sprites.set_grid_tile_size(GRID_TILE_SIZE, GRID_TILE_SIZE - ONE_TX);
-        for (int col = 0; col < ChargeHockeyGame.WORLD_WIDTH - 1; col++) {
-            int row = ChargeHockeyGame.WORLD_HEIGHT - 1;
+        for (int col = 0; col < Grid.WORLD_WIDTH - 1; col++) {
+            int row = Grid.WORLD_HEIGHT - 1;
             GRID_ITEM item = level.get_grid_item(row, col);
             game.grid_sprites.draw_tile(batch, item, row, col);
         }
         // top right
-        GRID_ITEM item = level.get_grid_item(ChargeHockeyGame.WORLD_WIDTH - 1, ChargeHockeyGame.WORLD_HEIGHT - 1);
+        GRID_ITEM item = level.get_grid_item(Grid.WORLD_WIDTH - 1, Grid.WORLD_HEIGHT - 1);
         if (item != GRID_ITEM.NULL) {
             Sprite sprite = game.grid_sprites.get(item);
             sprite.setSize(GRID_TILE_SIZE - ONE_TX, GRID_TILE_SIZE - ONE_TX);
-            sprite.setPosition(ChargeHockeyGame.WORLD_WIDTH - 1, ChargeHockeyGame.WORLD_HEIGHT - 1);
+            sprite.setPosition(Grid.WORLD_WIDTH - 1, Grid.WORLD_HEIGHT - 1);
             sprite.draw(batch);
         }
     }

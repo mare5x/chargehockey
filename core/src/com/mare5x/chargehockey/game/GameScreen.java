@@ -23,19 +23,29 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.FillViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.actors.SymmetryToolActor;
+import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.level.GridCache;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.level.LevelSelectorScreen;
 import com.mare5x.chargehockey.notifications.NoChargesNotification;
+import com.mare5x.chargehockey.settings.GameDefaults;
 import com.mare5x.chargehockey.settings.SettingsFile;
+
+import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_ACTIVE_BG;
+import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_BG;
+import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_HEIGHT;
+import static com.mare5x.chargehockey.settings.GameDefaults.DENSITY;
+import static com.mare5x.chargehockey.settings.GameDefaults.IMAGE_BUTTON_SIZE;
 
 
 // todo add undo button
@@ -136,23 +146,24 @@ public class GameScreen implements Screen {
 
     private final InputMultiplexer multiplexer;
 
-    // the height of the rectangle at the bottom of the screen from where charges are added and to
-    // where they must be dragged to remove them
-    public static final float CHARGE_ZONE_PERCENT_HEIGHT = 0.15f;
-    public static final String CHARGE_ZONE_BG = "pixels/px_grey_opaque";
-    public static final String CHARGE_ZONE_ACTIVE_BG = "pixels/px_darkgrey_opaque";
-
     public GameScreen(final ChargeHockeyGame game, final Level level) {
         this.game = game;
         this.level = level;
 
         camera = new OrthographicCamera();
 
-        float aspect_ratio = Gdx.graphics.getWidth() / (float)(Gdx.graphics.getHeight());
         // the game_stage will span the whole screen (see resize())
-        game_stage = new Stage(new FillViewport(aspect_ratio * ChargeHockeyGame.WORLD_HEIGHT, ChargeHockeyGame.WORLD_HEIGHT, camera), game.batch);
-        camera.position.set(ChargeHockeyGame.WORLD_WIDTH / 2, ChargeHockeyGame.WORLD_HEIGHT / 2, 0);  // center camera
+        // ExtendViewport fits the world square on the screen and then extends the shorter dimension
+        // to fill the whole screen
+        game_stage = new Stage(new ExtendViewport(Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT, camera), game.batch);
+        camera.position.set(Grid.WORLD_WIDTH / 2, Grid.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
+
+        hud_stage = new Stage(new ScreenViewport(), game.batch);
+        final Table button_table = new Table();
+
+//        hud_stage.setDebugAll(true);
+//        game_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
@@ -169,8 +180,6 @@ public class GameScreen implements Screen {
         game_stage.addActor(symmetry_tool);
 
         final WinDialog win_dialog = new WinDialog("WIN", game.skin);
-
-        final Table button_table = new Table();
 
         game_logic = new GameLogic(game, game_stage, level, new GameLogic.GameCallbacks() {
             @Override
@@ -203,8 +212,6 @@ public class GameScreen implements Screen {
         load_charge_state(Level.SAVE_TYPE.AUTO);
         game_logic.charge_state_changed();  // initialize tracking
 
-        hud_stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), game.batch);
-
         final Button menu_button = new Button(game.skin, "menu");
         menu_button.addListener(new ClickListener() {
             @Override
@@ -212,7 +219,7 @@ public class GameScreen implements Screen {
                 game.setScreen(new GameMenuScreen(game, GameScreen.this, level));
             }
         });
-        menu_button.pad(10);
+        menu_button.pad(ACTOR_PAD);
 
         Button symmetry_tool_button = new Button(game.skin, "symmetry_tool");
         symmetry_tool_button.addListener(new ClickListener() {
@@ -222,15 +229,15 @@ public class GameScreen implements Screen {
                 symmetry_tool.update_size(camera.zoom);
             }
         });
-        symmetry_tool_button.pad(10);
+        symmetry_tool_button.pad(ACTOR_PAD);
 
         Button charge_pos_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("charge_pos")));
         charge_pos_button.addListener(new ChargeDragger(CHARGE.POSITIVE));
-        charge_pos_button.pad(10);
+        charge_pos_button.pad(ACTOR_PAD);
 
         Button charge_neg_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("charge_neg")));
         charge_neg_button.addListener(new ChargeDragger(CHARGE.NEGATIVE));
-        charge_neg_button.pad(10);
+        charge_neg_button.pad(ACTOR_PAD);
 
         play_button = new PlayButton();
         play_button.addListener(new ClickListener() {
@@ -239,22 +246,23 @@ public class GameScreen implements Screen {
                 toggle_playing(!game_logic.is_playing());  // from pause to play
             }
         });
-        play_button.pad(10);
+        play_button.pad(ACTOR_PAD);
 
         Table hud_table = new Table();
         hud_table.setFillParent(true);
 
         button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_BG));
-        button_table.defaults().size(Value.percentWidth(0.15f, hud_table)).space(Value.percentWidth(0.125f, hud_table));
+        button_table.defaults().size(IMAGE_BUTTON_SIZE).space(Value.percentWidth(0.125f, hud_table));
         button_table.add(play_button);
         button_table.add(charge_pos_button);
         button_table.add(charge_neg_button);
 
-        hud_table.add(symmetry_tool_button).pad(15).expandX().left().size(Value.percentWidth(0.15f, hud_table));
-        hud_table.add(menu_button).pad(15).expandX().right().size(Value.percentWidth(0.15f, hud_table)).row();
+        hud_table.row().size(IMAGE_BUTTON_SIZE).pad(CELL_PAD).expandX();
+        hud_table.add(symmetry_tool_button).left();
+        hud_table.add(menu_button).right().row();
         hud_table.defaults().colspan(2);
         hud_table.add().expand().fill().row();
-        hud_table.add(button_table).height(Value.percentHeight(CHARGE_ZONE_PERCENT_HEIGHT, hud_table)).expandX().fill();
+        hud_table.add(button_table).height(CHARGE_ZONE_HEIGHT).expandX().fill();
 
         hud_stage.addActor(hud_table);
 
@@ -398,7 +406,7 @@ public class GameScreen implements Screen {
         grid_lines.render();
 
         game.batch.begin();
-        fbo.render(game.batch, 0, 0, ChargeHockeyGame.WORLD_WIDTH, ChargeHockeyGame.WORLD_HEIGHT);
+        fbo.render(game.batch, 0, 0, Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT);
         game.batch.end();
 
         game_stage.draw();
@@ -410,9 +418,10 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        game_stage.getViewport().setScreenBounds(0, 0, width, height);
+        GameDefaults.resize(width, height);
 
-        hud_stage.getViewport().setScreenBounds(0, 0, width, height);
+        game_stage.getViewport().update(width, height);
+        hud_stage.getViewport().update(width, height, true);
 
         camera_controller.resize(game_stage.getViewport().getScreenWidth(), game_stage.getViewport().getScreenHeight());
 
@@ -508,7 +517,7 @@ public class GameScreen implements Screen {
             setModal(true);
             setMovable(false);
 
-            pad(15 * ChargeHockeyGame.DENSITY);
+            pad(15 * DENSITY);
 
             getTitleTable().clear();  // hide the dumb title
 
@@ -516,18 +525,18 @@ public class GameScreen implements Screen {
 
             Label level_passed_label = new Label("LEVEL PASSED!", game.skin, "borderless");
             content_table.add(level_passed_label).padBottom(10).row();
-            content_table.add(new Image(game.skin.getDrawable("star"))).size(percent_width(0.3f)).pad(10);
+            content_table.add(new Image(game.skin.getDrawable("star"))).size(percent_width(0.3f)).pad(ACTOR_PAD);
 
             Table button_table = getButtonTable();
 
             Button back_button = new Button(skin, "back");
-            back_button.pad(10);
+            back_button.pad(ACTOR_PAD);
 
-            button_table.add(back_button).pad(15).size(percent_width(0.2f), percent_width(0.1f)).padRight(30 * ChargeHockeyGame.DENSITY);
+            button_table.add(back_button).pad(CELL_PAD).size(percent_width(0.2f), percent_width(0.1f)).padRight(30 * DENSITY);
             setObject(back_button, WinDialogBUTTON.BACK);
 
             Button next_level_button = new Button(skin, "next");
-            button_table.add(next_level_button).pad(15).size(percent_width(0.2f), percent_width(0.1f));
+            button_table.add(next_level_button).pad(CELL_PAD).size(percent_width(0.2f), percent_width(0.1f));
             setObject(next_level_button, WinDialogBUTTON.NEXT);
 
             button_table.row();
@@ -535,7 +544,7 @@ public class GameScreen implements Screen {
             // todo Share
 //            TextButton share_button = new TextButton("SHARE", skin);
 //            Button share_button = new Button(skin, "share");
-//            button_table.add(share_button).pad(15).size(percent_width(0.1f)).colspan(2).expandX().center();
+//            button_table.add(share_button).pad(CELL_PAD).size(percent_width(0.1f)).colspan(2).expandX().center();
 //            setObject(share_button, WinDialogBUTTON.SHARE);
 
             addListener(new InputListener() {

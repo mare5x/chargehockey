@@ -12,6 +12,7 @@ import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
 import com.mare5x.chargehockey.actors.ForcePuckActor;
 import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.actors.SymmetryToolActor;
+import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
@@ -251,7 +252,7 @@ public class GameLogic {
     private boolean check_out_of_bounds(PuckActor puck) {
         float x = puck.get_x();  // center
         float y = puck.get_y();
-        return x < 0 || x > ChargeHockeyGame.WORLD_WIDTH || y < 0 || y > ChargeHockeyGame.WORLD_HEIGHT;
+        return x < 0 || x > Grid.WORLD_WIDTH || y < 0 || y > Grid.WORLD_HEIGHT;
     }
 
     /** Priority: wall > goal > ... */

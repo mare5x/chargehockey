@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.level.Grid;
 
 
 // TODO rewrite the whole class using InputAdapter
@@ -59,6 +59,8 @@ public class CameraController {
     private boolean double_tap_zoom = false;
 
     private boolean long_press_started = false;
+
+    private static Rectangle tmp_rect = new Rectangle();
 
     public CameraController(OrthographicCamera camera, Stage stage) {
         controller = new CameraControllerImpl(camera, stage);
@@ -152,16 +154,20 @@ public class CameraController {
 
     /* Return the Rectangle of the current camera view in world coordinates. */
     public static Rectangle get_camera_rect(OrthographicCamera camera) {
-        float x = camera.position.x - camera.viewportWidth / 2f * camera.zoom;
-        float y = camera.position.y - camera.viewportHeight / 2f * camera.zoom;
-        return new Rectangle(x, y, camera.viewportWidth * camera.zoom, camera.viewportHeight * camera.zoom);
+        // can also use camera.frustum.planepoints ...
+        float w = camera.viewportWidth * camera.zoom;
+        float h = camera.viewportHeight * camera.zoom;
+        float x = camera.position.x - w / 2;
+        float y = camera.position.y - h / 2;
+        return tmp_rect.set(x, y, w, h);
     }
 
     private class CameraControllerImpl extends GestureDetector.GestureAdapter {
         private static final float dt = 1 / 60f;  // fixed time step
         private float dt_accumulator = 0;
 
-        private static final int BORDER = 16;
+        private static final float BORDER = 16;  // world units (for out_of_bounds)
+
         private final OrthographicCamera camera;
         private final Stage stage;
 
@@ -227,15 +233,20 @@ public class CameraController {
             float zoom_range = ZoomLevel.MIN.get_amount() - ZoomLevel.MAX.get_amount();
             px_to_zoom = zoom_range / diagonal;  // 1 px = px_to_zoom camera.zoom units
 
-            calc_px_to_world_unit();
+            calc_px_to_world_unit(screen_width, screen_height);
         }
 
         private void calc_px_to_world_unit() {
-            px_to_world_unit.x = (camera.viewportWidth * camera.zoom * 0.5f) / stage.getViewport().getScreenWidth();
-            px_to_world_unit.y = (camera.viewportHeight * camera.zoom * 0.5f) / stage.getViewport().getScreenHeight();
+            calc_px_to_world_unit(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
+        }
+
+        private void calc_px_to_world_unit(float screen_width, float screen_height) {
+            px_to_world_unit.x = (camera.viewportWidth * camera.zoom * 0.5f) / screen_width;
+            px_to_world_unit.y = (camera.viewportHeight * camera.zoom * 0.5f) / screen_height;
         }
 
         private Vector2 px_to_world_units(Vector2 px) {
+//            stage.getViewport().unproject(px);
             return px.scl(px_to_world_unit);
         }
 
@@ -263,31 +274,36 @@ public class CameraController {
 
         private void handle_out_of_bounds() {
             // camera.position is in the center of the camera
+            Rectangle view = get_camera_rect(camera);
+            float xw = view.x;
+            float xe = view.x + view.width;
+            float yn = view.y + view.height;
+            float ys = view.y;
 
-            float xw = camera.position.x - camera.viewportWidth / 2f * camera.zoom;
-            float xe = camera.position.x + camera.viewportWidth / 2f * camera.zoom;
-            float yn = camera.position.y + camera.viewportHeight / 2f * camera.zoom;
-            float ys = camera.position.y - camera.viewportHeight / 2f * camera.zoom;
+            float border = BORDER * camera.zoom;
 
-            float target_x = camera.position.x, target_y = camera.position.y;
-            if (xw < -BORDER * camera.zoom) {
-                target_x += -((BORDER / 2) * camera.zoom) - xw;
-                velocity.x = 0;
+            float dx = 0;
+            float dy = 0;
+
+            if (xw < -border)
+                dx += -(border / 2) - xw;
+            else if (xe > Grid.WORLD_WIDTH + border)
+                dx += Grid.WORLD_WIDTH + (border / 2) - xe;
+            if (ys < -border)
+                dy += -(border / 2) - ys;
+            else if (yn > Grid.WORLD_HEIGHT + border)
+                dy += Grid.WORLD_HEIGHT + (border / 2) - yn;
+
+            if (xw + dx < 0 && xe + dx > Grid.WORLD_WIDTH)
+                dx = Grid.WORLD_WIDTH / 2f - camera.position.x;
+            if (ys + dy < 0 && yn + dy > Grid.WORLD_HEIGHT)
+                dy = Grid.WORLD_HEIGHT / 2f - camera.position.y;
+
+            if (dx != 0 || dy != 0) {
+                if (dx != 0) velocity.x = 0;
+                if (dy != 0) velocity.y = 0;
+                move_to(camera.position.x + dx, camera.position.y + dy);
             }
-            else if (xe > ChargeHockeyGame.WORLD_WIDTH + BORDER * camera.zoom) {
-                target_x += ChargeHockeyGame.WORLD_WIDTH + ((BORDER / 2) * camera.zoom) - xe;
-                velocity.x = 0;
-            }
-            if (ys < -BORDER * camera.zoom) {
-                target_y += -((BORDER / 2) * camera.zoom) - ys;
-                velocity.y = 0;
-            }
-            else if (yn > ChargeHockeyGame.WORLD_HEIGHT + BORDER * camera.zoom) {
-                target_y += ChargeHockeyGame.WORLD_HEIGHT + ((BORDER / 2) * camera.zoom) - yn;
-                velocity.y = 0;
-            }
-            if (target_x != camera.position.x || target_y != camera.position.y)
-                move_to(target_x, target_y);
         }
 
         private void move_to(float x, float y) {
@@ -436,7 +452,9 @@ public class CameraController {
             }
 
             // use the px_to_zoom conversion factor to determine the right zoom from the pixel delta value
-            zoom_to(MathUtils.clamp(pinch_start_zoom - new_zoom_distance * px_to_zoom, ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount()), Interpolation.pow3Out);
+            float target_zoom = MathUtils.clamp(pinch_start_zoom - new_zoom_distance * px_to_zoom,
+                                                ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount());
+            zoom_to(target_zoom, Interpolation.pow3Out);
 
             return true;
         }

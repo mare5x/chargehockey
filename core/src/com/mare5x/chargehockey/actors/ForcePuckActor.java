@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.level.Grid;
 
 /** Puck sprite that can show (force) vectors. */
 public class ForcePuckActor extends ChargeActor {
@@ -24,7 +25,7 @@ public class ForcePuckActor extends ChargeActor {
     public static final Color NEG_BLUE = new Color(0, 0.58f, 1, 1);
 
     // vector sprite settings
-    static final float _MAX_LENGTH = ChargeHockeyGame.WORLD_WIDTH * 0.8f;
+    static final float _MAX_LENGTH = Grid.WORLD_WIDTH * 0.8f;
     private static final float _MIN_VEC_HEIGHT = 0.6f;
     private static final float _VEC_HEIGHT_SCL = 1.5f;  // manually check blank_vector.png arrow's tail height
 

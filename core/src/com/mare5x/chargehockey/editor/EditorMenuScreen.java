@@ -19,8 +19,14 @@ import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelector;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
+import com.mare5x.chargehockey.settings.GameDefaults;
 
 import java.util.Locale;
+
+import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.MAX_BUTTON_WIDTH;
+import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 
 class EditorMenuScreen extends BaseMenuScreen {
@@ -69,7 +75,7 @@ class EditorMenuScreen extends BaseMenuScreen {
                 }
             }
         });
-        play_button.pad(10);
+        play_button.pad(ACTOR_PAD);
 
         Button add_button = new Button(game.skin, "add");
         add_button.addListener(new ClickListener() {
@@ -78,13 +84,13 @@ class EditorMenuScreen extends BaseMenuScreen {
                 add_input_dialog.show();
             }
         });
-        add_button.pad(10);
+        add_button.pad(ACTOR_PAD);
 
         add_back_button(1, false);
-        table.add(add_button).pad(15).size(MIN_BUTTON_HEIGHT).expandX().right().row();
+        table.add(add_button).pad(CELL_PAD).size(MIN_BUTTON_HEIGHT).expandX().right().row();
         table.defaults().colspan(2);
-        table.add(level_selector.get_selector_table()).pad(15).expand().fill().row();
-        table.add(play_button).pad(15).size(1.75f * MIN_BUTTON_HEIGHT);
+        table.add(level_selector.get_selector_table()).pad(CELL_PAD).expand().fill().row();
+        table.add(play_button).pad(CELL_PAD).size(1.75f * MIN_BUTTON_HEIGHT);
 
         if (level_selector.is_empty()) {
             remove_notification();
@@ -94,6 +100,15 @@ class EditorMenuScreen extends BaseMenuScreen {
             table.validate();
             level_selector.select(selected_level.get_name());
         }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        if (add_input_dialog.isVisible())
+            add_input_dialog.resize();
+        if (edit_input_dialog.isVisible())
+            edit_input_dialog.resize();
     }
 
     @Override
@@ -117,7 +132,7 @@ class EditorMenuScreen extends BaseMenuScreen {
             setResizable(false);
             setMovable(false);
 
-            pad(ChargeHockeyGame.FONT_SIZE * 1.5f * ChargeHockeyGame.DENSITY);
+            pad(GameDefaults.FONT_SIZE * 1.5f * GameDefaults.DENSITY);
 
             getTitleTable().clear();
 
@@ -125,21 +140,21 @@ class EditorMenuScreen extends BaseMenuScreen {
             name_input.setAlignment(Align.center);
 
             Table content_table = getContentTable();
-            content_table.add(name_input).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width()).row();
+            content_table.add(name_input).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width()).row();
 
             Button cancel_button = new Button(game.skin, "cancel");
-            cancel_button.pad(10);
+            cancel_button.pad(ACTOR_PAD);
             Button confirm_button = new Button(game.skin, "confirm");
-            confirm_button.pad(10);
+            confirm_button.pad(ACTOR_PAD);
 
-            getButtonTable().defaults().size(MIN_BUTTON_HEIGHT).padTop(15).space(15).expandX().center();
+            getButtonTable().defaults().size(MIN_BUTTON_HEIGHT).padTop(CELL_PAD).space(CELL_PAD).expandX().center();
             button(cancel_button, DIALOG_BUTTON.CANCEL);
             button(confirm_button, DIALOG_BUTTON.CONFIRM);
         }
 
         @Override
         public float getPrefWidth() {
-            return stage.getWidth() * 0.8f;
+            return Math.min(stage.getWidth() * 0.8f, MAX_BUTTON_WIDTH * 1.25f);
         }
 
         Value get_input_width() {
@@ -164,9 +179,18 @@ class EditorMenuScreen extends BaseMenuScreen {
 
             name_input.selectAll();  // select everything, so it's ready to be overwritten
             stage.setKeyboardFocus(name_input);
-            name_input.getOnscreenKeyboard().show(true);
+            set_keyboard_visible(true);
 
             return this;
+        }
+
+        void set_keyboard_visible(boolean visible) {
+            name_input.getOnscreenKeyboard().show(visible);
+        }
+
+        void resize() {
+            pack();
+            super.setPosition(stage.getWidth() / 2 - getWidth() / 2, (float) (stage.getHeight() * 0.8 - getHeight()));
         }
 
         @Override
@@ -179,7 +203,7 @@ class EditorMenuScreen extends BaseMenuScreen {
 
         @Override
         public void hide() {
-            name_input.getOnscreenKeyboard().show(false);
+            set_keyboard_visible(false);
             super.hide();
         }
 
@@ -218,12 +242,13 @@ class EditorMenuScreen extends BaseMenuScreen {
                         }
                     });
                     exporter.export(level_name);
+                    set_keyboard_visible(false);
                 }
             });
 
             Table content_table = getContentTable();
-            content_table.add(delete_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width()).row();
-            content_table.add(export_button).pad(15).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width());
+            content_table.add(delete_button).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width()).row();
+            content_table.add(export_button).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width());
         }
 
         @Override

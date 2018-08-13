@@ -6,10 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.settings.GameDefaults;
+
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
 
 
 public class NoChargesNotification extends Notification {
-    private static final float img_size = ChargeHockeyGame.FONT_SIZE * ChargeHockeyGame.DENSITY * 1.5f;
+    private static final float img_size = GameDefaults.FONT_SIZE * GameDefaults.DENSITY * 1.5f;
 
     public NoChargesNotification(ChargeHockeyGame game, Stage stage) {
         super(game, stage);
@@ -20,7 +23,7 @@ public class NoChargesNotification extends Notification {
         Image neg_charge = new Image(game.sprites.findRegion("charge_neg"));
 
         add(text_label).width(get_label_width());
-        add(pos_charge).space(15).size(img_size);
+        add(pos_charge).space(CELL_PAD).size(img_size);
         add(neg_charge).size(img_size);
     }
 

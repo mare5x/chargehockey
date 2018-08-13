@@ -1,8 +1,8 @@
 package com.mare5x.chargehockey.level;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StringBuilder;
-import com.mare5x.chargehockey.ChargeHockeyGame;
 
 public class Grid {
     public enum GRID_ITEM {
@@ -36,19 +36,21 @@ public class Grid {
         }
     }
 
-    private static int WIDTH = ChargeHockeyGame.WORLD_WIDTH, HEIGHT = ChargeHockeyGame.WORLD_HEIGHT;
+    public static int WORLD_WIDTH = 64;
+    public static int WORLD_HEIGHT = 64;
+    public static final Rectangle WORLD_RECT = new Rectangle(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
     private final Array<GRID_ITEM> grid;
 
     Grid() {
-        grid = new Array<GRID_ITEM>(true, WIDTH * HEIGHT);
-        for (int i = 0; i < WIDTH * HEIGHT; i++)
+        grid = new Array<GRID_ITEM>(true, WORLD_WIDTH * WORLD_HEIGHT);
+        for (int i = 0; i < WORLD_WIDTH * WORLD_HEIGHT; i++)
             grid.add(GRID_ITEM.NULL);
     }
 
     private int get_idx(int row, int col) {
-        if (row >= 0 && row < HEIGHT && col >= 0 && col < WIDTH) {
-            return row * WIDTH + col;
+        if (row >= 0 && row < WORLD_HEIGHT && col >= 0 && col < WORLD_WIDTH) {
+            return row * WORLD_WIDTH + col;
         }
         return -1;
     }
@@ -115,17 +117,17 @@ public class Grid {
     }
 
     void set_size(int width, int height) {
-        WIDTH = width;
-        HEIGHT = height;
+        WORLD_WIDTH = width;
+        WORLD_HEIGHT = height;
         grid.setSize(width * height);
     }
 
     int get_height() {
-        return HEIGHT;
+        return WORLD_HEIGHT;
     }
 
     int get_width() {
-        return WIDTH;
+        return WORLD_WIDTH;
     }
 
     void clear() {
