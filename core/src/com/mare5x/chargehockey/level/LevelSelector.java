@@ -1,22 +1,20 @@
 package com.mare5x.chargehockey.level;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
-import com.mare5x.chargehockey.settings.GameDefaults;
+import com.mare5x.chargehockey.menus.TableLayout;
+
+import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
 
 public class LevelSelector {
     private final LEVEL_TYPE level_type;
 
-    private final LevelList list;
-    private final ScrollPane scroll_pane;
+    private final ScrollableLevelList list;
 
     private final LevelFrameBuffer preview_fbo;
 
@@ -44,11 +42,7 @@ public class LevelSelector {
                 on_long_press(level_name);
             }
         };
-        list = new LevelList(game, selection_listener, level_type);
-
-        scroll_pane = new ScrollPane(list, game.skin);
-        scroll_pane.setScrollingDisabled(true, false);
-        scroll_pane.setVariableSizeKnobs(true);
+        list = new ScrollableLevelList(game, selection_listener, level_type);
 
         preview_fbo = new LevelFrameBuffer(game, null, true);
         preview_fbo.set_puck_alpha(1);
@@ -66,15 +60,26 @@ public class LevelSelector {
         list.set_multi_select_enabled(multiple_select);
     }
 
-    public Table get_selector_table() {
-        Image preview_image = new Image(preview_fbo.get_texture_region());
-        preview_image.setScaling(Scaling.fit);
+    public TableLayout get_table_layout() {
+        return new TableLayout() {
+            private final Image preview_image;
+            {
+                preview_image = new Image(preview_fbo.get_texture_region());
+                preview_image.setScaling(Scaling.fit);
+            }
 
-        Table selector_table = new Table();
-        selector_table.add(scroll_pane).expand().fill().padBottom(GameDefaults.ACTOR_PAD).row();
-        selector_table.add(preview_image).size(Value.percentHeight(0.5f, selector_table));
+            @Override
+            public void portrait() {
+                add(list.get()).grow().space(ACTOR_PAD).maxHeight(Value.percentHeight(0.5f, this)).row();
+                add(preview_image).prefSize(Value.percentHeight(0.5f, this));
+            }
 
-        return selector_table;
+            @Override
+            public void landscape() {
+                add(list.get()).grow().space(ACTOR_PAD).maxWidth(Value.percentWidth(0.5f, this));
+                add(preview_image).prefSize(Value.percentWidth(0.5f, this));
+            }
+        };
     }
 
     public String get_selected_name() {
@@ -110,13 +115,11 @@ public class LevelSelector {
 
     public void add_level(String level_name) {
         if (!level_name.isEmpty()) {
-            if (!list.contains(level_name)) {
+            if (!list.contains(level_name))
                 list.add_entry(level_name, false);
-            } else {
+            else
                 list.select(level_name);
-            }
-
-            scroll_to_selected();
+            list.scroll_to_selected();
         }
     }
 
@@ -158,15 +161,7 @@ public class LevelSelector {
 
     public void select(String level_name) {
         list.select(level_name);
-        scroll_to_selected();
-    }
-
-    private void scroll_to_selected() {
-        Rectangle rect = list.get_selected_rect();
-
-        // necessary to scroll to bottom
-        scroll_pane.validate();
-        scroll_pane.scrollTo(rect.x, rect.y, rect.width, rect.height, true, true);
+        list.scroll_to_selected();
     }
 
     /** Returns whether any level is currently selected. */

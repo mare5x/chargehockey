@@ -9,6 +9,7 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelector;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
+import com.mare5x.chargehockey.menus.TableLayout;
 
 import java.util.Locale;
 
@@ -58,8 +59,11 @@ class ExportScreen extends BaseMenuScreen {
             }
         });
 
+        TableLayout level_selector_layout = selector.get_table_layout();
+        table.add_layout(level_selector_layout);
+
         add_back_button();
-        table.add(selector.get_selector_table()).pad(CELL_PAD).expand().fill().row();
+        table.add(level_selector_layout).pad(CELL_PAD).expand().fill().row();
         add_text_button(export_button).row();
         add_text_button(export_all_button);
 

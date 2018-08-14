@@ -95,10 +95,8 @@ class LevelList extends VerticalGroup {
                 }
             });
 
-            add(name_button).minHeight(MIN_BUTTON_HEIGHT).width(MAX_BUTTON_WIDTH).padRight(ACTOR_PAD);
-
+            add(name_button).minHeight(MIN_BUTTON_HEIGHT).prefWidth(MAX_BUTTON_WIDTH).padRight(ACTOR_PAD);
             add(new Image(game.skin.getDrawable(level_finished ? "star" : "star_empty"))).size(MIN_BUTTON_HEIGHT);
-
             pad(5);
         }
 
@@ -164,12 +162,27 @@ class LevelList extends VerticalGroup {
             add_entry(new LevelData(child.name(), type));
         }
 
+        // DO NOT REMOVE THIS!!! IT MAKES RESIZING WORK!!!
+        grow();
+//        center();
+
         invalidateHierarchy();
     }
 
     void set_select_on_long_press(boolean select_on_long_press) { this.select_on_long_press = select_on_long_press; }
 
     void set_multi_select_enabled(boolean multi_select_enabled) { this.multi_select_enabled = multi_select_enabled; }
+
+    void invalidate_layout() {
+        SnapshotArray<Actor> entries = getChildren();
+        Actor[] items = entries.begin();
+        for (int i = 0, n = entries.size; i < n; ++i) {
+            LevelListEntry entry = (LevelListEntry) items[i];
+            entry.invalidate();
+        }
+        entries.end();
+        invalidate();
+    }
 
     private LevelListEntry add_entry(LevelData level) {
         LevelListEntry entry = new LevelListEntry(level.name(), level.is_finished());

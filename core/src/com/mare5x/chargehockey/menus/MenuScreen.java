@@ -1,7 +1,7 @@
 package com.mare5x.chargehockey.menus;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mare5x.chargehockey.ChargeHockeyGame;
@@ -12,13 +12,16 @@ import com.mare5x.chargehockey.settings.SettingsScreen;
 
 import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.MAX_BUTTON_WIDTH;
+import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 
 public class MenuScreen extends BaseMenuScreen {
     public MenuScreen(final ChargeHockeyGame game) {
         super(game);
 
-        Button play_button = new Button(game.skin, "play");
+        // use an ImageButton for "fit" scaling
+        ImageButton play_button = new ImageButton(game.skin, "play");
+        play_button.getImageCell().grow();
         play_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -50,7 +53,7 @@ public class MenuScreen extends BaseMenuScreen {
             }
         });
 
-        table.add(play_button).expandX().pad(CELL_PAD).size(MAX_BUTTON_WIDTH).row();
+        table.add(play_button).pad(CELL_PAD).prefSize(MAX_BUTTON_WIDTH).minSize(MIN_BUTTON_HEIGHT).row();
         add_text_button(edit_button).row();
         add_text_button(settings_button).row();
         add_text_button(exit_button);

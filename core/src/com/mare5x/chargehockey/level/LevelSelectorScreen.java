@@ -8,6 +8,7 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.game.GameScreen;
 import com.mare5x.chargehockey.game.PlayMenuScreen;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
+import com.mare5x.chargehockey.menus.TableLayout;
 
 import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
@@ -42,8 +43,11 @@ public class LevelSelectorScreen extends BaseMenuScreen {
         });
         play_button.pad(ACTOR_PAD);
 
+        TableLayout level_selector_layout = level_selector.get_table_layout();
+        table.add_layout(level_selector_layout);
+
         add_back_button();
-        table.add(level_selector.get_selector_table()).pad(5, 15, 5, 15).expand().fill().row();
+        table.add(level_selector_layout).pad(CELL_PAD).expand().fill().row();
         table.add(play_button).pad(CELL_PAD).size(1.75f * MIN_BUTTON_HEIGHT).padBottom(Value.percentHeight(0.05f, table));
 
         if (level_selector.is_empty()) {

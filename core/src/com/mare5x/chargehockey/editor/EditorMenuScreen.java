@@ -18,6 +18,7 @@ import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelector;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
+import com.mare5x.chargehockey.menus.TableLayout;
 import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
 import com.mare5x.chargehockey.settings.GameDefaults;
 
@@ -86,10 +87,13 @@ class EditorMenuScreen extends BaseMenuScreen {
         });
         add_button.pad(ACTOR_PAD);
 
+        TableLayout level_selector_layout = level_selector.get_table_layout();
+        table.add_layout(level_selector_layout);
+
         add_back_button(1, false);
         table.add(add_button).pad(CELL_PAD).size(MIN_BUTTON_HEIGHT).expandX().right().row();
         table.defaults().colspan(2);
-        table.add(level_selector.get_selector_table()).pad(CELL_PAD).expand().fill().row();
+        table.add(level_selector_layout).pad(CELL_PAD).expand().fill().row();
         table.add(play_button).pad(CELL_PAD).size(1.75f * MIN_BUTTON_HEIGHT);
 
         if (level_selector.is_empty()) {

@@ -37,19 +37,30 @@ public abstract class BaseMenuScreen implements Screen {
 
     protected Notification notification = null;
 
-    protected Table table;
+    // the default TableLayout will only propagate resizing to its added children
+    // treat it as a normal Table and add aspect ratio sensitive layouts with table.add_layout()
+    // call table.set_resizable(true) to activate layout_portrait() and layout_landscape()
+    protected TableLayout table;
 
     protected BaseMenuScreen(final ChargeHockeyGame game) {
         this.game = game;
 
         stage = new Stage(new ScreenViewport(), game.batch);
 
-        table = new Table(game.skin);
+        table = new TableLayout(game.skin) {
+            @Override
+            public void portrait() { layout_portrait(); }
+
+            @Override
+            public void landscape() { layout_landscape(); }
+        };
+        table.set_resizable(false);
+        table.set_resize_children(true);
         table.setFillParent(true);
 
         stage.addActor(table);
 
-        stage.setDebugAll(true);
+//        stage.setDebugAll(true);
 
         InputAdapter back_key_processor = new InputAdapter() {  // same as return button
             @Override
@@ -74,6 +85,12 @@ public abstract class BaseMenuScreen implements Screen {
         back_button.pad(ACTOR_PAD);
         return back_button;
     }
+
+    /* Override to provide a seperate portrait layout. Safe to ignore. */
+    protected void layout_portrait() { }
+
+    /* Override to provide a seperate landscape layout. Safe to ignore. */
+    protected void layout_landscape() { }
 
     protected void add_back_button() {
         add_back_button(1);
@@ -113,7 +130,7 @@ public abstract class BaseMenuScreen implements Screen {
     }
 
     public static <T extends Actor> Cell<T> add_button_to_table(Table table, T button) {
-        return table.add(button).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(MAX_BUTTON_WIDTH);
+        return table.add(button).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).prefWidth(MAX_BUTTON_WIDTH);
     }
 
     protected Label make_label(String text) {
@@ -205,6 +222,8 @@ public abstract class BaseMenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+
+        table.resize(width, height);
 
         Gdx.graphics.requestRendering();
     }
