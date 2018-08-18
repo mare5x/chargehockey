@@ -36,6 +36,7 @@ import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.level.LevelSelectorScreen;
 import com.mare5x.chargehockey.notifications.NoChargesNotification;
+import com.mare5x.chargehockey.notifications.Notification;
 import com.mare5x.chargehockey.settings.GameDefaults;
 import com.mare5x.chargehockey.settings.SettingsFile;
 
@@ -138,6 +139,8 @@ public class GameScreen implements Screen {
     private final GridCache grid_lines;
 
     private final SymmetryToolActor symmetry_tool;
+
+    private Notification notification;
 
     private static boolean SHOW_GRID_LINES_SETTING = false;
     private static boolean SYMMETRY_TOOL_ENABLED_SETTING = false;
@@ -296,8 +299,14 @@ public class GameScreen implements Screen {
 
     private void toggle_playing(boolean update_background) {
         if (!game_logic.has_charges()) {
-            NoChargesNotification notification = new NoChargesNotification(game, hud_stage);  // note: the player can spam create notifications!
-            notification.show();
+            if (notification == null || !(notification instanceof NoChargesNotification))
+                notification = new NoChargesNotification(game, hud_stage);
+            notification.show(new Runnable() {
+                @Override
+                public void run() {
+                    notification = null;
+                }
+            });
             return;
         }
 
@@ -424,6 +433,9 @@ public class GameScreen implements Screen {
         hud_stage.getViewport().update(width, height, true);
 
         camera_controller.resize(game_stage.getViewport().getScreenWidth(), game_stage.getViewport().getScreenHeight());
+
+        if (notification != null && notification.is_displayed())
+            notification.resize();
 
         Gdx.graphics.requestRendering();
     }

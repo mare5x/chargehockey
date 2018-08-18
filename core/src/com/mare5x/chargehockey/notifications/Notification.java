@@ -2,17 +2,17 @@ package com.mare5x.chargehockey.notifications;
 
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.settings.GameDefaults;
 
+import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 // todo keep track of added notification; display multiple notifications simulataneously
@@ -22,19 +22,14 @@ public abstract class Notification extends Table {
     private final ChargeHockeyGame game;
     private final Stage stage;
 
+    private Runnable on_remove;
+
     // NOTE: stage must use screen coordinates.
     Notification(ChargeHockeyGame game, Stage stage) {
         super(game.skin);
 
         this.game = game;
         this.stage = stage;
-
-        setBackground(game.skin.getDrawable("button_up"));
-
-        // the default position and size is at the top of the screen
-        float width = stage.getWidth() * 0.8f;
-        float height = stage.getHeight() * 0.25f;
-        setBounds(stage.getWidth() / 2 - width / 2, stage.getHeight() * 0.95f - height, width, height);
 
         // dismiss notifications with a click
         addListener(new ClickListener() {
@@ -44,8 +39,11 @@ public abstract class Notification extends Table {
             }
         });
 
+//        setDebug(true, true);
+
         // set table defaults
-        pad(GameDefaults.FONT_SIZE * 0.5f * GameDefaults.DENSITY);
+        setBackground(game.skin.getDrawable("button_up"));
+        pad(CELL_PAD);
         defaults().maxWidth(getMaxWidth()).minHeight(getMinHeight());
     }
 
@@ -79,7 +77,7 @@ public abstract class Notification extends Table {
     }
 
     /** Returns a default fade in/out action. */
-    private Action get_action(float time) {
+    private SequenceAction get_action(float time) {
         return Actions.sequence(
                 Actions.alpha(0.4f),
                 Actions.show(),
@@ -87,7 +85,13 @@ public abstract class Notification extends Table {
                 Actions.delay(time),
                 Actions.fadeOut(0.6f),
                 Actions.hide(),
-                Actions.removeActor()
+//                Actions.removeActor(),
+                Actions.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        hide();
+                    }
+                })
         );
     }
 
@@ -106,16 +110,36 @@ public abstract class Notification extends Table {
         show(DEFAULT_SHOW_TIME);
     }
 
+    public void show(Runnable on_remove) {
+        show(DEFAULT_SHOW_TIME, on_remove);
+    }
+
     /** Adds the notification content to the stage for 'time' duration, then removes itself. */
     public void show(float time) {
+        show(time, null);
+    }
+
+    /** Adds the notification content to the stage for 'time' duration, then removes itself and calls
+     *  on_remove. */
+    public void show(float time, Runnable on_remove) {
+        clearActions();
         stage.addActor(this);
         addAction(get_action(time));
         pack();
+        this.on_remove = on_remove;
     }
 
     /** Immediately removes this notification (actor) from the stage. */
-    protected void hide() {
+    public void hide() {
         clearActions();
         remove();
+        if (on_remove != null)
+            on_remove.run();
+    }
+
+    /** Call when resizing the screen. */
+    public void resize() {
+        invalidate();
+        pack();
     }
 }

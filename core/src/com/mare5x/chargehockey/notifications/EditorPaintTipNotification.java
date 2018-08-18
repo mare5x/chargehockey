@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 
 import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
-import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
+import static com.mare5x.chargehockey.settings.GameDefaults.IMAGE_FONT_SIZE;
 
 public class EditorPaintTipNotification extends Notification {
     public EditorPaintTipNotification(ChargeHockeyGame game, Stage stage) {
@@ -19,14 +19,14 @@ public class EditorPaintTipNotification extends Notification {
         Image paint_img = new Image(game.skin.getDrawable("edit_on"));
 
         add(message).space(CELL_PAD).width(get_label_width());
-        add(paint_img).space(CELL_PAD).size(MIN_BUTTON_HEIGHT);
+        add(paint_img).space(CELL_PAD).size(IMAGE_FONT_SIZE);
     }
 
     private Value get_label_width() {
         return new Value() {
             @Override
             public float get(Actor context) {
-                return Math.min(context.getWidth(), getMaxWidth() * 0.8f);
+                return Math.min(context.getWidth(), getMaxWidth() * 0.9f - IMAGE_FONT_SIZE);
             }
         };
     }

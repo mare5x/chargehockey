@@ -35,7 +35,13 @@ public abstract class BaseMenuScreen implements Screen {
     protected final Stage stage;
     private final InputMultiplexer input_multiplexer;
 
-    protected Notification notification = null;
+    private Notification notification;
+    private final Runnable on_remove_notification = new Runnable() {
+        @Override
+        public void run() {
+            notification = null;
+        }
+    };
 
     // the default TableLayout will only propagate resizing to its added children
     // treat it as a normal Table and add aspect ratio sensitive layouts with table.add_layout()
@@ -146,20 +152,26 @@ public abstract class BaseMenuScreen implements Screen {
 
     /** Displays a TextNotification, making sure only one is displayed. */
     protected void show_notification(String message) {
-        show_notification(message, Notification.DEFAULT_SHOW_TIME);
+        show_notification(message, -1);
     }
 
     /** Displays a TextNotification, making sure only one is displayed. */
     protected void show_notification(String message, float show_time) {
-        if (notification != null)
-            notification.remove();
-        notification = new TextNotification(game, stage, message);
-        notification.show(show_time);
+        show_notification(new TextNotification(game, stage, message), show_time);
     }
 
-    protected void remove_notification() {
-        if (notification != null)
-            notification.remove();
+    protected void show_notification(Notification notification) {
+        show_notification(notification, -1);
+    }
+
+    protected void show_notification(final Notification notification, float show_time) {
+        if (this.notification != null && this.notification.is_displayed())
+            this.notification.hide();
+        this.notification = notification;
+        if (show_time > 0)
+            notification.show(show_time, on_remove_notification);
+        else
+            notification.show(on_remove_notification);
     }
 
     /** Use this instead of game.setScreen to use a transition animation. */
@@ -224,6 +236,9 @@ public abstract class BaseMenuScreen implements Screen {
         stage.getViewport().update(width, height, true);
 
         table.resize(width, height);
+
+        if (notification != null && notification.is_displayed())
+            notification.resize();
 
         Gdx.graphics.requestRendering();
     }
