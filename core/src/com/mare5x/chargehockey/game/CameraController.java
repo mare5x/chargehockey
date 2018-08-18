@@ -100,7 +100,7 @@ public class CameraController {
         controller.resize(width, height);
     }
 
-    void set_rendering(boolean value) {
+    public void set_rendering(boolean value) {
         continuous_rendering = value;
     }
 

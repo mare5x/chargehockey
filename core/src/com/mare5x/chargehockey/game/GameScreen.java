@@ -365,20 +365,6 @@ public class GameScreen implements Screen {
         fbo.update(game.batch);
     }
 
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(multiplexer);
-
-        // check if any settings were changed
-        game_logic.handle_charge_size_change();
-        if (SHOW_GRID_LINES_SETTING != grid_lines.get_show_grid_lines()) {
-            grid_lines.set_show_grid_lines(SHOW_GRID_LINES_SETTING);
-            grid_lines.update(camera.zoom);
-        }
-
-        render(Gdx.graphics.getDeltaTime());
-    }
-
     private void update_puck_trace_path() {
         if (!PuckActor.get_trace_path() || !game_logic.is_playing())
             return;
@@ -395,6 +381,20 @@ public class GameScreen implements Screen {
 
         game.batch.end();
         fbo.end();
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(multiplexer);
+
+        // check if any settings were changed
+        game_logic.handle_charge_size_change();
+        if (SHOW_GRID_LINES_SETTING != grid_lines.get_show_grid_lines()) {
+            grid_lines.set_show_grid_lines(SHOW_GRID_LINES_SETTING);
+            grid_lines.update(camera.zoom);
+        }
+
+        render(Gdx.graphics.getDeltaTime());
     }
 
     @Override

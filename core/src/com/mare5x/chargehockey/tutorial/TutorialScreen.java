@@ -283,6 +283,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
         Label settings_tip = make_label("TIP: EXPLORE THE SETTINGS MENU");
         Label editor_tip = make_label("TIP: CREATE YOUR OWN LEVELS USING THE BUILT-IN CUSTOM EDITOR");
         Label symmetry_tip = make_label("TIP: USE THE GRID AND THE SYMMETRY TOOL FOR PRECISE ACTIONS");
+        Label notifications_tip = make_label("TIP: TAP ON A NOTIFICATION TO DISMISS IT");
 
         table.clear();
 
@@ -300,6 +301,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
         table.add(settings_tip).fillX().row();
         table.add(editor_tip).fillX().row();
         table.add(symmetry_tip).fillX().row();
+        table.add(notifications_tip).fillX().row();
 
         table.add().expand().fill();
         table.row().minHeight(MIN_BUTTON_HEIGHT).prefWidth(MAX_BUTTON_WIDTH / 2).colspan(1);

@@ -411,6 +411,10 @@ public class EditorScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(multiplexer);
+
+        camera_controller.set_rendering(false);
+        Gdx.graphics.setContinuousRendering(false);
+        Gdx.graphics.requestRendering();
     }
 
     @Override
@@ -466,6 +470,7 @@ public class EditorScreen implements Screen {
     @Override
     public void hide() {
         save_changes();
+        Gdx.graphics.setContinuousRendering(false);
     }
 
     @Override

@@ -39,7 +39,7 @@ public abstract class Notification extends Table {
             }
         });
 
-        setDebug(true, true);
+//        setDebug(true, true);
 
         // set table defaults
         setBackground(game.skin.getDrawable("button_up"));
