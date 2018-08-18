@@ -1,8 +1,10 @@
 package com.mare5x.chargehockey.editor;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -21,12 +23,12 @@ import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.menus.TableLayout;
 import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
 import com.mare5x.chargehockey.notifications.Notification;
-import com.mare5x.chargehockey.settings.GameDefaults;
 
 import java.util.Locale;
 
 import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.IMAGE_FONT_SIZE;
 import static com.mare5x.chargehockey.settings.GameDefaults.MAX_BUTTON_WIDTH;
 import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
@@ -135,7 +137,7 @@ class EditorMenuScreen extends BaseMenuScreen {
             setResizable(false);
             setMovable(false);
 
-            pad(GameDefaults.FONT_SIZE * 1.5f * GameDefaults.DENSITY);
+            pad(IMAGE_FONT_SIZE);
 
             getTitleTable().clear();
 
@@ -151,9 +153,18 @@ class EditorMenuScreen extends BaseMenuScreen {
             Button confirm_button = new Button(game.skin, "confirm");
             confirm_button.pad(ACTOR_PAD);
 
-            getButtonTable().defaults().size(MIN_BUTTON_HEIGHT).padTop(CELL_PAD).space(CELL_PAD).expandX().center();
+            getButtonTable().defaults().size(MIN_BUTTON_HEIGHT).padTop(CELL_PAD).space(CELL_PAD).expandX();
             button(cancel_button, DIALOG_BUTTON.CANCEL);
             button(confirm_button, DIALOG_BUTTON.CONFIRM);
+
+            addListener(new InputListener() {
+                @Override
+                public boolean keyUp(InputEvent event, int keycode) {
+                    if (keycode == Input.Keys.BACK)
+                        result(DIALOG_BUTTON.CANCEL);
+                    return true;
+                }
+            });
         }
 
         @Override
@@ -177,7 +188,7 @@ class EditorMenuScreen extends BaseMenuScreen {
         public Dialog show(String level_name) {
             super.show(stage);
 
-            super.setPosition(stage.getWidth() / 2 - getWidth() / 2, (float) (stage.getHeight() * 0.8 - getHeight()));
+            setPosition(Math.round((stage.getWidth() - getWidth()) / 2), Math.round(stage.getHeight() * 0.9f - getHeight()));
 
             name_input.setText(level_name);
 
@@ -194,15 +205,14 @@ class EditorMenuScreen extends BaseMenuScreen {
 
         void resize() {
             pack();
-            super.setPosition(stage.getWidth() / 2 - getWidth() / 2, (float) (stage.getHeight() * 0.8 - getHeight()));
+            setPosition(Math.round((stage.getWidth() - getWidth()) / 2), Math.round(stage.getHeight() * 0.9f - getHeight()));
         }
 
         @Override
         protected void result(Object object) {
-            if (object.equals(DIALOG_BUTTON.CONFIRM)) {
-                on_confirm();
-            }
             hide();
+            if (object.equals(DIALOG_BUTTON.CONFIRM))
+                on_confirm();
         }
 
         @Override

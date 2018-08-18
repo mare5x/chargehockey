@@ -8,7 +8,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -23,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
@@ -45,14 +45,15 @@ import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_ACTIVE_BG;
 import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_BG;
 import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_HEIGHT;
-import static com.mare5x.chargehockey.settings.GameDefaults.DENSITY;
 import static com.mare5x.chargehockey.settings.GameDefaults.IMAGE_BUTTON_SIZE;
+import static com.mare5x.chargehockey.settings.GameDefaults.IMAGE_FONT_SIZE;
+import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 
 // todo add undo button
 public class GameScreen implements Screen {
     private enum WinDialogBUTTON {
-        BACK, SHARE, NEXT
+        BACK, NEXT
     }
 
     // Helper DragListener for adding charges
@@ -145,6 +146,7 @@ public class GameScreen implements Screen {
     private static boolean SHOW_GRID_LINES_SETTING = false;
     private static boolean SYMMETRY_TOOL_ENABLED_SETTING = false;
 
+    private final WinDialog win_dialog;
     private final PlayButton play_button;
 
     private final InputMultiplexer multiplexer;
@@ -182,7 +184,7 @@ public class GameScreen implements Screen {
         symmetry_tool.set_enabled(SYMMETRY_TOOL_ENABLED_SETTING);
         game_stage.addActor(symmetry_tool);
 
-        final WinDialog win_dialog = new WinDialog("WIN", game.skin);
+        win_dialog = new WinDialog("WIN", game.skin);
 
         game_logic = new GameLogic(game, game_stage, level, new GameLogic.GameCallbacks() {
             @Override
@@ -437,6 +439,9 @@ public class GameScreen implements Screen {
         if (notification != null && notification.is_displayed())
             notification.resize();
 
+        if (win_dialog.isVisible())
+            win_dialog.resize();
+
         Gdx.graphics.requestRendering();
     }
 
@@ -527,37 +532,28 @@ public class GameScreen implements Screen {
             super(title, skin);
 
             setModal(true);
+            setResizable(false);
             setMovable(false);
 
-            pad(15 * DENSITY);
+            pad(IMAGE_FONT_SIZE);
 
             getTitleTable().clear();  // hide the dumb title
 
+            Image star_image = new Image(game.skin.getDrawable("star"));
+            star_image.setScaling(Scaling.fit);
+
             Table content_table = getContentTable();
-
-            Label level_passed_label = new Label("LEVEL PASSED!", game.skin, "borderless");
-            content_table.add(level_passed_label).padBottom(10).row();
-            content_table.add(new Image(game.skin.getDrawable("star"))).size(percent_width(0.3f)).pad(ACTOR_PAD);
-
-            Table button_table = getButtonTable();
+            content_table.add(new Label("LEVEL PASSED!", game.skin, "borderless")).row();
+            content_table.add(star_image).prefSize(2 * IMAGE_BUTTON_SIZE).minSize(0).pad(CELL_PAD);
 
             Button back_button = new Button(skin, "back");
             back_button.pad(ACTOR_PAD);
-
-            button_table.add(back_button).pad(CELL_PAD).size(percent_width(0.2f), percent_width(0.1f)).padRight(30 * DENSITY);
-            setObject(back_button, WinDialogBUTTON.BACK);
-
             Button next_level_button = new Button(skin, "next");
-            button_table.add(next_level_button).pad(CELL_PAD).size(percent_width(0.2f), percent_width(0.1f));
-            setObject(next_level_button, WinDialogBUTTON.NEXT);
+            next_level_button.pad(ACTOR_PAD);
 
-            button_table.row();
-
-            // todo Share
-//            TextButton share_button = new TextButton("SHARE", skin);
-//            Button share_button = new Button(skin, "share");
-//            button_table.add(share_button).pad(CELL_PAD).size(percent_width(0.1f)).colspan(2).expandX().center();
-//            setObject(share_button, WinDialogBUTTON.SHARE);
+            getButtonTable().defaults().size(2 * MIN_BUTTON_HEIGHT, MIN_BUTTON_HEIGHT).padTop(CELL_PAD).space(CELL_PAD).expandX();
+            button(back_button, WinDialogBUTTON.BACK);
+            button(next_level_button, WinDialogBUTTON.NEXT);
 
             addListener(new InputListener() {
                 @Override
@@ -571,46 +567,18 @@ public class GameScreen implements Screen {
         }
 
         @Override
-        public Dialog show(Stage stage) {
-            super.show(stage);
-
-            return this;
-        }
-
-        @Override
         protected void result(Object object) {
             hide();
-
-            if (object == WinDialogBUTTON.BACK) {
-                Gdx.app.log("WinDialog", "BACK");
-            } else if (object == WinDialogBUTTON.SHARE) {
-                Gdx.app.log("WinDialog", "SHARE");
-            } else if (object == WinDialogBUTTON.NEXT) {
-                Gdx.app.log("WinDialog", "NEXT");
-
+            if (object == WinDialogBUTTON.NEXT) {
                 GameScreen.this.hide();
                 dispose();
                 game.setScreen(new LevelSelectorScreen(game, level));
             }
         }
 
-        private Value percent_width(final float percent) {
-            return new Value() {
-                @Override
-                public float get(Actor context) {
-                    return percent * hud_stage.getWidth();
-                }
-            };
+        void resize() {
+            pack();
+            setPosition(Math.round((hud_stage.getWidth() - getWidth()) / 2), Math.round((hud_stage.getHeight() - getHeight()) / 2));
         }
-
-//        @Override
-//        public float getPrefWidth() {
-//            return hud_stage.getWidth() * 0.75f;
-//        }
-//
-//        @Override
-//        public float getPrefHeight() {
-//            return hud_stage.getHeight() * 0.5f;
-//        }
     }
 }
