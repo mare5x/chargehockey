@@ -8,6 +8,7 @@ public abstract class TableLayout extends Table {
     private Array<TableLayout> children = new Array<TableLayout>(1);  // TableLayout children that will get resized
 
     private float prev_aspect_ratio = -1;
+
     private boolean resizable = true;  // set to false to ignore resizing of this instance (doesn't affect children)
     private boolean resize_children = true;  // set to false to ignore resizing children
 

@@ -66,7 +66,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
         add_back_button();
         table.add().expand().row();
 
-        table.defaults().pad(CELL_PAD).width(Value.percentWidth(0.8f, table));
+        table.defaults().pad(CELL_PAD).prefWidth(Value.percentWidth(0.8f, table)).maxWidth(Value.percentWidth(0.8f, table));
         table.add(game_speed_slider).row();
         table.add(charge_size_slider).row();
         table.add(game_grid_lines).row();
@@ -75,7 +75,8 @@ public class SettingsScreen extends ScrollableMenuScreen {
         table.add(forces_checkbox).row();
         table.add(trace_path_checkbox).row();
 
-        BaseMenuScreen.add_button_to_table(table, defaults_button).row();
+//        BaseMenuScreen.add_button_to_table(table, defaults_button).padLeft(Value.percentWidth(0.1f, table)).left().row();
+        table.add(defaults_button).minHeight(MIN_BUTTON_HEIGHT).row();
 
         table.add().expand();
     }
@@ -178,7 +179,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
                 }
             });
 
-            add(label).fill().width(GameDefaults.MIN_DIMENSION * 0.4f);
+            add(label).fill().prefWidth(GameDefaults.MIN_DIMENSION * 0.4f);
             add(slider).space(CELL_PAD).expandX().fillX();
 
             set_knob_size_impl(MIN_BUTTON_HEIGHT);
@@ -244,7 +245,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
             reset();
             remove();
 
-            add(label).fill().width(GameDefaults.MIN_DIMENSION * 0.4f);
+            add(label).fill().prefWidth(GameDefaults.MIN_DIMENSION * 0.4f);
             add(slider).space(CELL_PAD).expandX().fillX();
             add(charge).space(CELL_PAD).size(Value.percentHeight(1, slider));
 

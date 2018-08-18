@@ -101,6 +101,8 @@ class EditorMenuScreen extends BaseMenuScreen {
             notification = new EditorNoLevelsNotification(game, stage);
             notification.show();
         } else if (selected_level != null) {
+            // workaround for scrolling to selected level (TableLayout initialized after resize)
+            table.resize(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
             table.validate();
             level_selector.select(selected_level.get_name());
         }
@@ -144,7 +146,8 @@ class EditorMenuScreen extends BaseMenuScreen {
             name_input.setAlignment(Align.center);
 
             Table content_table = getContentTable();
-            content_table.add(name_input).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width()).row();
+            content_table.defaults().pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).prefWidth(get_input_width()).minWidth(0);
+            content_table.add(name_input).row();
 
             Button cancel_button = new Button(game.skin, "cancel");
             cancel_button.pad(ACTOR_PAD);
@@ -250,9 +253,9 @@ class EditorMenuScreen extends BaseMenuScreen {
                 }
             });
 
-            Table content_table = getContentTable();
-            content_table.add(delete_button).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width()).row();
-            content_table.add(export_button).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(get_input_width());
+            Table content_table = getContentTable();  // see inherited defaults()
+            content_table.add(delete_button).row();
+            content_table.add(export_button);
         }
 
         @Override

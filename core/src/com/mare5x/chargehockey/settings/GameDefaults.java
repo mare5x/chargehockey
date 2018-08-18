@@ -9,6 +9,9 @@ public class GameDefaults {
     public static float DENSITY = Gdx.graphics.getDensity();
     public static final float FONT_SIZE = 24;  // dp units
 
+    // currently image based Buttons have a fixed size and do not scale
+    // use ImageButtons instead if you want them to scale
+
     public static float MIN_BUTTON_SIZE = 50 * DENSITY;
     public static float IMAGE_BUTTON_SIZE = MIN_DIMENSION * 0.125f;
     public static float MIN_BUTTON_HEIGHT = MIN_DIMENSION * 0.1f;

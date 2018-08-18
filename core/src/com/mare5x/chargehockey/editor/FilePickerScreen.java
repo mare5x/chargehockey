@@ -22,6 +22,10 @@ class FilePickerScreen extends BaseMenuScreen {
     private final Screen parent_screen;
     private final FilePicker file_picker;
 
+    private final ScrollableLabel path_label;
+    private final TextButton back_button;
+    private final TextButton result_button;
+
     FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback) {
         this(game, parent_screen, callback, null);
     }
@@ -32,7 +36,7 @@ class FilePickerScreen extends BaseMenuScreen {
 
         this.parent_screen = parent_screen;
 
-        final ScrollableLabel path_label = new ScrollableLabel(game);
+        path_label = new ScrollableLabel(game);
 
         if (filter != null)
             file_picker = game.get_file_picker(filter);
@@ -46,7 +50,7 @@ class FilePickerScreen extends BaseMenuScreen {
         });
         path_label.setText(file_picker.get_current_path().file().getAbsolutePath());
 
-        TextButton back_button = make_text_button("BACK", false);
+        back_button = make_text_button("BACK", false);
         back_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -54,7 +58,7 @@ class FilePickerScreen extends BaseMenuScreen {
             }
         });
 
-        TextButton result_button = make_text_button("SELECT", false);
+        result_button = make_text_button("SELECT", false);
         result_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -67,11 +71,25 @@ class FilePickerScreen extends BaseMenuScreen {
             }
         });
 
+        table.set_resizable(true);
+    }
+
+    @Override
+    protected void layout_portrait() {
         add_back_button(2);
         table.add(path_label.get()).colspan(2).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.9f, table)).center().row();
         table.add(file_picker.get_display()).colspan(2).pad(CELL_PAD).expand().fill().row();
-        table.add(back_button).pad(CELL_PAD).height(MIN_BUTTON_HEIGHT).fillX();
+        table.add(back_button).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).fillX();
         add_text_button(result_button).expandX();
+    }
+
+    @Override
+    protected void layout_landscape() {
+        add_back_button(2);
+        table.add(path_label.get()).colspan(2).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).width(Value.percentWidth(0.9f, table)).center().row();
+        table.add(file_picker.get_display()).colspan(2).pad(CELL_PAD).expand().fill().row();
+        table.add(back_button).pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).fillX();
+        add_text_button(result_button).expandX().right();
     }
 
     @Override

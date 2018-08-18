@@ -53,6 +53,8 @@ public class LevelSelectorScreen extends BaseMenuScreen {
         if (level_selector.is_empty()) {
             show_notification("NO CUSTOM LEVELS YET CREATED.\nCREATE OR IMPORT CUSTOM LEVELS USING THE CUSTOM EDITOR.", 3);
         } else if (selected_level_name != null) {
+            // workaround for scrolling to selected level (TableLayout initialized after resize)
+            table.resize(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
             table.validate();
             level_selector.select(selected_level_name);
         }
