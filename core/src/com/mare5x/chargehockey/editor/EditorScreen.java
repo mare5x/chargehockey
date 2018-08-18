@@ -35,6 +35,7 @@ import com.mare5x.chargehockey.level.GridCache;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
 import com.mare5x.chargehockey.notifications.EditorPaintTipNotification;
+import com.mare5x.chargehockey.notifications.Notification;
 import com.mare5x.chargehockey.settings.GameDefaults;
 import com.mare5x.chargehockey.settings.SettingsFile;
 import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
@@ -54,6 +55,8 @@ public class EditorScreen implements Screen {
     private final Stage edit_stage, hud_stage;
     private final OrthographicCamera camera;  // camera of edit_stage
     private final EditCameraController camera_controller;
+
+    private Notification notification;
 
     private final LevelFrameBuffer fbo;
     private final GridCache grid_lines;
@@ -444,6 +447,9 @@ public class EditorScreen implements Screen {
 
         camera_controller.resize(edit_stage.getViewport().getScreenWidth(), edit_stage.getViewport().getScreenHeight());
 
+        if (notification != null && notification.is_displayed())
+            notification.resize();
+
         Gdx.graphics.requestRendering();
     }
 
@@ -476,8 +482,14 @@ public class EditorScreen implements Screen {
     }
 
     void show_paint_tip() {
-        EditorPaintTipNotification notification = new EditorPaintTipNotification(game, hud_stage);
-        notification.show(2.5f);
+        if (notification == null || !(notification instanceof EditorPaintTipNotification))
+            notification = new EditorPaintTipNotification(game, hud_stage);
+        notification.show(2.5f, new Runnable() {
+            @Override
+            public void run() {
+                notification = null;
+            }
+        });
     }
 
     public static void set_grid_lines_setting(boolean value) {

@@ -20,6 +20,7 @@ import com.mare5x.chargehockey.level.LevelSelector;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.menus.TableLayout;
 import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
+import com.mare5x.chargehockey.notifications.Notification;
 import com.mare5x.chargehockey.settings.GameDefaults;
 
 import java.util.Locale;
@@ -68,9 +69,7 @@ class EditorMenuScreen extends BaseMenuScreen {
                     if (level_selector.get_level_count() == 1)
                         editor.show_paint_tip();
                 } else if (level_selector.is_empty()) {
-                    remove_notification();
-                    notification = new EditorNoLevelsNotification(game, stage);
-                    notification.show();
+                    show_notification(new EditorNoLevelsNotification(game, stage));
                 } else {
                     show_notification("FIRST, SELECT THE LEVEL YOU WISH TO EDIT", 2);
                 }
@@ -97,9 +96,7 @@ class EditorMenuScreen extends BaseMenuScreen {
         table.add(play_button).pad(CELL_PAD).size(1.75f * MIN_BUTTON_HEIGHT);
 
         if (level_selector.is_empty()) {
-            remove_notification();
-            notification = new EditorNoLevelsNotification(game, stage);
-            notification.show();
+            show_notification(new EditorNoLevelsNotification(game, stage));
         } else if (selected_level != null) {
             // workaround for scrolling to selected level (TableLayout initialized after resize)
             table.resize(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
@@ -216,6 +213,7 @@ class EditorMenuScreen extends BaseMenuScreen {
 
         protected void on_confirm() {
             level_selector.add_level(name_input.getText());
+            show_notification("LONG PRESS TO DELETE OR RENAME A LEVEL", 2 * Notification.DEFAULT_SHOW_TIME);
         }
     }
 

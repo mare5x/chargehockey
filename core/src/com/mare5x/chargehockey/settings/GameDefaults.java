@@ -8,6 +8,7 @@ public class GameDefaults {
 
     public static float DENSITY = Gdx.graphics.getDensity();
     public static final float FONT_SIZE = 24;  // dp units
+    public static final float IMAGE_FONT_SIZE = DENSITY * FONT_SIZE * 1.5f;  // in-line image with text
 
     // currently image based Buttons have a fixed size and do not scale
     // use ImageButtons instead if you want them to scale

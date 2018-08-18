@@ -5,33 +5,34 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
+import com.badlogic.gdx.utils.Scaling;
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.settings.GameDefaults;
 
 import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.IMAGE_FONT_SIZE;
 
 
 public class NoChargesNotification extends Notification {
-    private static final float img_size = GameDefaults.FONT_SIZE * GameDefaults.DENSITY * 1.5f;
-
     public NoChargesNotification(ChargeHockeyGame game, Stage stage) {
         super(game, stage);
 
         Label text_label = get_label("FIRST, ADD SOME: ");
 
         Image pos_charge = new Image(game.sprites.findRegion("charge_pos"));
+        pos_charge.setScaling(Scaling.fit);
         Image neg_charge = new Image(game.sprites.findRegion("charge_neg"));
+        neg_charge.setScaling(Scaling.fit);
 
         add(text_label).width(get_label_width());
-        add(pos_charge).space(CELL_PAD).size(img_size);
-        add(neg_charge).size(img_size);
+        add(pos_charge).space(CELL_PAD).size(IMAGE_FONT_SIZE);
+        add(neg_charge).size(IMAGE_FONT_SIZE);
     }
 
     private Value get_label_width() {
         return new Value() {
             @Override
             public float get(Actor context) {
-                return Math.min(context.getWidth(), getMaxWidth() * 0.9f - 2 * img_size);
+                return Math.min(context.getWidth(), getMaxWidth() * 0.9f - 2 * IMAGE_FONT_SIZE);
             }
         };
     }
