@@ -93,6 +93,7 @@ public class CameraController {
             Vector2 touch_coordinates = controller.get_stage_coordinates(Gdx.input.getX(), Gdx.input.getY());
             on_long_press_held(touch_coordinates.x, touch_coordinates.y);
         }
+        delta = delta > 1 ? 0 : delta;  // after a period of inactivity, make the camera less jerky
         controller.update(delta);
     }
 
@@ -166,7 +167,7 @@ public class CameraController {
         private static final float dt = 1 / 60f;  // fixed time step
         private float dt_accumulator = 0;
 
-        private static final float BORDER = 16;  // world units (for out_of_bounds)
+        private static final float BORDER = 16;  // world units (for out_of_bounds, zoom adjusted)
 
         private final OrthographicCamera camera;
         private final Stage stage;
@@ -190,12 +191,15 @@ public class CameraController {
         private float zoom_to_time = 0;
 
         private float px_to_zoom;  // conversion factor
+        private float max_pinch_distance = 0;  // in pixels
         private Vector2 px_to_world_unit = new Vector2();  // conversion factor
 
-        private boolean zoom_started = false;
-        private float zoom_target_val = -1;
-        private long zoom_stop_time = 0;
+        private Vector2 pinch_target_center = new Vector2();
+        private boolean is_pinching = false;
+        private float pinch_start_dst = 0;
         private float pinch_start_zoom = 0;
+        private long pinch_stop_time = 0;
+        private float zoom_target_val = -1;
         private float zoom_to_start_value = 0;
 
         CameraControllerImpl(OrthographicCamera camera, Stage stage) {
@@ -208,7 +212,7 @@ public class CameraController {
         void update(float delta) {
             dt_accumulator += delta;
 
-            while (dt_accumulator >= delta) {
+            while (dt_accumulator >= dt) {
                 if (is_zooming)
                     zoom_to(zoom_target_val, zoom_to_interpolator, dt);
 
@@ -229,9 +233,9 @@ public class CameraController {
         }
 
         void resize(float screen_width, float screen_height) {
-            float diagonal = (float) Math.sqrt(screen_width * screen_width + screen_height * screen_height);
+            max_pinch_distance = (float) Math.sqrt(screen_width * screen_width + screen_height * screen_height);  // length of diagonal
             float zoom_range = ZoomLevel.MIN.get_amount() - ZoomLevel.MAX.get_amount();
-            px_to_zoom = zoom_range / diagonal;  // 1 px = px_to_zoom camera.zoom units
+            px_to_zoom = zoom_range / max_pinch_distance;  // 1 px = px_to_zoom camera.zoom units
 
             calc_px_to_world_unit(screen_width, screen_height);
         }
@@ -246,7 +250,7 @@ public class CameraController {
         }
 
         private Vector2 px_to_world_units(Vector2 px) {
-//            stage.getViewport().unproject(px);
+//            stage.screenToStageCoordinates(px);
             return px.scl(px_to_world_unit);
         }
 
@@ -259,12 +263,10 @@ public class CameraController {
             handle_out_of_bounds();
 
             velocity.scl(0.9f);  // smooth camera fling movement
-            if (Math.abs(velocity.x) < 0.1f) {
+            if (Math.abs(velocity.x) < 0.1f)
                 velocity.x = 0;
-            }
-            if (Math.abs(velocity.y) < 0.1f) {
+            if (Math.abs(velocity.y) < 0.1f)
                 velocity.y = 0;
-            }
         }
 
         /** amount must be in world units. */
@@ -300,8 +302,6 @@ public class CameraController {
                 dy = Grid.WORLD_HEIGHT / 2f - camera.position.y;
 
             if (dx != 0 || dy != 0) {
-                if (dx != 0) velocity.x = 0;
-                if (dy != 0) velocity.y = 0;
                 move_to(camera.position.x + dx, camera.position.y + dy);
             }
         }
@@ -405,18 +405,9 @@ public class CameraController {
         }
 
         @Override
-        public boolean panStop(float x, float y, int pointer, int button) {
-            restore_rendering();
-
-            handle_out_of_bounds();
-
-            return true;
-        }
-
-        @Override
         public boolean fling(float velocityX, float velocityY, int button) {
             // ignore flings just after pinching
-            if (TimeUtils.nanoTime() - zoom_stop_time < 2e7)  // 0.02 seconds
+            if (TimeUtils.nanoTime() - pinch_stop_time < 2e7)  // 0.02 seconds
                 return true;
 
             if (!Gdx.graphics.isContinuousRendering())
@@ -425,45 +416,54 @@ public class CameraController {
 
             px_to_world_units(velocity.set(velocityX, velocityY));
 
+            // fling is (nearly) always called after pinchStop and panStop, so handle them here
+            if (velocity.isZero(0.1f)) {
+                velocity.setZero();
+                restore_rendering();
+                handle_out_of_bounds();
+            }
+
             return true;
         }
 
         @Override
         public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-            float initial_dst = initialPointer1.dst(initialPointer2);
-            float dst = pointer1.dst(pointer2);
-            float new_zoom_distance = dst - initial_dst;
-
             if (!Gdx.graphics.isContinuousRendering())
                 Gdx.graphics.setContinuousRendering(true);
 
-            // move to center of pinch at the start of pinching
-            if (!zoom_started) {
-                zoom_started = true;
-
+            if (!is_pinching) {
+                is_pinching = true;
                 pinch_start_zoom = camera.zoom;
+                pinch_start_dst = initialPointer1.dst(initialPointer2);
+                pinch_target_center.set(initialPointer1).add(initialPointer2).scl(0.5f);
+                stage.screenToStageCoordinates(pinch_target_center);
+            } else {
+                float dst = pointer1.dst(pointer2);
+                float delta_pinch_dst = dst - pinch_start_dst;
 
-                float center_x = (initialPointer1.x + initialPointer2.x) / 2;
-                float center_y = (initialPointer1.y + initialPointer2.y) / 2;
+                // use the px_to_zoom conversion factor to determine the right zoom from the pixel delta value
+                float target_zoom = MathUtils.clamp(pinch_start_zoom - delta_pinch_dst * px_to_zoom,
+                        ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount());
 
-                stage.screenToStageCoordinates(tmp_coords.set(center_x, center_y));
+                zoom_to(target_zoom, Interpolation.pow3Out);
 
-                move_to(tmp_coords.x, tmp_coords.y, Interpolation.pow3Out);
+                // when pinching, move the camera towards the center of where the pinch started (in
+                // world coordinates), based on the distance between the fingers that are pinching
+                if (!MathUtils.isEqual(camera.zoom, target_zoom, 0.01f)) {
+                    Vector2 cur_center = tmp_coords.set(camera.position.x, camera.position.y);
+                    Vector2 delta_pos = pinch_target_center.cpy().sub(cur_center);
+                    delta_pos.scl(Math.abs(delta_pinch_dst / max_pinch_distance));
+                    cur_center.add(delta_pos);
+                    move_to(cur_center.x, cur_center.y);
+                }
             }
-
-            // use the px_to_zoom conversion factor to determine the right zoom from the pixel delta value
-            float target_zoom = MathUtils.clamp(pinch_start_zoom - new_zoom_distance * px_to_zoom,
-                                                ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount());
-            zoom_to(target_zoom, Interpolation.pow3Out);
-
             return true;
         }
 
         @Override
         public void pinchStop() {
-            zoom_stop_time = TimeUtils.nanoTime();
-            zoom_started = false;
-            restore_rendering();
+            pinch_stop_time = TimeUtils.nanoTime();
+            is_pinching = false;
         }
 
         private void zoom_to(float target_val) {
