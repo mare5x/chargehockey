@@ -27,6 +27,8 @@ public class GameDefaults {
     public static final String CHARGE_ZONE_BG = "pixels/px_grey_opaque";
     public static final String CHARGE_ZONE_ACTIVE_BG = "pixels/px_darkgrey_opaque";
 
+    public static final long SECONDS_TO_NANOS = 1000000000L;
+
     public static void resize(int screen_width, int screen_height) {
         CHARGE_ZONE_PERCENT_HEIGHT = CHARGE_ZONE_HEIGHT / screen_height;
     }
