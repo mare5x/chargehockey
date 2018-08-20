@@ -16,41 +16,50 @@ import static com.mare5x.chargehockey.settings.GameDefaults.SECONDS_TO_NANOS;
 
 // TODO rewrite the whole class using InputAdapter
 public class CameraController {
-    public enum ZoomLevel {
-        MIN(1.6f),
-        LEVEL1(0.8f),
-        LEVEL2(0.4f),
-        LEVEL3(0.2f),
-        MAX(0.1f);
-
-        private float amount;
-
-        ZoomLevel(float amount) {
-            this.amount = amount;
+    /** Levels are ordered in descending zoom amount: MIN_LEVEL (0) has MIN_ZOOM (1.55), etc ... */
+    public static class ZoomLevel {
+        private static final int N_ZOOM_LEVELS = 5;
+        private static final float ZOOM_LEVELS[] = new float[N_ZOOM_LEVELS];
+        public static final int MAX_LEVEL = N_ZOOM_LEVELS - 1;
+        public static final int MIN_LEVEL = 0;
+        public static final float MAX_ZOOM;  // 0.05
+        public static final float MIN_ZOOM;  // 1.55 
+        
+        static {
+            // cache values
+            for (int i = 0; i < N_ZOOM_LEVELS; ++i)
+                ZOOM_LEVELS[i] = calc_zoom(MAX_LEVEL - i);
+            MAX_ZOOM = ZOOM_LEVELS[MAX_LEVEL];
+            MIN_ZOOM = ZOOM_LEVELS[MIN_LEVEL];
         }
 
-        public float get_amount() {
-            return amount;
+        private static float calc_zoom(int opposite_level) {
+            // (2^x)/10-0.05 -> look at a graph plot to see
+            // but 'flipped'
+            return (float) (Math.pow(2.0, opposite_level) / 10.0 - 0.05);
         }
 
-        /** Returns the next zoom level after the current one, or MIN/MAX if at the end. */
-        ZoomLevel get_next() {
-            int next_ord = MathUtils.clamp(this.ordinal() + 1, MIN.ordinal(), MAX.ordinal());
-            return ZoomLevel.values()[next_ord];
+        private static float get_zoom(int level) {
+            level = MathUtils.clamp(level, MIN_LEVEL, MAX_LEVEL);
+            return ZOOM_LEVELS[level];
         }
 
-        /** Get the appropriate ZoomLevel based on the given camera zoom. */
-        static ZoomLevel get(float zoom) {
-            if (zoom < (LEVEL3.amount + MAX.amount) / 2) return MAX;
-            if (between(zoom, (LEVEL3.amount + MAX.amount) / 2, (LEVEL2.amount + LEVEL3.amount) / 2)) return LEVEL3;
-            if (between(zoom, (LEVEL2.amount + LEVEL3.amount) / 2, (LEVEL1.amount + LEVEL2.amount) / 2)) return LEVEL2;
-            if (between(zoom, (LEVEL1.amount + LEVEL2.amount) / 2, (MIN.amount + LEVEL1.amount) / 2)) return LEVEL1;
-            else return MIN;
+        public static float get_zoom(float zoom) {
+            return get_zoom(get_level(zoom));
+        }
+        
+        public static int get_level(float zoom) {
+            // solve for x in the calc_zoom equation and round it
+            return MAX_LEVEL - MathUtils.round(MathUtils.log2(10*zoom + 0.5f));
+        }
+        
+        /** The next level has more zoom (but lower value). */
+        private static int get_next_level(int level) {
+            return MathUtils.clamp(level + 1, MIN_LEVEL, MAX_LEVEL);
         }
 
-        /** Check whether a <= x < b. */
-        static private boolean between(float x, float a, float b) {
-            return x >= a && x < b;
+        public static float get_next_zoom(int level) {
+            return get_zoom(get_next_level(level));
         }
     }
 
@@ -239,7 +248,7 @@ public class CameraController {
 
         void resize(float screen_width, float screen_height) {
             max_pinch_distance = (float) Math.sqrt(screen_width * screen_width + screen_height * screen_height);  // length of diagonal
-            float zoom_range = ZoomLevel.MIN.get_amount() - ZoomLevel.MAX.get_amount();
+            float zoom_range = ZoomLevel.MIN_ZOOM - ZoomLevel.MAX_ZOOM;
             px_to_zoom = zoom_range / max_pinch_distance;  // 1 px = px_to_zoom camera.zoom units
 
             calc_px_to_world_unit(screen_width, screen_height);
@@ -403,19 +412,14 @@ public class CameraController {
         }
 
         private float get_next_zoom_level() {
-            ZoomLevel zoom_level = ZoomLevel.get(camera.zoom);
-            if (zoom_level == ZoomLevel.MAX) {
-                // if not completely at max zoom, zoom to max
-                if (MathUtils.isEqual(camera.zoom, ZoomLevel.MAX.get_amount(), EPSILON)) {
-                    return ZoomLevel.LEVEL2.get_amount();
-                } else {
-                    return ZoomLevel.MAX.get_amount();
-                }
-            } else if (zoom_level == ZoomLevel.MIN) {
-                return ZoomLevel.LEVEL1.get_amount();
-            } else {
-                return zoom_level.get_next().get_amount();
+            int zoom_level = ZoomLevel.get_level(camera.zoom);
+            if (zoom_level == ZoomLevel.MAX_LEVEL) {
+                // if not completely at the zoom level, zoom to it
+                if (!MathUtils.isEqual(ZoomLevel.MAX_ZOOM, camera.zoom, EPSILON))
+                    return ZoomLevel.MAX_ZOOM;
+                return ZoomLevel.get_zoom(ZoomLevel.N_ZOOM_LEVELS / 2);
             }
+            return ZoomLevel.get_next_zoom(zoom_level);
         }
 
         @Override
@@ -467,7 +471,7 @@ public class CameraController {
 
                 // use the px_to_zoom conversion factor to determine the right zoom from the pixel delta value
                 float target_zoom = MathUtils.clamp(pinch_start_zoom - delta_pinch_dst * px_to_zoom,
-                        ZoomLevel.MAX.get_amount(), ZoomLevel.MIN.get_amount());
+                        ZoomLevel.MAX_ZOOM, ZoomLevel.MIN_ZOOM);
 
                 zoom_to(target_zoom, Interpolation.pow3Out);
 

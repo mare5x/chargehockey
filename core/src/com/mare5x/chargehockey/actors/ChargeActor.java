@@ -106,8 +106,8 @@ public class ChargeActor extends Actor {
 
         if (drag_callback != null) {
             DragListener drag_listener = new DragListener() {
-                private final float max_zoom = CameraController.ZoomLevel.MAX.get_amount();
-                private final float min_zoom = CameraController.ZoomLevel.MIN.get_amount();
+                private final float max_zoom = CameraController.ZoomLevel.MAX_ZOOM;
+                private final float min_zoom = CameraController.ZoomLevel.MIN_ZOOM;
 
                 private boolean in_charge_zone = false;
 
