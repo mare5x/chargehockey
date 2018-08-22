@@ -23,52 +23,15 @@ public class GameLogic {
         WIN, LOSS, IN_PROGRESS
     }
 
-    interface GameCallbacks {
+    interface UIInterface {
         void result_win();
         void result_loss();
-
-        void charge_zone_enter(ChargeActor charge);
-        void charge_zone_exit(ChargeActor charge);
+        ChargeActor.DragCallback get_charge_drag_callback();
     }
 
     private final ChargeHockeyGame game;
     private final Level level;
-    private final GameCallbacks callbacks;
-    private final ChargeActor.DragCallback charge_drag_callback = new ChargeActor.DragCallback() {
-        @Override
-        public void out_of_bounds(ChargeActor charge, boolean dragged) {
-            ChargeActor partner = charge.get_partner();
-            remove_charge(charge);
-            if (partner != null && ((dragged && symmetry_tool.is_enabled()) || partner.check_out_of_world())) {
-                remove_charge(partner);
-            }
-        }
-
-        @Override
-        public void drag(ChargeActor charge) {
-            if (PuckActor.get_draw_forces()) {
-                for (PuckActor puck : puck_actors)
-                    puck.set_force(charge, calc_force(puck, charge));
-                for (ForcePuckActor puck : initial_pucks)
-                    puck.set_force(charge, calc_force(puck, charge));
-            }
-        }
-
-        @Override
-        public void drag_started(ChargeActor charge) {
-            charge_state_changed = true;
-        }
-
-        @Override
-        public void charge_zone_enter(ChargeActor charge) {
-            callbacks.charge_zone_enter(charge);
-        }
-
-        @Override
-        public void charge_zone_exit(ChargeActor charge) {
-            callbacks.charge_zone_exit(charge);
-        }
-    };
+    private final UIInterface ui_interface;
 
     private final SymmetryToolActor symmetry_tool;
 
@@ -90,11 +53,11 @@ public class GameLogic {
     
     private final Array<ForcePuckActor> initial_pucks = new Array<ForcePuckActor>();
 
-    GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, GameCallbacks callbacks, SymmetryToolActor symmetry_tool) {
+    GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, UIInterface ui_interface, SymmetryToolActor symmetry_tool) {
         this.game = game;
         this.game_stage = game_stage;
         this.level = level;
-        this.callbacks = callbacks;
+        this.ui_interface = ui_interface;
         this.symmetry_tool = symmetry_tool;
 
         for (ChargeState state : level.get_puck_states()) {
@@ -152,7 +115,7 @@ public class GameLogic {
     }
 
     private ChargeActor add_charge(CHARGE charge_type, float x, float y) {
-        ChargeActor charge = new ChargeActor(game, charge_type, charge_drag_callback, symmetry_tool);
+        ChargeActor charge = new ChargeActor(game, charge_type, ui_interface.get_charge_drag_callback(), symmetry_tool);
         charge.set_position(x, y);
 
         charge_actors.add(charge);
@@ -168,7 +131,7 @@ public class GameLogic {
         return charge;
     }
 
-    private void remove_charge(ChargeActor charge) {
+    void remove_charge(ChargeActor charge) {
         if (charge instanceof PuckActor)
             return;
 
@@ -219,9 +182,9 @@ public class GameLogic {
             return;
 
         if (result == GAME_RESULT.WIN) {
-            callbacks.result_win();
+            ui_interface.result_win();
         } else {  // LOSS
-            callbacks.result_loss();
+            ui_interface.result_loss();
         }
     }
 
@@ -351,6 +314,16 @@ public class GameLogic {
         }
     }
 
+    /** Update the puck's force vectors which depend on 'charge' */
+    void update_puck_vectors(ChargeActor charge) {
+        if (PuckActor.get_draw_forces()) {
+            for (PuckActor puck : puck_actors)
+                puck.set_force(charge, calc_force(puck, charge));
+            for (ForcePuckActor puck : initial_pucks)
+                puck.set_force(charge, calc_force(puck, charge));
+        }
+    }
+
     private Vector2 calc_net_force(final PuckActor puck) {
         force_vec.setZero();
         // calculate the net force on the puck
@@ -463,6 +436,10 @@ public class GameLogic {
         boolean ret_val = charge_state_changed;
         charge_state_changed = false;
         return ret_val;
+    }
+
+    void update_charge_state() {
+        charge_state_changed = true;
     }
 
     final Array<PuckActor> get_pucks() {

@@ -78,16 +78,18 @@ public class EditorScreen implements Screen {
 
     private final Vector2 tmp_v = new Vector2();
 
+    private ChargeActor.ChargeDragAreaHelper charge_drag_area_helper = new ChargeActor.ChargeDragAreaHelper();
+
     private final Table button_table = new Table();
+
     // callback function for ChargeActor pucks
     private final ChargeActor.DragCallback drag_callback = new ChargeActor.DragCallback() {
         @Override
         public void out_of_bounds(ChargeActor charge, boolean dragged) {
             ChargeActor partner = charge.get_partner();
             remove_puck(charge);
-            if (partner != null && ((dragged && symmetry_tool.is_enabled()) || partner.check_out_of_world())) {
+            if (partner != null && ((dragged && symmetry_tool.is_enabled()) || partner.check_out_of_world()))
                 remove_puck(partner);
-            }
         }
 
         @Override
@@ -120,13 +122,23 @@ public class EditorScreen implements Screen {
         }
 
         @Override
-        public void charge_zone_enter(ChargeActor charge) {
+        public void enter_charge_zone(ChargeActor charge) {
             button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_ACTIVE_BG));
         }
 
         @Override
-        public void charge_zone_exit(ChargeActor charge) {
+        public void exit_charge_zone(ChargeActor charge) {
             button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_BG));
+        }
+
+        @Override
+        public void enter_drag_area(ChargeActor charge) {
+            charge_drag_area_helper.enter_drag_area(charge);
+        }
+
+        @Override
+        public void exit_drag_area(ChargeActor charge) {
+            charge_drag_area_helper.exit_drag_area();
         }
     };
 
@@ -423,6 +435,8 @@ public class EditorScreen implements Screen {
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera_controller.update(delta);
+
+        charge_drag_area_helper.update(delta);
 
         edit_stage.getViewport().apply();
         game.batch.setProjectionMatrix(camera.combined);

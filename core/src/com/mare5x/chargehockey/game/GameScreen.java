@@ -125,6 +125,46 @@ public class GameScreen implements Screen {
         }
     }
 
+    private final ChargeActor.DragCallback charge_drag_callback = new ChargeActor.DragCallback() {
+        @Override
+        public void out_of_bounds(ChargeActor charge, boolean dragged) {
+            ChargeActor partner = charge.get_partner();
+            game_logic.remove_charge(charge);
+            if (partner != null && ((dragged && symmetry_tool.is_enabled()) || partner.check_out_of_world()))
+                game_logic.remove_charge(partner);
+        }
+
+        @Override
+        public void drag(ChargeActor charge) {
+            game_logic.update_puck_vectors(charge);
+        }
+
+        @Override
+        public void drag_started(ChargeActor charge) {
+            game_logic.update_charge_state();
+        }
+
+        @Override
+        public void enter_charge_zone(ChargeActor charge) {
+            button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_ACTIVE_BG));
+        }
+
+        @Override
+        public void exit_charge_zone(ChargeActor charge) {
+            button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_BG));
+        }
+
+        @Override
+        public void enter_drag_area(ChargeActor charge) {
+            charge_drag_area_helper.enter_drag_area(charge);
+        }
+
+        @Override
+        public void exit_drag_area(ChargeActor charge) {
+            charge_drag_area_helper.exit_drag_area();
+        }
+    };
+
     private final ChargeHockeyGame game;
     private final Level level;
 
@@ -140,6 +180,10 @@ public class GameScreen implements Screen {
     private final GridCache grid_lines;
 
     private final SymmetryToolActor symmetry_tool;
+
+    private final Table button_table;
+
+    private ChargeActor.ChargeDragAreaHelper charge_drag_area_helper = new ChargeActor.ChargeDragAreaHelper();
 
     private Notification notification;
 
@@ -165,7 +209,6 @@ public class GameScreen implements Screen {
         camera.zoom = 0.8f;
 
         hud_stage = new Stage(new ScreenViewport(), game.batch);
-        final Table button_table = new Table();
 
 //        hud_stage.setDebugAll(true);
 //        game_stage.setDebugAll(true);
@@ -186,7 +229,7 @@ public class GameScreen implements Screen {
 
         win_dialog = new WinDialog("WIN", game.skin);
 
-        game_logic = new GameLogic(game, game_stage, level, new GameLogic.GameCallbacks() {
+        game_logic = new GameLogic(game, game_stage, level, new GameLogic.UIInterface() {
             @Override
             public void result_win() {
                 if (!level.get_level_finished()) {
@@ -205,13 +248,8 @@ public class GameScreen implements Screen {
             }
 
             @Override
-            public void charge_zone_enter(ChargeActor charge) {
-                button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_ACTIVE_BG));
-            }
-
-            @Override
-            public void charge_zone_exit(ChargeActor charge) {
-                button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_BG));
+            public ChargeActor.DragCallback get_charge_drag_callback() {
+                return charge_drag_callback;
             }
         }, symmetry_tool);
         load_charge_state(Level.SAVE_TYPE.AUTO);
@@ -256,6 +294,7 @@ public class GameScreen implements Screen {
         Table hud_table = new Table();
         hud_table.setFillParent(true);
 
+        button_table = new Table();
         button_table.setBackground(game.skin.getDrawable(CHARGE_ZONE_BG));
         button_table.defaults().size(IMAGE_BUTTON_SIZE).space(Value.percentWidth(0.125f, hud_table));
         button_table.add(play_button);
@@ -406,6 +445,8 @@ public class GameScreen implements Screen {
 
         game_logic.update(delta);
         game_stage.act();
+
+        charge_drag_area_helper.update(delta);
 
         // fbo_region contains the static level background and the dynamically added puck trace path points
         update_puck_trace_path();

@@ -1,5 +1,6 @@
 package com.mare5x.chargehockey.actors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -54,12 +55,51 @@ public class ChargeActor extends Actor {
         }
     }
 
+    /** Helper for updating the charge and camera when dragging a charge close to the edge of the
+     * screen. Usage: (1) enter_drag_area() (2) update() (3) exit_drag_area()
+     */
+    public static class ChargeDragAreaHelper {
+        private static final float DRAG_SPEED = 15.0f;
+        private static Vector2 tmp_vec = new Vector2();
+        private ChargeActor charge;
+
+        public void update(float delta) {
+            if (charge != null && charge.getStage() != null)
+                in_drag_area(delta);
+        }
+
+        void in_drag_area(float delta) {
+            // The camera follows the dragged charge off the screen.
+            OrthographicCamera camera = (OrthographicCamera) charge.getStage().getCamera();
+            tmp_vec.set(charge.get_x(), charge.get_y()).sub(camera.position.x, camera.position.y);
+            Vector2 delta_pos = tmp_vec.nor().scl(DRAG_SPEED).scl(delta).scl(camera.zoom);
+            camera.translate(delta_pos);
+            charge.moveBy(delta_pos.x, delta_pos.y);
+        }
+
+        public void enter_drag_area(ChargeActor charge) {
+            this.charge = charge;
+            if (!Gdx.graphics.isContinuousRendering())
+                Gdx.graphics.setContinuousRendering(true);
+        }
+
+        public void exit_drag_area() {
+            this.charge = null;
+            if (Gdx.graphics.isContinuousRendering())
+                Gdx.graphics.setContinuousRendering(false);
+        }
+    }
+
+    // TODO fix this mess
     public abstract static class DragCallback {
+        // Out of bounds means out of the Grid OR in the charge zone
         public abstract void out_of_bounds(ChargeActor charge, boolean dragged);  // dragged tells whether charge was dragged physically or by symmetry
-        public void drag(ChargeActor charge) {}
+        public abstract void drag(ChargeActor charge);
         public void drag_started(ChargeActor charge) {}
-        public void charge_zone_enter(ChargeActor charge) {}
-        public void charge_zone_exit(ChargeActor charge) {}
+        public void enter_charge_zone(ChargeActor charge) {}
+        public void exit_charge_zone(ChargeActor charge) {}
+        public void enter_drag_area(ChargeActor charge) {}
+        public void exit_drag_area(ChargeActor charge) {}
     }
 
     private final CHARGE charge_type;
@@ -110,6 +150,11 @@ public class ChargeActor extends Actor {
                 private final float min_zoom = CameraController.ZoomLevel.MIN_ZOOM;
 
                 private boolean in_charge_zone = false;
+                private boolean in_drag_area = false;
+
+                // used to ignore edge dragging if starting in the charge zone
+                // true as long as the charge is in the charge zone
+                private boolean started_in_charge_zone = false;
 
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -163,21 +208,41 @@ public class ChargeActor extends Actor {
 
                     drag_callback.drag(ChargeActor.this);
 
-                    if (check_in_charge_zone()) {
+                    // Charge zone and drag area checking when draggin is determined based on the
+                    // finger's (pointer's) position, not the center of the charge
+                    if (check_in_charge_zone(event.getStageX(), event.getStageY())) {
                         if (!in_charge_zone) {
                             in_charge_zone = true;
-                            drag_callback.charge_zone_enter(ChargeActor.this);
+                            drag_callback.enter_charge_zone(ChargeActor.this);
                         }
                     } else {
                         if (in_charge_zone) {
+                            started_in_charge_zone = false;
                             in_charge_zone = false;
-                            drag_callback.charge_zone_exit(ChargeActor.this);
+                            drag_callback.exit_charge_zone(ChargeActor.this);
+                        }
+                    }
+
+                    // ignore if the dragging is still in the initial charge zone
+                    if (!started_in_charge_zone) {
+                        if (check_in_drag_area(event.getStageX(), event.getStageY())) {
+                            if (!in_drag_area) {
+                                in_drag_area = true;
+                                drag_callback.enter_drag_area(ChargeActor.this);
+                            }
+                        } else {
+                            if (in_drag_area) {
+                                in_drag_area = false;
+                                drag_callback.exit_drag_area(ChargeActor.this);
+                            }
                         }
                     }
                 }
 
                 @Override
                 public void dragStart(InputEvent event, float x, float y, int pointer) {
+                    started_in_charge_zone = check_in_charge_zone(event.getStageX(), event.getStageY());
+
                     drag_callback.drag_started(ChargeActor.this);
                     if (partner != null)
                         drag_callback.drag_started(partner);
@@ -185,12 +250,16 @@ public class ChargeActor extends Actor {
 
                 @Override
                 public void dragStop(InputEvent event, float x, float y, int pointer) {
-                    if (check_in_charge_zone()) {
+                    if (check_in_charge_zone(event.getStageX(), event.getStageY())) {
                         in_charge_zone = false;
-                        drag_callback.charge_zone_exit(ChargeActor.this);
+                        drag_callback.exit_charge_zone(ChargeActor.this);
+                    }
+                    if (check_in_drag_area(event.getStageX(), event.getStageY())) {
+                        in_drag_area = false;
+                        drag_callback.exit_drag_area(ChargeActor.this);
                     }
 
-                    if (check_out_of_bounds())
+                    if (check_out_of_bounds(event.getStageX(), event.getStageY()))
                         drag_callback.out_of_bounds(ChargeActor.this, true);
                     if (partner != null && partner.check_out_of_world())
                         drag_callback.out_of_bounds(partner, false);
@@ -329,13 +398,29 @@ public class ChargeActor extends Actor {
         return !MathUtils.isEqual(radius * 2, SIZE, 0.001f);
     }
 
-    private boolean check_out_of_bounds() {
-        return check_out_of_world() || check_in_charge_zone();
+    private Vector2 get_screen_coordinates() {
+        return get_screen_coordinates(get_x(), get_y());
     }
 
-    private boolean check_in_charge_zone() {
-        Rectangle camera_rect = CameraController.get_camera_rect((OrthographicCamera) getStage().getCamera());
-        return get_y() < (camera_rect.getY() + GameDefaults.CHARGE_ZONE_PERCENT_HEIGHT * camera_rect.getHeight());
+    /** Returns the screen coordinates in tmp_vec. */
+    private Vector2 get_screen_coordinates(float world_x, float world_y) {
+        return getStage().stageToScreenCoordinates(tmp_vec.set(world_x, world_y));
+    }
+
+    /** Out of bounds means out of the Grid OR in the charge zone.
+     * Careful: out of world checking uses the charge's center and in charge zone checking uses
+     * the finger/pointer position!
+     */
+    private boolean check_out_of_bounds(float world_x, float world_y) {
+        return check_out_of_world() || check_in_charge_zone(world_x, world_y);
+    }
+
+    private boolean check_in_charge_zone(float world_x, float world_y) {
+        return GameDefaults.CHARGE_ZONE_RECT.contains(get_screen_coordinates(world_x, world_y));
+    }
+
+    private boolean check_in_drag_area(float world_x, float world_y) {
+        return !GameDefaults.CHARGE_DRAG_RECT.contains(get_screen_coordinates(world_x, world_y));
     }
 
     public boolean check_out_of_world() {
