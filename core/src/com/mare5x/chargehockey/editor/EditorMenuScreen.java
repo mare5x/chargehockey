@@ -222,8 +222,9 @@ class EditorMenuScreen extends BaseMenuScreen {
         }
 
         protected void on_confirm() {
+            if (level_selector.is_empty())
+                show_notification("LONG PRESS TO DELETE OR RENAME A LEVEL", 2 * Notification.DEFAULT_SHOW_TIME);
             level_selector.add_level(name_input.getText());
-            show_notification("LONG PRESS TO DELETE OR RENAME A LEVEL", 2 * Notification.DEFAULT_SHOW_TIME);
         }
     }
 

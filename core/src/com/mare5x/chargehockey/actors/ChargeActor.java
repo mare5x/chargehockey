@@ -378,14 +378,23 @@ public class ChargeActor extends Actor {
         return new ChargeState(charge_type, get_x(), get_y());
     }
 
-    /** Circular collision detection with a rectangle. */
-    public boolean intersects(Rectangle rectangle) {
+    /** Circular collision detection with a rectangle. If the circle and rectangle intersect,
+     *  the displacement vector is returned in 'intersection'. */
+    public boolean intersects(Rectangle rectangle, Vector2 intersection) {
         float center_x = get_x();
         float center_y = get_y();
 
         // find the closest rectangle point to the circle (charge)
         float closest_x = MathUtils.clamp(center_x, rectangle.x, rectangle.x + rectangle.width);
         float closest_y = MathUtils.clamp(center_y, rectangle.y, rectangle.y + rectangle.height);
+
+        intersection.x = closest_x - center_x;
+        if (closest_x > center_x) intersection.x -= radius;
+        else if (closest_x < center_x) intersection.x += radius;
+
+        intersection.y = closest_y - center_y;
+        if (closest_y > center_y) intersection.y -= radius;
+        else if (closest_y < center_y) intersection.y += radius;
 
         float dx = center_x - closest_x;
         float dy = center_y - closest_y;

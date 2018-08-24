@@ -12,7 +12,6 @@ import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
 import com.mare5x.chargehockey.actors.ForcePuckActor;
 import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.actors.SymmetryToolActor;
-import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.LevelFrameBuffer;
@@ -46,7 +45,9 @@ public class GameLogic {
     private static final float dt = 0.01f;
     private float dt_accumulator = 0;  // http://gafferongames.com/game-physics/fix-your-timestep/
 
-    private final Vector2 force_vec = new Vector2(), tmp_vec = new Vector2();
+    private final Vector2 force_vec = new Vector2();
+    private final Vector2 tmp_vec = new Vector2();
+    private final Rectangle tmp_rect = new Rectangle();
 
     private final Array<ChargeActor> charge_actors = new Array<ChargeActor>();
     private final Array<PuckActor> puck_actors = new Array<PuckActor>();
@@ -167,8 +168,6 @@ public class GameLogic {
         while (dt_accumulator >= dt) {
             update_pucks(dt);
 
-            update_collisions();
-
             handle_game_result();
 
             dt_accumulator -= dt * (1f / GAME_SPEED);
@@ -197,7 +196,7 @@ public class GameLogic {
     private GAME_RESULT get_game_result() {
         int goals = 0;
         for (PuckActor puck : puck_actors) {
-            if (check_out_of_bounds(puck))
+            if (puck.check_out_of_world())
                 return GAME_RESULT.LOSS;
 
             GRID_ITEM collision = puck.get_collision();
@@ -212,32 +211,26 @@ public class GameLogic {
             return GAME_RESULT.IN_PROGRESS;
     }
 
-    private boolean check_out_of_bounds(PuckActor puck) {
-        float x = puck.get_x();  // center
-        float y = puck.get_y();
-        return x < 0 || x > Grid.WORLD_WIDTH || y < 0 || y > Grid.WORLD_HEIGHT;
-    }
-
     /** Priority: wall > goal > ... */
     private GRID_ITEM get_collision(PuckActor puck) {
         int row = (int) (puck.getY());
         int col = (int) (puck.getX());
-        GRID_ITEM bottom_left = check_collision(puck, row, col);
+        GRID_ITEM bottom_left = check_collision(puck, row, col, tmp_vec);
         if (bottom_left == GRID_ITEM.WALL)
             return bottom_left;
 
         col = (int) (puck.getRight());
-        GRID_ITEM bottom_right = check_collision(puck, row, col);
+        GRID_ITEM bottom_right = check_collision(puck, row, col, tmp_vec);
         if (bottom_right == GRID_ITEM.WALL)
             return bottom_right;
 
         row = (int) (puck.getTop());
-        GRID_ITEM top_right = check_collision(puck, row, col);
+        GRID_ITEM top_right = check_collision(puck, row, col, tmp_vec);
         if (top_right == GRID_ITEM.WALL)
             return top_right;
 
         col = (int) (puck.getX());
-        GRID_ITEM top_left = check_collision(puck, row, col);
+        GRID_ITEM top_left = check_collision(puck, row, col, tmp_vec);
         if (top_left == GRID_ITEM.WALL)
             return top_left;
 
@@ -249,38 +242,69 @@ public class GameLogic {
         return GRID_ITEM.NULL;
     }
 
-    private GRID_ITEM check_collision(PuckActor puck, int row, int col) {
+    /** Check collision between puck and the tile at row,col, returning the intersection point in
+     *  intersection, if it exists. */
+    private GRID_ITEM check_collision(PuckActor puck, int row, int col, Vector2 intersection) {
         GRID_ITEM grid_item = level.get_grid_item(row, col);
         // add a bit of leniency: walls have a smaller size than goals
         if (grid_item == GRID_ITEM.WALL && puck.intersects(
-                new Rectangle(col + LevelFrameBuffer.ONE_TX,
-                              row + LevelFrameBuffer.ONE_TX,
-                              LevelFrameBuffer.GRID_TILE_SIZE - 3 * LevelFrameBuffer.ONE_TX,
-                              LevelFrameBuffer.GRID_TILE_SIZE - 3 * LevelFrameBuffer.ONE_TX)))
+                tmp_rect.set(col + LevelFrameBuffer.ONE_TX, row + LevelFrameBuffer.ONE_TX,
+                             LevelFrameBuffer.GRID_TILE_SIZE - 3 * LevelFrameBuffer.ONE_TX,
+                             LevelFrameBuffer.GRID_TILE_SIZE - 3 * LevelFrameBuffer.ONE_TX),
+                intersection))
             return grid_item;
         else if (grid_item == GRID_ITEM.GOAL && puck.intersects(
-                new Rectangle(col, row,
-                              LevelFrameBuffer.GRID_TILE_SIZE, LevelFrameBuffer.GRID_TILE_SIZE)))
+                tmp_rect.set(col, row,
+                             LevelFrameBuffer.GRID_TILE_SIZE, LevelFrameBuffer.GRID_TILE_SIZE),
+                intersection))
             return grid_item;
         return GRID_ITEM.NULL;
     }
 
-    private void update_collisions() {
-        for (PuckActor puck : puck_actors) {
-            if (!is_collision(puck.get_collision())) {
-                puck.set_collision(get_collision(puck));
-            }
-        }
-    }
-
     void blink_collided_pucks() {
         for (PuckActor puck : puck_actors) {
-            if (puck.get_collision() == GRID_ITEM.WALL || check_out_of_bounds(puck)) {
+            if (puck.get_collision() == GRID_ITEM.WALL || puck.check_out_of_world()) {
                 puck.set_puck_alpha(1);
                 puck.set_vector_alpha(0.35f);
                 puck.start_blinking();
             }
         }
+    }
+
+    /** Move puck by dx,dy, handling any collisions on the way to the destination. */
+    private void move_puck(PuckActor puck, float dx, float dy) {
+        float start_x = puck.get_x();
+        float start_y = puck.get_y();
+        float end_x = start_x + dx;
+        float end_y = start_y + dy;
+
+        int sign_x = dx >= 0 ? 1 : -1;
+        int sign_y = dy >= 0 ? 1 : -1;
+        float step_x = sign_x * 0.1f;
+        float step_y = sign_y * 0.1f;
+
+        // To prevent collisions going unnoticed if the objects are moving too fast,
+        // multisample and check additional points on the trajectory (linear path from source to
+        // destination point).
+        float x = start_x, y = start_y;
+        while (x != end_x || y != end_y) {
+            x = (step_x > 0) ? Math.min(x + step_x, end_x) : Math.max(x + step_x, end_x);
+            y = (step_y > 0) ? Math.min(y + step_y, end_y) : Math.max(y + step_y, end_y);
+            puck.set_position(x, y);
+            puck.set_collision(get_collision(puck));
+            // On a collision, adjust the puck's position to be touching the hit object.
+            if (is_collision(puck.get_collision())) {
+                Vector2 puck_velocity = puck.get_velocity();
+                if (Math.abs(puck_velocity.x) >= Math.abs(puck_velocity.y))
+                    puck.moveBy(tmp_vec.x, 0);
+                else
+                    puck.moveBy(0, tmp_vec.y);
+                break;
+            }
+        }
+
+        if (PuckActor.get_trace_path())
+            puck.save_path_position();
     }
 
     private void update_pucks(float delta) {
@@ -297,10 +321,7 @@ public class GameLogic {
 
             float dx = delta * (velocity_vec.x + delta * acceleration_vec.x / 2);  // x = v * t
             float dy = delta * (velocity_vec.y + delta * acceleration_vec.y / 2);  // average velocity
-            puck.moveBy(dx, dy);
-
-            if (PuckActor.get_trace_path())
-                puck.save_path_position();
+            move_puck(puck, dx, dy);
 
             calc_net_force(puck);
             tmp_vec.x = force_vec.x / weight;  // a = F / m
@@ -309,7 +330,6 @@ public class GameLogic {
             velocity_vec.x += delta * (tmp_vec.x + acceleration_vec.x) / 2;  // v = v0 + a * t
             velocity_vec.y += delta * (tmp_vec.y + acceleration_vec.y) / 2;
             puck.set_velocity(velocity_vec.x, velocity_vec.y);
-
             puck.set_acceleration(tmp_vec.x, tmp_vec.y);
         }
     }
@@ -324,22 +344,19 @@ public class GameLogic {
         }
     }
 
-    private Vector2 calc_net_force(final PuckActor puck) {
+    /** Calculate the net force on the puck. The answer is in force_vec. */
+    private void calc_net_force(final PuckActor puck) {
         force_vec.setZero();
-        // calculate the net force on the puck
-        for (ChargeActor charge : charge_actors) {
+        for (ChargeActor charge : charge_actors)
             apply_force(puck, charge);
-        }
-        return force_vec;
     }
 
-    /** Returns a force vector of the force between puck and charge. */
+    /** Returns a new force vector of the force between puck and charge. */
     private Vector2 calc_force(ChargeActor puck, ChargeActor charge) {
         Vector2 vec = charge.get_vec(puck);
-        float dist_squared = vec.len2();
-        dist_squared = dist_squared < MIN_DIST * MIN_DIST ? MIN_DIST * MIN_DIST : dist_squared;
-        float val = (puck.get_abs_charge() * charge.get_abs_charge()) / (dist_squared * E_CONST);
-        return vec.scl(val);
+        float dist_squared = Math.max(MIN_DIST * MIN_DIST, vec.len2());
+        float force_magnitude = (puck.get_abs_charge() * charge.get_abs_charge()) / (dist_squared * E_CONST);
+        return vec.scl(force_magnitude);
     }
 
     /** Applies the force between puck and charge to the resultant force_vec. */
