@@ -139,38 +139,17 @@ public class SymmetryToolActor extends Actor {
         setVisible(enabled);
     }
 
-    /** Orthogonal projection of pos coordinates to the given slope (k1).
-     * NOTE: k1 must not be 0 or Infinity. */
-    private Vector2 orthogonal_projection(Vector2 pos, float k1) {
-        float center_x = get_center_x();
-        float center_y = get_center_y();
-        pos.sub(center_x, center_y);
-
-        float k2 = -1 / k1;
-        float n = pos.y - k2 * pos.x;
-
-        float new_x = n / (k1 - k2);
-        float new_y = k1 * new_x;
-
-        return pos.set(new_x, new_y).add(center_x, center_y);
-    }
-
     /** Returns the position of pos mirrored on the other side of the symmetrical axis. */
     public Vector2 get_symmetrical_pos(Vector2 pos) {
-        float rotation = getRotation();
-        if (rotation % 90 == 0) {
-            if (rotation % 180 == 0) {  // 0 or 180 only y
-                pos.y -= 2 * (pos.y - get_center_y());
-                return pos;
-            }
-            // 90
-            pos.x -= 2 * (pos.x - get_center_x());
-            return pos;
-        }
-        float k1 = (float) Math.tan(rotation * MathUtils.degreesToRadians);
-        orthogonal_projection(tmp_v.set(pos), k1);
-        tmp_v.sub(pos).scl(2);
-        return pos.add(tmp_v);
+        // Project pos onto a unit vector on the rotation axis then scale it by 2 and add it to the
+        // original pos.
+        float pos_x = pos.x;
+        float pos_y = pos.y;
+        pos.sub(get_center_x(), get_center_y());
+        tmp_v.x = (float) Math.cos(getRotation() * MathUtils.degreesToRadians);
+        tmp_v.y = (float) Math.sin(getRotation() * MathUtils.degreesToRadians);
+        tmp_v.scl(pos.dot(tmp_v)).sub(pos).scl(2);
+        return pos.set(pos_x, pos_y).add(tmp_v);
     }
 
     private float get_center_x() {
