@@ -90,14 +90,16 @@ public class ForcePuckActor extends ChargeActor {
     }
 
     private Sprite get_force_sprite(ChargeActor charge, Vector2 force) {
-        Sprite force_sprite = force_sprites.get(charge, new Sprite(vector_region));
-        float len = Math.min(force.scl(1 / get_weight() / 2).len(), _MAX_LENGTH);  // shorten the length
+        Sprite force_sprite = force_sprites.get(charge, null);
+        if (force_sprite == null)
+            force_sprite = new Sprite(vector_region);
+        float len = Math.min(force.scl(1 / get_weight() * 2).len(), _MAX_LENGTH);  //
         prepare_vector_sprite(force_sprite, force, len);
         if (charge.get_type() == CHARGE.POSITIVE)
             force_sprite.setColor(POS_RED);
         else
             force_sprite.setColor(NEG_BLUE);
-        force_sprite.setAlpha(Math.min(len * 2 / _MAX_LENGTH, 0.8f));
+        force_sprite.setAlpha(Math.min(len / _MAX_LENGTH, 0.8f));
         return force_sprite;
     }
 

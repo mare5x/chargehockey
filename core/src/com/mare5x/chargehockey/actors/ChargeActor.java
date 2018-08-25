@@ -370,8 +370,8 @@ public class ChargeActor extends Actor {
     }
 
     /** Returns the vector from puck to this charge, taking the charge's polarity into account. */
-    public Vector2 get_vec(ChargeActor puck) {
-        return new Vector2(puck.get_x(), puck.get_y()).sub(get_x(), get_y()).scl(get_direction());
+    public Vector2 get_vec_from(Vector2 puck_pos) {
+        return puck_pos.sub(get_x(), get_y()).scl(get_direction());
     }
 
     public ChargeState get_state() {

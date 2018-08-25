@@ -41,7 +41,7 @@ public class GameLogic {
 
     private static final float MIN_DIST = PuckActor.RADIUS;  // how many units apart can two charges be when calculating the force? (avoids infinite forces)
     private static final float E_CONST = 1.1e-10f;
-    private static float GAME_SPEED = 1;  // game speed (force scalar) set by the user in settings
+    private static float GAME_SPEED = 1;  // game speed set by the user in settings
     private static final float dt = 0.01f;
     private float dt_accumulator = 0;  // http://gafferongames.com/game-physics/fix-your-timestep/
 
@@ -351,20 +351,21 @@ public class GameLogic {
             apply_force(puck, charge);
     }
 
-    /** Returns a new force vector of the force between puck and charge. */
+    /** Returns a force vector of the force between puck and charge in tmp_vec.
+     *  Coulomb's law. */
     private Vector2 calc_force(ChargeActor puck, ChargeActor charge) {
-        Vector2 vec = charge.get_vec(puck);
-        float dist_squared = Math.max(MIN_DIST * MIN_DIST, vec.len2());
+        charge.get_vec_from(tmp_vec.set(puck.get_x(), puck.get_y()));
+        float dist_squared = Math.max(MIN_DIST * MIN_DIST, tmp_vec.len2());
         float force_magnitude = (puck.get_abs_charge() * charge.get_abs_charge()) / (dist_squared * E_CONST);
-        return vec.scl(force_magnitude);
+        return tmp_vec.nor().scl(force_magnitude);
     }
 
     /** Applies the force between puck and charge to the resultant force_vec. */
     private void apply_force(PuckActor puck, ChargeActor charge) {
-        Vector2 vec = calc_force(puck, charge);
-        force_vec.add(vec);
+        calc_force(puck, charge);
+        force_vec.add(tmp_vec);
         if (PuckActor.get_draw_forces())
-            puck.set_force(charge, vec);
+            puck.set_force(charge, tmp_vec);
     }
     
     private void show_initial_pucks(boolean visibility) {
