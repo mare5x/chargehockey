@@ -78,7 +78,7 @@ public class EditorScreen implements Screen {
 
     private final Vector2 tmp_v = new Vector2();
 
-    private ChargeActor.ChargeDragAreaHelper charge_drag_area_helper = new ChargeActor.ChargeDragAreaHelper();
+    private ChargeActor.ChargeDragAreaHelper charge_drag_area_helper;
 
     private final Table button_table = new Table();
 
@@ -170,6 +170,8 @@ public class EditorScreen implements Screen {
         symmetry_tool.update_size(camera.zoom);
         symmetry_tool.set_enabled(SYMMETRY_TOOL_ENABLED_SETTING);
         edit_stage.addActor(symmetry_tool);
+
+        charge_drag_area_helper = new ChargeActor.ChargeDragAreaHelper(symmetry_tool);
 
         // add interactive pucks from the stored puck positions
         puck_actors = new Array<ChargeActor>(level.get_puck_states().size * 2);

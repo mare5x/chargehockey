@@ -183,7 +183,7 @@ public class GameScreen implements Screen {
 
     private final Table button_table;
 
-    private ChargeActor.ChargeDragAreaHelper charge_drag_area_helper = new ChargeActor.ChargeDragAreaHelper();
+    private ChargeActor.ChargeDragAreaHelper charge_drag_area_helper;
 
     private Notification notification;
 
@@ -226,6 +226,8 @@ public class GameScreen implements Screen {
         symmetry_tool.update_size(camera.zoom);
         symmetry_tool.set_enabled(SYMMETRY_TOOL_ENABLED_SETTING);
         game_stage.addActor(symmetry_tool);
+
+        charge_drag_area_helper = new ChargeActor.ChargeDragAreaHelper(symmetry_tool);
 
         win_dialog = new WinDialog("WIN", game.skin);
 

@@ -62,6 +62,11 @@ public class ChargeActor extends Actor {
         private static final float DRAG_SPEED = 15.0f;
         private static Vector2 tmp_vec = new Vector2();
         private ChargeActor charge;
+        private final SymmetryToolActor symmetry_tool;
+
+        public ChargeDragAreaHelper(SymmetryToolActor symmetry_tool) {
+            this.symmetry_tool = symmetry_tool;
+        }
 
         public void update(float delta) {
             if (charge != null && charge.getStage() != null)
@@ -75,6 +80,13 @@ public class ChargeActor extends Actor {
             Vector2 delta_pos = tmp_vec.nor().scl(DRAG_SPEED).scl(delta).scl(camera.zoom);
             camera.translate(delta_pos);
             charge.moveBy(delta_pos.x, delta_pos.y);
+
+            // move the partner symmetrically
+            ChargeActor partner = charge.get_partner();
+            if (partner != null && symmetry_tool.is_enabled()) {
+                symmetry_tool.get_symmetrical_pos(tmp_vec.set(charge.get_x(), charge.get_y()));
+                partner.set_position(tmp_vec.x, tmp_vec.y);
+            }
         }
 
         public void enter_drag_area(ChargeActor charge) {
