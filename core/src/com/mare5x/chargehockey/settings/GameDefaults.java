@@ -35,6 +35,8 @@ public class GameDefaults {
 
     public static final long SECONDS_TO_NANOS = 1000000000L;
 
+    public static final float PHYSICS_EPSILON = 0.001f;
+
     public static void resize(int screen_width, int screen_height) {
         // for now we only care about the top y position
         // make the width and height larger in case the charge is dragged 'off' the screen

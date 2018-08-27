@@ -16,6 +16,8 @@ import com.mare5x.chargehockey.game.CameraController;
 import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.settings.GameDefaults;
 
+import static com.mare5x.chargehockey.settings.GameDefaults.PHYSICS_EPSILON;
+
 
 public class ChargeActor extends Actor {
     public enum CHARGE {
@@ -400,23 +402,17 @@ public class ChargeActor extends Actor {
         float closest_x = MathUtils.clamp(center_x, rectangle.x, rectangle.x + rectangle.width);
         float closest_y = MathUtils.clamp(center_y, rectangle.y, rectangle.y + rectangle.height);
 
-        intersection.x = closest_x - center_x;
-        if (closest_x > center_x) intersection.x -= radius;
-        else if (closest_x < center_x) intersection.x += radius;
-
-        intersection.y = closest_y - center_y;
-        if (closest_y > center_y) intersection.y -= radius;
-        else if (closest_y < center_y) intersection.y += radius;
-
-        float dx = center_x - closest_x;
-        float dy = center_y - closest_y;
+        float dx = intersection.x = closest_x - center_x;
+        float dy = intersection.y = closest_y - center_y;
+        tmp_vec.set(intersection).nor().scl(radius);
+        intersection.sub(tmp_vec);
 
         // if the distance from circle to rectangle is less than the circle's radius, there is an intersection
-        return (dx * dx + dy * dy) < (radius * radius);
+        return (radius*radius) - (dx*dx + dy*dy) > PHYSICS_EPSILON;  // epsilon
     }
 
     public boolean size_changed() {
-        return !MathUtils.isEqual(radius * 2, SIZE, 0.001f);
+        return !MathUtils.isEqual(radius * 2, SIZE, PHYSICS_EPSILON);
     }
 
     private Vector2 get_screen_coordinates() {

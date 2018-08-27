@@ -46,7 +46,13 @@ public class GameLogic {
     private float dt_accumulator = 0;  // http://gafferongames.com/game-physics/fix-your-timestep/
 
     private final Vector2 force_vec = new Vector2();
-    private final Vector2 tmp_vec = new Vector2();
+    private final Vector2[] vec_cache;
+    {
+        vec_cache = new Vector2[4];
+        for (int i = 0; i < vec_cache.length; ++i)
+            vec_cache[i] = new Vector2();
+    }
+    private final Vector2 tmp_vec = vec_cache[0];
     private final Rectangle tmp_rect = new Rectangle();
 
     private final Array<ChargeActor> charge_actors = new Array<ChargeActor>();
@@ -212,33 +218,53 @@ public class GameLogic {
     }
 
     /** Priority: wall > goal > ... */
-    private GRID_ITEM get_collision(PuckActor puck) {
+    private GRID_ITEM get_collision(PuckActor puck, Vector2 intersection) {
         int row = (int) (puck.getY());
         int col = (int) (puck.getX());
-        GRID_ITEM bottom_left = check_collision(puck, row, col, tmp_vec);
-        if (bottom_left == GRID_ITEM.WALL)
+        GRID_ITEM bottom_left = check_collision(puck, row, col, vec_cache[0]);
+        if (bottom_left == GRID_ITEM.WALL) {
+            intersection.set(vec_cache[0]);
             return bottom_left;
+        }
 
         col = (int) (puck.getRight());
-        GRID_ITEM bottom_right = check_collision(puck, row, col, tmp_vec);
-        if (bottom_right == GRID_ITEM.WALL)
+        GRID_ITEM bottom_right = check_collision(puck, row, col, vec_cache[1]);
+        if (bottom_right == GRID_ITEM.WALL) {
+            intersection.set(vec_cache[1]);
             return bottom_right;
+        }
 
         row = (int) (puck.getTop());
-        GRID_ITEM top_right = check_collision(puck, row, col, tmp_vec);
-        if (top_right == GRID_ITEM.WALL)
+        GRID_ITEM top_right = check_collision(puck, row, col, vec_cache[2]);
+        if (top_right == GRID_ITEM.WALL) {
+            intersection.set(vec_cache[2]);
             return top_right;
+        }
 
         col = (int) (puck.getX());
-        GRID_ITEM top_left = check_collision(puck, row, col, tmp_vec);
-        if (top_left == GRID_ITEM.WALL)
+        GRID_ITEM top_left = check_collision(puck, row, col, vec_cache[3]);
+        if (top_left == GRID_ITEM.WALL) {
+            intersection.set(vec_cache[3]);
             return top_left;
+        }
 
-        if (bottom_left != GRID_ITEM.NULL) return bottom_left;
-        if (bottom_right != GRID_ITEM.NULL) return bottom_right;
-        if (top_right != GRID_ITEM.NULL) return top_right;
-        if (top_left != GRID_ITEM.NULL) return top_left;
-
+        // Goal
+        if (bottom_left != GRID_ITEM.NULL) {
+            intersection.set(vec_cache[0]);
+            return bottom_left;
+        }
+        if (bottom_right != GRID_ITEM.NULL) {
+            intersection.set(vec_cache[1]);
+            return bottom_right;
+        }
+        if (top_right != GRID_ITEM.NULL) {
+            intersection.set(vec_cache[2]);
+            return top_right;
+        }
+        if (top_left != GRID_ITEM.NULL) {
+            intersection.set(vec_cache[3]);
+            return top_left;
+        }
         return GRID_ITEM.NULL;
     }
 
@@ -246,11 +272,11 @@ public class GameLogic {
      *  intersection, if it exists. */
     private GRID_ITEM check_collision(PuckActor puck, int row, int col, Vector2 intersection) {
         GRID_ITEM grid_item = level.get_grid_item(row, col);
-        // add a bit of leniency: walls have a smaller size than goals
+        // add a bit of leniency: walls have a smaller size than goals (without the white wall border)
         if (grid_item == GRID_ITEM.WALL && puck.intersects(
                 tmp_rect.set(col + LevelFrameBuffer.ONE_TX, row + LevelFrameBuffer.ONE_TX,
-                             LevelFrameBuffer.GRID_TILE_SIZE - 3 * LevelFrameBuffer.ONE_TX,
-                             LevelFrameBuffer.GRID_TILE_SIZE - 3 * LevelFrameBuffer.ONE_TX),
+                             LevelFrameBuffer.GRID_TILE_SIZE - 2 * LevelFrameBuffer.ONE_TX,
+                             LevelFrameBuffer.GRID_TILE_SIZE - 2 * LevelFrameBuffer.ONE_TX),
                 intersection))
             return grid_item;
         else if (grid_item == GRID_ITEM.GOAL && puck.intersects(
@@ -280,8 +306,8 @@ public class GameLogic {
 
         int sign_x = dx >= 0 ? 1 : -1;
         int sign_y = dy >= 0 ? 1 : -1;
-        float step_x = sign_x * 0.1f;
-        float step_y = sign_y * 0.1f;
+        float step_x = sign_x * 0.5f;
+        float step_y = sign_y * 0.5f;
 
         // To prevent collisions going unnoticed if the objects are moving too fast,
         // multisample and check additional points on the trajectory (linear path from source to
@@ -291,16 +317,29 @@ public class GameLogic {
             x = (step_x > 0) ? Math.min(x + step_x, end_x) : Math.max(x + step_x, end_x);
             y = (step_y > 0) ? Math.min(y + step_y, end_y) : Math.max(y + step_y, end_y);
             puck.set_position(x, y);
-            puck.set_collision(get_collision(puck));
+
+            // Binary search vs Vector math benchmark results:
+            // Vector math requires significantly less iterations for the most part and it
+            // is usually 100% faster. Binary search on the other hand requires a constant number
+            // of iterations and the results are predictable. Sometimes binary search is faster
+            // because the vector math might move in very small steps.
+
             // On a collision, adjust the puck's position to be touching the hit object.
-            if (is_collision(puck.get_collision())) {
-                Vector2 puck_velocity = puck.get_velocity();
-                if (Math.abs(puck_velocity.x) >= Math.abs(puck_velocity.y))
-                    puck.moveBy(tmp_vec.x, 0);
-                else
-                    puck.moveBy(0, tmp_vec.y);
-                break;
+            Vector2 intersection = tmp_vec;
+            GRID_ITEM collision = get_collision(puck, intersection);
+            puck.set_collision(collision);
+            // A puck can collide with multiple tiles, so fix them all
+            while (is_collision(collision)) {
+                // project the intersection vector onto a normalized vector of the puck's velocity
+                // vector: only move the puck on the path that the puck is moving on!
+                Vector2 displacement = vec_cache[1].set(puck.get_velocity()).nor();
+//                displacement.scl(displacement.dot(tmp_vec));
+                displacement.scl(displacement.dot(intersection)).nor().scl(intersection.len());
+                puck.moveBy(displacement.x, displacement.y);
+                collision = get_collision(puck, intersection);
             }
+            if (is_collision(puck.get_collision()))
+                break;
         }
 
         if (PuckActor.get_trace_path())
