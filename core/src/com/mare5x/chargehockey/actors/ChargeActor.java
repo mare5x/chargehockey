@@ -16,6 +16,7 @@ import com.mare5x.chargehockey.game.CameraController;
 import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.settings.GameDefaults;
 
+import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_DRAG_SPEED;
 import static com.mare5x.chargehockey.settings.GameDefaults.PHYSICS_EPSILON;
 
 
@@ -61,7 +62,6 @@ public class ChargeActor extends Actor {
      * screen. Usage: (1) enter_drag_area() (2) update() (3) exit_drag_area()
      */
     public static class ChargeDragAreaHelper {
-        private static final float DRAG_SPEED = 15.0f;
         private static Vector2 tmp_vec = new Vector2();
         private ChargeActor charge;
         private final SymmetryToolActor symmetry_tool;
@@ -79,7 +79,7 @@ public class ChargeActor extends Actor {
             // The camera follows the dragged charge off the screen.
             OrthographicCamera camera = (OrthographicCamera) charge.getStage().getCamera();
             tmp_vec.set(charge.get_x(), charge.get_y()).sub(camera.position.x, camera.position.y);
-            Vector2 delta_pos = tmp_vec.nor().scl(DRAG_SPEED).scl(delta).scl(camera.zoom);
+            Vector2 delta_pos = tmp_vec.nor().scl(CHARGE_DRAG_SPEED).scl(delta).scl(camera.zoom);
             camera.translate(delta_pos);
             charge.moveBy(delta_pos.x, delta_pos.y);
 
