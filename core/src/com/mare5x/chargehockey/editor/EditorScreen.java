@@ -602,6 +602,10 @@ public class EditorScreen implements Screen {
             style = new ButtonStyle(drawable, drawable, null);
             style_table.put(GRID_ITEM.GOAL, style);
 
+            drawable = new TextureRegionDrawable(game.sprites.findRegion("grid/grid_bouncer"));
+            style = new ButtonStyle(drawable, drawable, null);
+            style_table.put(GRID_ITEM.BOUNCER, style);
+
             setStyle(get_style(GRID_ITEM.WALL));
         }
 

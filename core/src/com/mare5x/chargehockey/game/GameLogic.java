@@ -274,6 +274,7 @@ public class GameLogic {
     private CollisionData check_collision(PuckActor puck, int row, int col) {
         GRID_ITEM grid_item = level.get_grid_item(row, col);
         CollisionData collision_data = new CollisionData();
+        /*
         // add a bit of leniency: walls have a smaller size than goals (without the white wall border)
         if (grid_item == GRID_ITEM.WALL) {
             tmp_rect.x = col + LevelFrameBuffer.ONE_TX;
@@ -283,7 +284,10 @@ public class GameLogic {
             if (puck.intersects(tmp_rect, collision_data.intersection, collision_data.norm))
                 collision_data.item = grid_item;
         }
-        else if (grid_item == GRID_ITEM.GOAL)  {
+
+        else if (grid_item == GRID_ITEM.GOAL || grid_item == GRID_ITEM.BOUNCER)  {
+        */
+        if (grid_item != GRID_ITEM.NULL) {
             tmp_rect.x = col;
             tmp_rect.y = row;
             tmp_rect.width = LevelFrameBuffer.GRID_TILE_SIZE;
@@ -384,7 +388,7 @@ public class GameLogic {
         for (int i = 0; i < puck_actors.size; i++) {
             PuckActor puck = puck_actors.get(i);
 
-            if (puck.get_collision().item == GRID_ITEM.GOAL)
+            if (puck.get_collision().item == GRID_ITEM.GOAL || puck.get_collision().item == GRID_ITEM.WALL)
                 continue;
 
             float weight = puck.get_weight();
@@ -403,7 +407,7 @@ public class GameLogic {
             velocity_vec.y += delta * (tmp_vec.y + acceleration_vec.y) / 2;
 
             CollisionData collision = puck.get_collision();
-            if (collision.item == GRID_ITEM.WALL) {
+            if (collision.item == GRID_ITEM.BOUNCER) {
                 // Reflect the puck's velocity based on the normal vector of the collision.
                 // The incoming angle is the same as the outgoing angle.
                 Vector2 norm = collision.norm;  // directly change the norm vector since it's used only here

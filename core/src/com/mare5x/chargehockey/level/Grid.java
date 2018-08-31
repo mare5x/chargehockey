@@ -8,7 +8,8 @@ public class Grid {
     public enum GRID_ITEM {
         NULL('n'),
         WALL('w'),
-        GOAL('g');
+        GOAL('g'),
+        BOUNCER('b');
 
         private char code;  // item abbreviation code used to save the items in the file (instead of using .ordinal())
         GRID_ITEM(char code) {
@@ -20,6 +21,7 @@ public class Grid {
                 case 'n': return NULL;
                 case 'w': return WALL;
                 case 'g': return GOAL;
+                case 'b': return BOUNCER;
             }
             return NULL;
         }

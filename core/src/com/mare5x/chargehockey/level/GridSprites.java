@@ -21,21 +21,25 @@ public class GridSprites {
         Sprite null_sprite = game.sprites.createSprite("grid/grid_null");
         Sprite wall_sprite = game.sprites.createSprite("grid/grid_wall");
         Sprite goal_sprite = game.sprites.createSprite("grid/grid_goal");
+        Sprite bouncer_sprite = game.sprites.createSprite("grid/grid_bouncer");
 
         grid_sprites = new ObjectMap<GRID_ITEM, Sprite>(GRID_ITEM.values.length);
         grid_sprites.put(GRID_ITEM.NULL, null_sprite);
         grid_sprites.put(GRID_ITEM.WALL, wall_sprite);
         grid_sprites.put(GRID_ITEM.GOAL, goal_sprite);
+        grid_sprites.put(GRID_ITEM.BOUNCER, bouncer_sprite);
 
         // p_ = preview
         Sprite p_null_sprite = game.sprites.createSprite("grid/p_grid_null");
         Sprite p_wall_sprite = game.sprites.createSprite("grid/p_grid_wall");
         Sprite p_goal_sprite = game.sprites.createSprite("grid/p_grid_goal");
+        Sprite p_bouncer_sprite = game.sprites.createSprite("grid/p_grid_bouncer");
 
         preview_grid_sprites = new ObjectMap<GRID_ITEM, Sprite>(GRID_ITEM.values.length);
         preview_grid_sprites.put(GRID_ITEM.NULL, p_null_sprite);
         preview_grid_sprites.put(GRID_ITEM.WALL, p_wall_sprite);
         preview_grid_sprites.put(GRID_ITEM.GOAL, p_goal_sprite);
+        preview_grid_sprites.put(GRID_ITEM.BOUNCER, p_bouncer_sprite);
 
         set_grid_tile_size(1);
 
