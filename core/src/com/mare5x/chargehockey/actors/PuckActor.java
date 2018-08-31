@@ -3,6 +3,7 @@ package com.mare5x.chargehockey.actors;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
@@ -40,6 +41,7 @@ public class PuckActor extends ForcePuckActor {
 
         path_px = new Sprite(game.skin.getRegion("pixels/px_white"));
         path_px.setSize(getWidth() / 5, getHeight() / 5);
+        path_px.setColor(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1);
 
         reset_vectors();
     }
