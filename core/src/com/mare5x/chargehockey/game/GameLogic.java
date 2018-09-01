@@ -65,10 +65,11 @@ public class GameLogic {
     private boolean is_playing = false;
     private boolean charge_state_changed = false;
 
-    private static final float E_CONST = 1.1e-10f;
     private static float GAME_SPEED = 1;  // game speed set by the user in settings
     private static final float dt = 0.01f;
     private float dt_accumulator = 0;  // http://gafferongames.com/game-physics/fix-your-timestep/
+
+    private static final float FORCE_FACTOR = 100;
 
     private final Vector2 force_vec = new Vector2();
     private final Vector2[] vec_cache;
@@ -245,28 +246,22 @@ public class GameLogic {
 
     /** Priority: wall > goal > ... */
     private CollisionData get_collision(PuckActor puck) {
-        int row = (int) (puck.getY());
-        int col = (int) (puck.getX());
-        CollisionData bottom_left = check_collision(puck, row, col);
-        if (bottom_left.item == GRID_ITEM.WALL) return bottom_left;
+        CollisionData[] collisions = new CollisionData[9];
+        final int[] dx = { 0, 1, 0, -1, 0, 1, -1, -1, 1 };
+        final int[] dy = { 0, 0, 1, 0, -1, 1, 1, -1, -1 };
+        float x = puck.get_x();
+        float y = puck.get_y();
+        float r = PuckActor.RADIUS + PHYSICS_EPSILON;
+        for (int i = 0; i < 9; ++i) {
+            collisions[i] = check_collision(puck, (int) (y + dy[i] * r), (int) (x + dx[i] * r));
+            if (collisions[i].item == GRID_ITEM.WALL)
+                return collisions[i];
+        }
 
-        col = (int) (puck.getRight());
-        CollisionData bottom_right = check_collision(puck, row, col);
-        if (bottom_right.item == GRID_ITEM.WALL) return bottom_right;
-
-        row = (int) (puck.getTop());
-        CollisionData top_right = check_collision(puck, row, col);
-        if (top_right.item == GRID_ITEM.WALL) return top_right;
-
-        col = (int) (puck.getX());
-        CollisionData top_left = check_collision(puck, row, col);
-        if (top_left.item == GRID_ITEM.WALL) return top_left;
-
-        // Goal
-        if (bottom_left.valid()) return bottom_left;
-        if (bottom_right.valid()) return bottom_right;
-        if (top_right.valid()) return top_right;
-        if (top_left.valid()) return top_left;
+        for (int i = 0; i < 9; ++i) {
+            if (collisions[i].valid())
+                return collisions[i];
+        }
         return tmp_collision.reset();
     }
 
@@ -274,6 +269,7 @@ public class GameLogic {
     private CollisionData check_collision(PuckActor puck, int row, int col) {
         GRID_ITEM grid_item = level.get_grid_item(row, col);
         CollisionData collision_data = new CollisionData();
+        /*
         // add a bit of leniency: walls have a smaller size than goals (without the white wall border)
         if (grid_item == GRID_ITEM.WALL) {
             tmp_rect.x = col + LevelFrameBuffer.ONE_TX;
@@ -284,6 +280,8 @@ public class GameLogic {
                 collision_data.item = grid_item;
         }
         else if (grid_item == GRID_ITEM.GOAL)  {
+        */
+        if (grid_item != GRID_ITEM.NULL) {
             tmp_rect.x = col;
             tmp_rect.y = row;
             tmp_rect.width = LevelFrameBuffer.GRID_TILE_SIZE;
@@ -439,7 +437,7 @@ public class GameLogic {
         charge.get_vec_from(tmp_vec.set(puck.get_x(), puck.get_y()));
         // how many units apart can two charges be when calculating the force? (avoids infinite forces)
         float dist_squared = Math.max(PuckActor.SIZE * PuckActor.SIZE, tmp_vec.len2());
-        float force_magnitude = (puck.get_abs_charge() * charge.get_abs_charge()) / (dist_squared * E_CONST);
+        float force_magnitude = FORCE_FACTOR * (puck.get_abs_charge() * charge.get_abs_charge()) / dist_squared;
         return tmp_vec.nor().scl(force_magnitude);
     }
 
