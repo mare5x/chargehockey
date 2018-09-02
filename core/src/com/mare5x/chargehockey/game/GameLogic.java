@@ -389,16 +389,18 @@ public class GameLogic {
             Vector2 velocity_vec = puck.get_velocity();
             Vector2 acceleration_vec = puck.get_acceleration();
 
-            float dx = delta * (velocity_vec.x + delta * acceleration_vec.x / 2);  // x = v * t
-            float dy = delta * (velocity_vec.y + delta * acceleration_vec.y / 2);  // average velocity
-            move_puck(puck, dx, dy);
+            // Semi-implicit euler integration
 
             calc_net_force(puck);
             tmp_vec.x = force_vec.x / weight;  // a = F / m
             tmp_vec.y = force_vec.y / weight;
 
-            velocity_vec.x += delta * (tmp_vec.x + acceleration_vec.x) / 2;  // v = v0 + a * t
-            velocity_vec.y += delta * (tmp_vec.y + acceleration_vec.y) / 2;
+            velocity_vec.x += delta * tmp_vec.x;
+            velocity_vec.y += delta * tmp_vec.y;
+
+            float dx = delta * velocity_vec.x;  // x = v * t
+            float dy = delta * velocity_vec.y;
+            move_puck(puck, dx, dy);
 
             CollisionData collision = puck.get_collision();
             if (collision.item == GRID_ITEM.WALL) {
