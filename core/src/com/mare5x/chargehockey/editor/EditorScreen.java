@@ -42,6 +42,8 @@ import com.mare5x.chargehockey.settings.SettingsFile.SETTINGS_KEY;
 
 import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
+import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_DRAG_RECT;
+import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_DRAG_SPEED;
 import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_ACTIVE_BG;
 import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_BG;
 import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_ZONE_HEIGHT;
@@ -76,7 +78,7 @@ public class EditorScreen implements Screen {
 
     private Array<ChargeActor> puck_actors;
 
-    private final Vector2 tmp_v = new Vector2();
+    private final Vector2 tmp_vec = new Vector2();
 
     private ChargeActor.ChargeDragAreaHelper charge_drag_area_helper;
 
@@ -115,8 +117,8 @@ public class EditorScreen implements Screen {
             if (symmetry_tool.is_enabled()) {
                 ChargeActor partner = charge.get_partner();
                 if (partner != null) {
-                    symmetry_tool.get_symmetrical_pos(tmp_v.set(x, y));
-                    partner.set_position(tmp_v.x, tmp_v.y);
+                    symmetry_tool.get_symmetrical_pos(tmp_vec.set(x, y));
+                    partner.set_position(tmp_vec.x, tmp_vec.y);
                 }
             }
         }
@@ -336,9 +338,9 @@ public class EditorScreen implements Screen {
         ChargeActor puck1 = add_puck(x, y);
 
         if (symmetry_tool.is_enabled()) {
-            symmetry_tool.get_symmetrical_pos(tmp_v.set(x, y));
+            symmetry_tool.get_symmetrical_pos(tmp_vec.set(x, y));
 
-            ChargeActor puck2 = add_puck(tmp_v.x, tmp_v.y);
+            ChargeActor puck2 = add_puck(tmp_vec.x, tmp_vec.y);
 
             puck1.set_partner(puck2);
             puck2.set_partner(puck1);
@@ -373,9 +375,9 @@ public class EditorScreen implements Screen {
         int row2 = row1;
         int col2 = col1;
         if (symmetry_tool.is_enabled()) {
-            symmetry_tool.get_symmetrical_pos(tmp_v.set(x, y));
-            row2 = (int) tmp_v.y;
-            col2 = (int) tmp_v.x;
+            symmetry_tool.get_symmetrical_pos(tmp_vec.set(x, y));
+            row2 = (int) tmp_vec.y;
+            col2 = (int) tmp_vec.x;
         }
 
         // only update the fbo if a new tile was just placed
@@ -533,7 +535,7 @@ public class EditorScreen implements Screen {
         @Override
         protected boolean on_tap(float x, float y, int count, int button) {
             // ignore taps outside of edit_stage's camera and outside the world
-            if (!point_in_view(x, y) || !Grid.WORLD_RECT.contains(tmp_v.set(x, y))) {
+            if (!point_in_view(x, y) || !Grid.WORLD_RECT.contains(tmp_vec.set(x, y))) {
                 return true;
             }
 
@@ -564,14 +566,33 @@ public class EditorScreen implements Screen {
         }
 
         @Override
-        protected void on_long_press_start() {
-            super.on_long_press_start();
+        protected void on_long_press_start(float screen_x, float screen_y) {
+            super.on_long_press_start(screen_x, screen_y);
             edit_icon.show_on();
         }
 
         @Override
-        protected void on_long_press_held(float x, float y) {
-            place_tile(x, y, grid_item_button.get_selected_item());
+        protected void on_long_press_held(float screen_x, float screen_y) {
+            edit_stage.screenToStageCoordinates(tmp_vec.set(screen_x, screen_y));
+            place_tile(tmp_vec.x, tmp_vec.y, grid_item_button.get_selected_item());
+
+            // If painting on the edge of the screen, move the camera.
+            // continuous rendering is enabled and this gets called every frame
+            tmp_vec.setZero();
+            if (screen_x < CHARGE_DRAG_RECT.x)
+                tmp_vec.x = -1;
+            else if (screen_x > CHARGE_DRAG_RECT.x + CHARGE_DRAG_RECT.width)
+                tmp_vec.x = 1;
+            if (screen_y < CHARGE_DRAG_RECT.y)
+                tmp_vec.y = 1;
+            else if (screen_y > CHARGE_DRAG_RECT.y + CHARGE_DRAG_RECT.height)
+                tmp_vec.y = -1;
+
+            if (!tmp_vec.isZero()) {
+                float delta = Gdx.graphics.getDeltaTime();
+                Vector2 delta_pos = tmp_vec.nor().scl(CHARGE_DRAG_SPEED).scl(delta).scl(camera.zoom);
+                camera.translate(delta_pos);
+            }
         }
 
         @Override

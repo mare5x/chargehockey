@@ -101,8 +101,8 @@ public class CameraController {
 
     public void update(float delta) {
         if (long_press_started) {
-            Vector2 touch_coordinates = controller.get_stage_coordinates(Gdx.input.getX(), Gdx.input.getY());
-            on_long_press_held(touch_coordinates.x, touch_coordinates.y);
+//            Vector2 touch_coordinates = controller.get_stage_coordinates(Gdx.input.getX(), Gdx.input.getY());
+            on_long_press_held(Gdx.input.getX(), Gdx.input.getY());
         }
         delta = delta > 1 ? 0 : delta;  // after a period of inactivity, make the camera less jerky
         controller.update(delta);
@@ -138,11 +138,11 @@ public class CameraController {
         return controller.is_moving();
     }
 
-    protected void on_long_press_start() {
+    protected void on_long_press_start(float screen_x, float screen_y) {
         long_press_started = true;
     }
 
-    protected void on_long_press_held(float x, float y) {
+    protected void on_long_press_held(float screen_x, float screen_y) {
 
     }
 
@@ -389,11 +389,6 @@ public class CameraController {
             }
         }
 
-        Vector2 get_stage_coordinates(float x, float y) {
-            stage.screenToStageCoordinates(tmp_coords.set(x, y));
-            return tmp_coords;
-        }
-
         @Override
         public boolean tap(float x, float y, int count, int button) {
             last_action_time = TimeUtils.nanoTime();
@@ -407,7 +402,7 @@ public class CameraController {
         public boolean longPress(float x, float y) {
             last_action_time = TimeUtils.nanoTime();
 
-            on_long_press_start();
+            on_long_press_start(x, y);
             return true;
         }
 
