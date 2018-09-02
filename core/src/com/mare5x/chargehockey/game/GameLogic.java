@@ -302,8 +302,12 @@ public class GameLogic {
         }
     }
 
-    /** Move puck by dx,dy, handling any collisions on the way to the destination. */
     private void move_puck(PuckActor puck, float dx, float dy) {
+        move_puck(puck, dx, dy, true);
+    }
+
+    /** Move puck by dx,dy, handling any collisions on the way to the destination. */
+    private void move_puck(PuckActor puck, float dx, float dy, boolean trace_path) {
         float start_x = puck.get_x();
         float start_y = puck.get_y();
         float end_x = start_x + dx;
@@ -360,20 +364,38 @@ public class GameLogic {
                 // vector: only move the puck on the path that the puck is moving on!
                 Vector2 intersection = collision.intersection;
                 Vector2 displacement = vec_cache[1].set(puck.get_velocity()).nor();
-//                displacement.scl(displacement.dot(tmp_vec));
+//                displacement.scl(displacement.dot(intersection));
                 displacement.scl(displacement.dot(intersection)).nor().scl(intersection.len());
                 puck.moveBy(displacement.x, displacement.y);
                 collision = get_collision(puck);
                 ++iters;
             }
-            if (puck.get_collision().valid())
+
+            if (puck.get_collision().valid()) {
+                // Reflect the puck and move it how much it still has to go.
+                // This prevents a noticeable pause in the simulation.
+                collision = puck.get_collision();
+                if (collision.item == GRID_ITEM.WALL) {
+                    // Reflect the puck's velocity based on the normal vector of the collision.
+                    // The incoming angle is the same as the outgoing angle.
+                    Vector2 velocity_vec = puck.get_velocity();
+                    Vector2 norm = collision.norm;  // directly change the norm vector since it's used only here
+                    velocity_vec.sub(norm.scl(norm.dot(velocity_vec)).scl(2));
+
+                    float total_distance = (float) Math.hypot(start_x - end_x, start_y - end_y);
+                    float current_distance = (float) Math.hypot(x - start_x, y - start_y);
+                    float remaining_distance = total_distance - current_distance;
+                    tmp_vec.set(velocity_vec).nor().scl(remaining_distance);
+                    move_puck(puck, tmp_vec.x, tmp_vec.y, false);
+                }
                 break;
+            }
 
             prev_x = x;
             prev_y = y;
         }
 
-        if (PuckActor.get_trace_path())
+        if (trace_path && PuckActor.get_trace_path())
             puck.save_path_position();
     }
 
@@ -387,13 +409,13 @@ public class GameLogic {
 
             float weight = puck.get_weight();
             Vector2 velocity_vec = puck.get_velocity();
-            Vector2 acceleration_vec = puck.get_acceleration();
 
             // Semi-implicit euler integration
 
             calc_net_force(puck);
             tmp_vec.x = force_vec.x / weight;  // a = F / m
             tmp_vec.y = force_vec.y / weight;
+            puck.set_acceleration(tmp_vec.x, tmp_vec.y);
 
             velocity_vec.x += delta * tmp_vec.x;
             velocity_vec.y += delta * tmp_vec.y;
@@ -402,17 +424,7 @@ public class GameLogic {
             float dy = delta * velocity_vec.y;
             move_puck(puck, dx, dy);
 
-            CollisionData collision = puck.get_collision();
-            if (collision.item == GRID_ITEM.WALL) {
-                // Reflect the puck's velocity based on the normal vector of the collision.
-                // The incoming angle is the same as the outgoing angle.
-                Vector2 norm = collision.norm;  // directly change the norm vector since it's used only here
-                norm.scl(velocity_vec.scl(-1).dot(norm)).sub(velocity_vec).scl(2);
-                velocity_vec.add(norm);
-            }
-
             puck.set_velocity(velocity_vec.x, velocity_vec.y);
-            puck.set_acceleration(tmp_vec.x, tmp_vec.y);
         }
     }
 
