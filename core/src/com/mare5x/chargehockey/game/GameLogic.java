@@ -12,9 +12,9 @@ import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
 import com.mare5x.chargehockey.actors.ForcePuckActor;
 import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.actors.SymmetryToolActor;
+import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.Level;
-import com.mare5x.chargehockey.level.LevelFrameBuffer;
 
 import static com.mare5x.chargehockey.settings.GameDefaults.PHYSICS_EPSILON;
 
@@ -284,8 +284,8 @@ public class GameLogic {
         if (grid_item != GRID_ITEM.NULL) {
             tmp_rect.x = col;
             tmp_rect.y = row;
-            tmp_rect.width = LevelFrameBuffer.GRID_TILE_SIZE;
-            tmp_rect.height = LevelFrameBuffer.GRID_TILE_SIZE;
+            tmp_rect.width = Grid.UNIT;
+            tmp_rect.height = Grid.UNIT;
             if (puck.intersects(tmp_rect, collision_data.intersection, collision_data.norm))
                 collision_data.item = grid_item;
         }
