@@ -27,7 +27,7 @@ public class LevelFrameBuffer {
     private static float WORLD_UNIT_TX;  // 1 world unit = world_unit_tx texels
     public static float ONE_TX; // 1 texel in world units
 
-    public static float GRID_TILE_SIZE = 1 + ONE_TX;  // in world units
+    public static float GRID_TILE_SIZE;  // in world units
 
     private final ChargeHockeyGame game;
 
@@ -56,7 +56,7 @@ public class LevelFrameBuffer {
         FBO_SIZE = size;
         WORLD_UNIT_TX = FBO_SIZE / Grid.WORLD_WIDTH;  // 1 world unit = world_unit_tx texels
         ONE_TX = 1 / WORLD_UNIT_TX;  // 1 texel
-        GRID_TILE_SIZE = 1 + ONE_TX;
+        GRID_TILE_SIZE = Grid.UNIT;
 
         game.grid_sprites.set_grid_tile_size(GRID_TILE_SIZE);
         game.grid_sprites.set_preview(is_preview(FBO_SIZE));
@@ -127,37 +127,11 @@ public class LevelFrameBuffer {
     }
 
     private void draw_grid(final SpriteBatch batch) {
-        // Draw the grid
-        game.grid_sprites.set_grid_tile_size(GRID_TILE_SIZE);
-        for (int row = 0; row < Grid.WORLD_HEIGHT - 1; row++) {
-            for (int col = 0; col < Grid.WORLD_WIDTH - 1; col++) {
+        for (int row = 0; row < Grid.WORLD_HEIGHT; row++) {
+            for (int col = 0; col < Grid.WORLD_WIDTH; col++) {
                 GRID_ITEM item = level.get_grid_item(row, col);
                 game.grid_sprites.draw_tile(batch, item, row, col);
             }
-        }
-        // specially draw the top and right border tiles, otherwise they get cut off by ONE_TX
-        // note: this makes the border sprites squished by ONE_TX
-        // right border
-        game.grid_sprites.set_grid_tile_size(GRID_TILE_SIZE - ONE_TX, GRID_TILE_SIZE);
-        for (int row = 0; row < Grid.WORLD_HEIGHT - 1; row++) {
-            int col = Grid.WORLD_WIDTH - 1;
-            GRID_ITEM item = level.get_grid_item(row, col);
-            game.grid_sprites.draw_tile(batch, item, row, col);
-        }
-        // top border
-        game.grid_sprites.set_grid_tile_size(GRID_TILE_SIZE, GRID_TILE_SIZE - ONE_TX);
-        for (int col = 0; col < Grid.WORLD_WIDTH - 1; col++) {
-            int row = Grid.WORLD_HEIGHT - 1;
-            GRID_ITEM item = level.get_grid_item(row, col);
-            game.grid_sprites.draw_tile(batch, item, row, col);
-        }
-        // top right
-        GRID_ITEM item = level.get_grid_item(Grid.WORLD_WIDTH - 1, Grid.WORLD_HEIGHT - 1);
-        if (item != GRID_ITEM.NULL) {
-            Sprite sprite = game.grid_sprites.get(item);
-            sprite.setSize(GRID_TILE_SIZE - ONE_TX, GRID_TILE_SIZE - ONE_TX);
-            sprite.setPosition(Grid.WORLD_WIDTH - 1, Grid.WORLD_HEIGHT - 1);
-            sprite.draw(batch);
         }
     }
 

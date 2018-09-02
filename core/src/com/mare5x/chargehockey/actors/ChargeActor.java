@@ -127,8 +127,8 @@ public class ChargeActor extends Actor {
     private static float SIZE = 2;  // the public shared size of all charges set in the settings
     private float radius = SIZE / 2f;  // all 'size' checking, etc uses this
     private float charge_size = 2 * radius;  // this is the effective size of the charge (not necessarily the current size), it's the size the charge gets reset to
-    private static final float WEIGHT = 9.1e-31f;  // kg
-    private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
+    private static final float WEIGHT = 1;  // kg
+    private static final float ABS_CHARGE = 1;  // Coulombs
 
     private static int UID_COUNTER = 0;
     private final int uid = ++UID_COUNTER;  // unique identifier for every charge (used in .save files)
@@ -393,8 +393,9 @@ public class ChargeActor extends Actor {
     }
 
     /** Circular collision detection with a rectangle. If the circle and rectangle intersect,
-     *  the displacement vector is returned in 'intersection'. */
-    public boolean intersects(Rectangle rectangle, Vector2 intersection) {
+     *  the displacement vector is returned in 'intersection'.
+     *  @param norm the normal vector of the closest collision point. */
+    public boolean intersects(Rectangle rectangle, Vector2 intersection, Vector2 norm) {
         float center_x = get_x();
         float center_y = get_y();
 
@@ -404,8 +405,12 @@ public class ChargeActor extends Actor {
 
         float dx = intersection.x = closest_x - center_x;
         float dy = intersection.y = closest_y - center_y;
+        // the intersection vector points from the edge of the circle to the closest collision point
+        // towards the center, which in this case also acts as the normal vector
         tmp_vec.set(intersection).nor().scl(radius);
         intersection.sub(tmp_vec);
+
+        norm.set(intersection).nor();
 
         // if the distance from circle to rectangle is less than the circle's radius, there is an intersection
         return (radius*radius) - (dx*dx + dy*dy) > PHYSICS_EPSILON;  // epsilon
