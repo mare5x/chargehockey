@@ -72,15 +72,21 @@ public class GameLogic {
     private static final float FORCE_FACTOR = 100;
 
     private final Vector2 force_vec = new Vector2();
+    // Use a cache to prevent the garbage collector from running.
     private final Vector2[] vec_cache;
     {
         vec_cache = new Vector2[4];
         for (int i = 0; i < vec_cache.length; ++i)
             vec_cache[i] = new Vector2();
     }
+    private final CollisionData[] collision_data_cache;
+    {
+        collision_data_cache = new CollisionData[9];
+        for (int i = 0; i < collision_data_cache.length; ++i)
+            collision_data_cache[i] = new CollisionData();
+    }
     private final Vector2 tmp_vec = vec_cache[0];
     private final Rectangle tmp_rect = new Rectangle();
-    private final CollisionData tmp_collision = new CollisionData();
 
     private final Array<ChargeActor> charge_actors = new Array<ChargeActor>();
     private final Array<PuckActor> puck_actors = new Array<PuckActor>();
@@ -246,14 +252,14 @@ public class GameLogic {
 
     /** Priority: wall > goal > ... */
     private CollisionData get_collision(PuckActor puck) {
-        CollisionData[] collisions = new CollisionData[9];
+        CollisionData[] collisions = collision_data_cache;
         final int[] dx = { 0, 1, 0, -1, 0, 1, -1, -1, 1 };
         final int[] dy = { 0, 0, 1, 0, -1, 1, 1, -1, -1 };
         float x = puck.get_x();
         float y = puck.get_y();
         float r = PuckActor.RADIUS + PHYSICS_EPSILON;
         for (int i = 0; i < 9; ++i) {
-            collisions[i] = check_collision(puck, (int) (y + dy[i] * r), (int) (x + dx[i] * r));
+            check_collision(puck, (int) (y + dy[i] * r), (int) (x + dx[i] * r), collisions[i].reset());
             if (collisions[i].item == GRID_ITEM.WALL)
                 return collisions[i];
         }
@@ -262,25 +268,12 @@ public class GameLogic {
             if (collisions[i].valid())
                 return collisions[i];
         }
-        return tmp_collision.reset();
+        return collisions[0].reset();
     }
 
     /** Check collision between puck and the tile at row,col. */
-    private CollisionData check_collision(PuckActor puck, int row, int col) {
+    private void check_collision(PuckActor puck, int row, int col, CollisionData collision_data) {
         GRID_ITEM grid_item = level.get_grid_item(row, col);
-        CollisionData collision_data = new CollisionData();
-        /*
-        // add a bit of leniency: walls have a smaller size than goals (without the white wall border)
-        if (grid_item == GRID_ITEM.WALL) {
-            tmp_rect.x = col + LevelFrameBuffer.ONE_TX;
-            tmp_rect.y = row + LevelFrameBuffer.ONE_TX;
-            tmp_rect.width = LevelFrameBuffer.GRID_TILE_SIZE - 2 * LevelFrameBuffer.ONE_TX;
-            tmp_rect.height = LevelFrameBuffer.GRID_TILE_SIZE - 2 * LevelFrameBuffer.ONE_TX;
-            if (puck.intersects(tmp_rect, collision_data.intersection, collision_data.norm))
-                collision_data.item = grid_item;
-        }
-        else if (grid_item == GRID_ITEM.GOAL)  {
-        */
         if (grid_item != GRID_ITEM.NULL) {
             tmp_rect.x = col;
             tmp_rect.y = row;
@@ -289,7 +282,6 @@ public class GameLogic {
             if (puck.intersects(tmp_rect, collision_data.intersection, collision_data.norm))
                 collision_data.item = grid_item;
         }
-        return collision_data;
     }
 
     void blink_collided_pucks() {
@@ -371,15 +363,15 @@ public class GameLogic {
                 ++iters;
             }
 
-            if (puck.get_collision().valid()) {
+            collision = puck.get_collision();
+            if (collision.valid()) {
                 // Reflect the puck and move it how much it still has to go.
                 // This prevents a noticeable pause in the simulation.
-                collision = puck.get_collision();
                 if (collision.item == GRID_ITEM.WALL) {
                     // Reflect the puck's velocity based on the normal vector of the collision.
                     // The incoming angle is the same as the outgoing angle.
                     Vector2 velocity_vec = puck.get_velocity();
-                    Vector2 norm = collision.norm;  // directly change the norm vector since it's used only here
+                    Vector2 norm = tmp_vec.set(collision.norm);
                     velocity_vec.sub(norm.scl(norm.dot(velocity_vec)).scl(2));
 
                     float total_distance = (float) Math.hypot(start_x - end_x, start_y - end_y);
@@ -450,8 +442,11 @@ public class GameLogic {
     private Vector2 calc_force(ChargeActor puck, ChargeActor charge) {
         charge.get_vec_from(tmp_vec.set(puck.get_x(), puck.get_y()));
         // how many units apart can two charges be when calculating the force? (avoids infinite forces)
-        float dist_squared = Math.max(PuckActor.SIZE * PuckActor.SIZE, tmp_vec.len2());
-        float force_magnitude = FORCE_FACTOR * (puck.get_abs_charge() * charge.get_abs_charge()) / dist_squared;
+        final float MIN_DIST = PuckActor.SIZE * PuckActor.SIZE * 2;
+        float dist_squared = tmp_vec.len2();
+        float force_magnitude = FORCE_FACTOR * (puck.get_abs_charge() * charge.get_abs_charge()) / Math.max(MIN_DIST, dist_squared);
+        if (dist_squared <= MIN_DIST)  // small workaround for energy preservation
+            force_magnitude *= dist_squared / MIN_DIST;
         return tmp_vec.nor().scl(force_magnitude);
     }
 

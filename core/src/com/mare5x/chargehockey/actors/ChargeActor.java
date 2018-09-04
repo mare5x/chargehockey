@@ -413,7 +413,7 @@ public class ChargeActor extends Actor {
         norm.set(intersection).nor();
 
         // if the distance from circle to rectangle is less than the circle's radius, there is an intersection
-        return (radius*radius) - (dx*dx + dy*dy) > PHYSICS_EPSILON;  // epsilon
+        return (radius*radius) - (dx*dx + dy*dy) > -(PHYSICS_EPSILON * PHYSICS_EPSILON);  // epsilon
     }
 
     public boolean size_changed() {

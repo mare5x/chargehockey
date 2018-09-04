@@ -135,7 +135,7 @@ public class PuckActor extends ForcePuckActor {
     }
 
     public void set_collision(GameLogic.CollisionData collision) {
-        this.collision = collision;
+        this.collision.set(collision);
     }
 
     public void start_blinking() {
