@@ -101,7 +101,7 @@ public class PuckActor extends ForcePuckActor {
     public void set_velocity(float x, float y) {
         velocity_vec.set(x, y);
         if (draw_velocity) {
-            float len = Math.min(velocity_vec.len() / 2, _MAX_LENGTH);
+            float len = Math.min(velocity_vec.len(), _MAX_LENGTH);
             prepare_vector_sprite(velocity_sprite, velocity_vec, len);
         }
     }
@@ -109,7 +109,9 @@ public class PuckActor extends ForcePuckActor {
     public void set_acceleration(float x, float y) {
         acceleration_vec.set(x, y);
         if (draw_acceleration) {
-            float len = Math.min(acceleration_vec.len() / 4, _MAX_LENGTH);
+            // the same length as a force vector sprite, which means it accurately shows the net
+            // force vector
+            float len = Math.min(acceleration_vec.len() * get_weight() * 4, _MAX_LENGTH);
             prepare_vector_sprite(acceleration_sprite, acceleration_vec, len);
         }
     }

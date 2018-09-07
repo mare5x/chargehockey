@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Grid;
 
+import static com.mare5x.chargehockey.settings.GameDefaults.PHYSICS_EPSILON;
+
 /** Puck sprite that can show (force) vectors. */
 public class ForcePuckActor extends ChargeActor {
     final TextureAtlas.AtlasRegion vector_region;
@@ -69,11 +71,11 @@ public class ForcePuckActor extends ChargeActor {
     }
 
     void prepare_vector_sprite(Sprite sprite, Vector2 vector, float length) {
-        if (MathUtils.isZero(length, 10e-5f)) {
+        if (MathUtils.isZero(length, PHYSICS_EPSILON)) {
             sprite.setSize(0, 0);
             return;
         }
-        float height = Math.max(length / (_MAX_LENGTH), _MIN_VEC_HEIGHT);  // sprite width
+        float height = Math.max(length / (_MAX_LENGTH) * 0.8f, _MIN_VEC_HEIGHT);  // sprite width
         height *= _VEC_HEIGHT_SCL;
         sprite.setBounds(get_x(), get_y() - height / 2, length, height);
         sprite.setOrigin(0, height / 2);  // rotate around the center of the puck
@@ -93,13 +95,13 @@ public class ForcePuckActor extends ChargeActor {
         Sprite force_sprite = force_sprites.get(charge, null);
         if (force_sprite == null)
             force_sprite = new Sprite(vector_region);
-        float len = Math.min(force.scl(1 / get_weight() * 2).len(), _MAX_LENGTH);  //
+        float len = Math.min(force.scl(4).len(), _MAX_LENGTH);
         prepare_vector_sprite(force_sprite, force, len);
         if (charge.get_type() == CHARGE.POSITIVE)
             force_sprite.setColor(POS_RED);
         else
             force_sprite.setColor(NEG_BLUE);
-        force_sprite.setAlpha(Math.min(len / _MAX_LENGTH, 0.8f));
+        force_sprite.setAlpha(MathUtils.clamp(len / _MAX_LENGTH, 0.2f, 0.6f));
         return force_sprite;
     }
 
