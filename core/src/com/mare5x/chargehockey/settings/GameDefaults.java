@@ -29,9 +29,10 @@ public class GameDefaults {
     public static final float CHARGE_ZONE_HEIGHT = IMAGE_BUTTON_SIZE * 1.5f;  // in px
     // Defines the area of where charges are dragged to get removed (the bottom of the screen).
     public static Rectangle CHARGE_ZONE_RECT = new Rectangle();  // in screen coordinates (px)
-    // Defines the area outside of which charge dragging moves the camera.
+    // Defines the area outside of which charge dragging or tile painting moves the camera.
     public static Rectangle CHARGE_DRAG_RECT = new Rectangle();  // in screen coordinates (px)
     private static float CHARGE_DRAG_EDGE = CHARGE_ZONE_HEIGHT / 2;  // in px
+    public static final float CHARGE_DRAG_SPEED = 15.0f;
 
     public static final long SECONDS_TO_NANOS = 1000000000L;
 

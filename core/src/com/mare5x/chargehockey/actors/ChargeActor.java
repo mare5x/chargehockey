@@ -16,6 +16,7 @@ import com.mare5x.chargehockey.game.CameraController;
 import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.settings.GameDefaults;
 
+import static com.mare5x.chargehockey.settings.GameDefaults.CHARGE_DRAG_SPEED;
 import static com.mare5x.chargehockey.settings.GameDefaults.PHYSICS_EPSILON;
 
 
@@ -61,7 +62,6 @@ public class ChargeActor extends Actor {
      * screen. Usage: (1) enter_drag_area() (2) update() (3) exit_drag_area()
      */
     public static class ChargeDragAreaHelper {
-        private static final float DRAG_SPEED = 15.0f;
         private static Vector2 tmp_vec = new Vector2();
         private ChargeActor charge;
         private final SymmetryToolActor symmetry_tool;
@@ -79,7 +79,7 @@ public class ChargeActor extends Actor {
             // The camera follows the dragged charge off the screen.
             OrthographicCamera camera = (OrthographicCamera) charge.getStage().getCamera();
             tmp_vec.set(charge.get_x(), charge.get_y()).sub(camera.position.x, camera.position.y);
-            Vector2 delta_pos = tmp_vec.nor().scl(DRAG_SPEED).scl(delta).scl(camera.zoom);
+            Vector2 delta_pos = tmp_vec.nor().scl(CHARGE_DRAG_SPEED).scl(delta).scl(camera.zoom);
             camera.translate(delta_pos);
             charge.moveBy(delta_pos.x, delta_pos.y);
 
@@ -127,8 +127,8 @@ public class ChargeActor extends Actor {
     private static float SIZE = 2;  // the public shared size of all charges set in the settings
     private float radius = SIZE / 2f;  // all 'size' checking, etc uses this
     private float charge_size = 2 * radius;  // this is the effective size of the charge (not necessarily the current size), it's the size the charge gets reset to
-    private static final float WEIGHT = 9.1e-31f;  // kg
-    private static final float ABS_CHARGE = 1.6e-19f;  // Coulombs
+    private static final float WEIGHT = 1;  // kg
+    private static final float ABS_CHARGE = 1;  // Coulombs
 
     private static int UID_COUNTER = 0;
     private final int uid = ++UID_COUNTER;  // unique identifier for every charge (used in .save files)
@@ -413,7 +413,7 @@ public class ChargeActor extends Actor {
         norm.set(intersection).nor();
 
         // if the distance from circle to rectangle is less than the circle's radius, there is an intersection
-        return (radius*radius) - (dx*dx + dy*dy) > PHYSICS_EPSILON;  // epsilon
+        return (radius*radius) - (dx*dx + dy*dy) > -(PHYSICS_EPSILON * PHYSICS_EPSILON);  // epsilon
     }
 
     public boolean size_changed() {

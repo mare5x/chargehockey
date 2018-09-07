@@ -42,6 +42,8 @@ public class Grid {
     public static int WORLD_HEIGHT = 64;
     public static final Rectangle WORLD_RECT = new Rectangle(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
+    public static final float UNIT = 1.0f;
+
     private final Array<GRID_ITEM> grid;
 
     Grid() {
