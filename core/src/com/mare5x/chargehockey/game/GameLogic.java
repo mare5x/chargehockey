@@ -480,7 +480,6 @@ public class GameLogic {
 
     /** Move puck by dx,dy, handling any collisions on the way to the destination. */
     private void move_puck(PuckActor puck, float dx, float dy, boolean trace_path) {
-        if (dx * dx + dy * dy < PHYSICS_EPSILON * PHYSICS_EPSILON) return;
         if (puck.get_collision() == GRID_ITEM.GOAL || puck.get_collision() == GRID_ITEM.WALL) return;
 
         float start_x = puck.get_x();
