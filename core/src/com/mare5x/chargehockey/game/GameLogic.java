@@ -1,7 +1,6 @@
 package com.mare5x.chargehockey.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -30,26 +29,45 @@ public class GameLogic {
         ChargeActor.DragCallback get_charge_drag_callback();
     }
 
-    public static class CollisionData {
-        GRID_ITEM item = GRID_ITEM.NULL;
-        Vector2 intersection = new Vector2();  // a vector telling you how much to move the puck to stop colliding
-        Vector2 norm = new Vector2();  // the normal vector of the collision point on item
+    private static class RectBounds {
+        float top, left, bottom, right;
+    }
 
-        public CollisionData reset() {
-            item = GRID_ITEM.NULL;
-            norm.setZero();
-            intersection.setZero();
-            return this;
+    private static class Intersection {
+        GRID_ITEM item = GRID_ITEM.NULL;
+        Vector2 pos = new Vector2();  // the center of the puck, so that it's touching the RectBounds
+        Vector2 normal = new Vector2();
+        Vector2 intersection = new Vector2();  // the point of intersection between the puck and the RectBounds
+        float time;
+
+        Intersection() { }
+
+        Intersection(float x, float y, float time, float norm_x, float norm_y, float intersection_x, float intersection_y) {
+            pos.set(x, y);
+            normal.set(norm_x, norm_y);
+            intersection.set(intersection_x, intersection_y);
+            this.time = time;
         }
 
         boolean valid() {
-            return item != GRID_ITEM.NULL;
+            return item != GRID_ITEM.NULL && time > 0;
         }
 
-        public CollisionData set(CollisionData collision) {
-            item = collision.item;
-            intersection.set(collision.intersection);
-            norm.set(collision.norm);
+        Intersection reset() {
+            item = GRID_ITEM.NULL;
+            pos.setZero();
+            normal.setZero();
+            intersection.setZero();
+            time = 0;
+            return this;
+        }
+
+        Intersection set(Intersection other) {
+            item = other.item;
+            pos.set(other.pos);
+            normal.set(other.normal);
+            intersection.set(other.intersection);
+            time = other.time;
             return this;
         }
     }
@@ -79,14 +97,14 @@ public class GameLogic {
         for (int i = 0; i < vec_cache.length; ++i)
             vec_cache[i] = new Vector2();
     }
-    private final CollisionData[] collision_data_cache;
+    private final Intersection[] intersection_cache;
     {
-        collision_data_cache = new CollisionData[9];
-        for (int i = 0; i < collision_data_cache.length; ++i)
-            collision_data_cache[i] = new CollisionData();
+        intersection_cache = new Intersection[9];
+        for (int i = 0; i < intersection_cache.length; ++i)
+            intersection_cache[i] = new Intersection();
     }
     private final Vector2 tmp_vec = vec_cache[0];
-    private final Rectangle tmp_rect = new Rectangle();
+    private final RectBounds tmp_bounds = new RectBounds();
 
     private final Array<ChargeActor> charge_actors = new Array<ChargeActor>();
     private final Array<PuckActor> puck_actors = new Array<PuckActor>();
@@ -238,10 +256,10 @@ public class GameLogic {
             if (puck.check_out_of_world())
                 return GAME_RESULT.LOSS;
 
-            CollisionData collision = puck.get_collision();
-            if (collision.item == GRID_ITEM.GOAL)
+            GRID_ITEM collision_item = puck.get_collision();
+            if (collision_item == GRID_ITEM.GOAL)
                 goals++;
-//            else if (collision.item == GRID_ITEM.WALL)
+//            else if (collision_item == GRID_ITEM.WALL)
 //                return GAME_RESULT.LOSS;
         }
         if (goals == puck_actors.size)
@@ -250,48 +268,210 @@ public class GameLogic {
             return GAME_RESULT.IN_PROGRESS;
     }
 
-    /** Priority: wall > goal > ... */
-    private CollisionData get_collision(PuckActor puck) {
-        CollisionData[] collisions = collision_data_cache;
-        final int[] dx = { 0, 1, 0, -1, 0, 1, -1, -1, 1 };
-        final int[] dy = { 0, 0, 1, 0, -1, 1, 1, -1, -1 };
-        float x = puck.get_x();
-        float y = puck.get_y();
-        float r = PuckActor.RADIUS + PHYSICS_EPSILON;
-        for (int i = 0; i < 9; ++i) {
-            check_collision(puck, (int) (y + dy[i] * r), (int) (x + dx[i] * r), collisions[i].reset());
-            if (collisions[i].item == GRID_ITEM.WALL)
-                return collisions[i];
-        }
-
-        for (int i = 0; i < 9; ++i) {
-            if (collisions[i].valid())
-                return collisions[i];
-        }
-        return collisions[0].reset();
-    }
-
-    /** Check collision between puck and the tile at row,col. */
-    private void check_collision(PuckActor puck, int row, int col, CollisionData collision_data) {
-        GRID_ITEM grid_item = level.get_grid_item(row, col);
-        if (grid_item != GRID_ITEM.NULL) {
-            tmp_rect.x = col;
-            tmp_rect.y = row;
-            tmp_rect.width = Grid.UNIT;
-            tmp_rect.height = Grid.UNIT;
-            if (puck.intersects(tmp_rect, collision_data.intersection, collision_data.norm))
-                collision_data.item = grid_item;
-        }
-    }
-
     void blink_collided_pucks() {
         for (PuckActor puck : puck_actors) {
-            if (puck.get_collision().item == GRID_ITEM.WALL || puck.check_out_of_world()) {
+            if (puck.get_collision() == GRID_ITEM.WALL || puck.check_out_of_world()) {
                 puck.set_puck_alpha(1);
                 puck.set_vector_alpha(0.35f);
                 puck.start_blinking();
             }
         }
+    }
+
+    private Intersection get_nearest_intersection(Vector2 current, Vector2 start, Vector2 stop) {
+        // Collision check only the 9 nearest tiles around the puck.
+        Intersection intersections[] = intersection_cache;
+        final int[] sign_x = { 0, 1, 0, -1, 0, 1, -1, -1, 1 };
+        final int[] sign_y = { 0, 0, 1, 0, -1, 1, 1, -1, -1 };
+        float r = PuckActor.RADIUS + PHYSICS_EPSILON;
+        for (int i = 0; i < 9; ++i) {
+            int row = (int) (current.y + sign_y[i] * r);
+            int col = (int) (current.x + sign_x[i] * r);
+
+            intersections[i].reset();
+
+            GRID_ITEM item = level.get_grid_item(row, col);
+            if (item == GRID_ITEM.NULL)
+                continue;
+
+            RectBounds bounds = tmp_bounds;
+            bounds.left = col;
+            bounds.right = col + Grid.UNIT;
+            bounds.bottom = row;
+            bounds.top = row + Grid.UNIT;
+
+            Intersection intersection = get_intersection(bounds, start, stop);
+            if (intersection != null)
+                intersections[i].set(intersection);
+            intersections[i].item = item;
+        }
+
+        // Pick the collision that happened first.
+        float min_time = Float.MAX_VALUE;
+        Intersection nearest_intersection = null;
+        for (Intersection intersection : intersections) {
+            if (intersection.valid() && intersection.time < min_time) {
+                min_time = intersection.time;
+                nearest_intersection = intersection;
+            }
+        }
+        return (nearest_intersection != null ? nearest_intersection : intersections[0].reset());
+    }
+
+    // Based on:
+    // https://stackoverflow.com/questions/18704999/how-to-fix-circle-and-rectangle-overlap-in-collision-response/18790389#18790389
+    // Implementation of above in ./CircleRectangle.jar
+    // start - the position of the puck at a point where we know it doesn't collide with anything
+    // end - the target position of the puck along a straight line from start
+    private Intersection get_intersection(RectBounds bounds, Vector2 start, Vector2 end) {
+        float r = PuckActor.RADIUS;
+
+        // If it's impossible for the circle to touch the bounding box:
+        if (    (Math.max(start.x, end.x) + r < bounds.left)  ||
+                (Math.min(start.x, end.x) - r > bounds.right) ||
+                (Math.min(start.y, end.y) - r > bounds.top)   ||
+                (Math.max(start.y, end.y) + r < bounds.bottom))
+            return null;
+
+        final float dx = end.x - start.x;
+        final float dy = end.y - start.y;
+        float corner_x = Float.MAX_VALUE;
+        float corner_y = Float.MAX_VALUE;
+
+        // The circle goes through the left edge from left to right
+        if (start.x - r < bounds.left && end.x + r > bounds.left) {
+            // time is a scalar of the distance travelled, in range [0, 1]
+            // the 'time' it takes the circle to hit the left side
+            float left_time = (bounds.left - r - start.x) / dx;
+            if (left_time >= 0.0f && left_time <= 1.0f) {
+                float left_y = dy * left_time + start.y;
+                if (left_y <= bounds.top && left_y >= bounds.bottom)
+                    return new Intersection(dx * left_time + start.x, left_y, left_time, -1, 0, bounds.left, left_y);
+            }
+            corner_x = bounds.left;
+        }
+
+        // The circle goes through the right edge from right to left
+        if (start.x + r > bounds.right && end.x - r < bounds.right) {
+            float right_time = (start.x - (bounds.right + r)) / -dx;
+            if (right_time >= 0.0f && right_time <= 1.0f) {
+                float right_y = dy * right_time + start.y;
+                if (right_y <= bounds.top && right_y >= bounds.bottom)
+                    return new Intersection(dx * right_time + start.x, right_y, right_time, 1, 0, bounds.right, right_y);
+            }
+            corner_x = bounds.right;
+        }
+
+        // The circle goes through the top edge from the top down
+        if (start.y + r > bounds.top && end.y - r < bounds.top) {
+            float top_time = (start.y - (bounds.top + r)) / -dy;
+            if (top_time >= 0.0f && top_time <= 1.0f) {
+                float top_x = dx * top_time + start.x;
+                if (top_x >= bounds.left && top_x <= bounds.right)
+                    return new Intersection(top_x, dy * top_time + start.y, top_time, 0, 1, top_x, bounds.top);
+            }
+            corner_y = bounds.top;
+        }
+
+        // The circle goes through the bottom edge from the bottom up
+        if (start.y - r < bounds.bottom && end.y + r > bounds.bottom) {
+            float bot_time = ((bounds.bottom - r) - start.y) / dy;
+            if (bot_time > 0.0f && bot_time <= 1.0f) {
+                float bot_x = dx * bot_time + start.x;
+                if (bot_x >= bounds.left && bot_x <= bounds.right)
+                    return new Intersection(bot_x, dy * bot_time + start.y, bot_time, 0, -1, bot_x, bounds.bottom);
+            }
+            corner_y = bounds.bottom;
+        }
+
+        if (corner_x == Float.MAX_VALUE && corner_y == Float.MAX_VALUE)
+            return null;
+
+        if (corner_x != Float.MAX_VALUE && corner_y == Float.MAX_VALUE)
+            corner_y = (dy < 0.0f ? bounds.bottom : bounds.top);
+        if (corner_y != Float.MAX_VALUE && corner_x == Float.MAX_VALUE)
+            corner_x = (dx > 0.0f ? bounds.right : bounds.left);
+
+        /* Solve the triangle between the start, corner, and intersection point.
+         *
+         *           +-----------T-----------+
+         *           |                       |
+         *          L|                       |R
+         *           |                       |
+         *           C-----------B-----------+
+         *          / \
+         *         /   \r     _.-E
+         *        /     \ _.-'
+         *       /    _.-I
+         *      / _.-'
+         *     S-'
+         *
+         * S = start of circle's path
+         * E = end of circle's path
+         * LTRB = sides of the rectangle
+         * I = {ix, iY} = point at which the circle intersects with the rectangle
+         * C = corner of intersection (and collision point)
+         * C=>I (r) = {nx, ny} = radius and intersection normal
+         * S=>C = cornerdist
+         * S=>I = intersectionDistance
+         * S=>E = lineLength
+         * <S = innerAngle
+         * <I = angle1
+         * <C = angle2
+         */
+
+        double corner_dx = corner_x - start.x;
+        double corner_dy = corner_y - start.y;
+        double corner_dist = Math.hypot(corner_dx, corner_dy);
+        double line_length = Math.hypot(dx, dy);
+        // Rearrange vector dot product formula to get the angle:
+        double inner_angle = Math.acos((corner_dx * dx + corner_dy * dy) / (line_length * corner_dist));
+
+        // If the circle is too close, no intersection.
+        if (corner_dist < r)
+            return null;
+
+        // If inner angle is zero, it's going to hit the corner straight on.
+        if (inner_angle == 0.0f) {
+            float time = (float) ((corner_dist - r) / line_length);
+
+            if (time > 1.0f || time < 0.0f)
+                return null;
+
+            Intersection intersection = new Intersection();
+            intersection.pos.x = time * dx + start.x;
+            intersection.pos.y = time * dy + start.y;
+            intersection.time = time;
+            intersection.normal.x = (float) (corner_dx / corner_dist);
+            intersection.normal.y = (float) (corner_dy / corner_dist);
+            intersection.intersection.set(corner_x, corner_y);
+            return intersection;
+        }
+
+        double inner_angle_sin = Math.sin(inner_angle);
+        double angle_1_sin = inner_angle_sin * corner_dist / r;  // the law of sines
+
+        if (Math.abs(angle_1_sin) > 1.0f)
+            return null;
+
+        double angle1 = Math.PI - Math.asin(angle_1_sin);
+        double angle2 = Math.PI - inner_angle - angle1;
+        double intersection_dist = r * Math.sin(angle2) / inner_angle_sin;  // the law of sines
+
+        float time = (float) (intersection_dist / line_length);
+
+        if (time > 1.0f || time < 0.0f)
+            return null;
+
+        Intersection intersection = new Intersection();
+        intersection.pos.x = time * dx + start.x;
+        intersection.pos.y = time * dy + start.y;
+        intersection.time = time;
+        intersection.normal.x = (intersection.pos.x - corner_x) / r;
+        intersection.normal.y = (intersection.pos.y - corner_y) / r;
+        intersection.intersection.set(corner_x, corner_y);
+
+        return intersection;
     }
 
     private void move_puck(PuckActor puck, float dx, float dy) {
@@ -300,6 +480,8 @@ public class GameLogic {
 
     /** Move puck by dx,dy, handling any collisions on the way to the destination. */
     private void move_puck(PuckActor puck, float dx, float dy, boolean trace_path) {
+        if (puck.get_collision() == GRID_ITEM.GOAL) return;
+
         float start_x = puck.get_x();
         float start_y = puck.get_y();
         float end_x = start_x + dx;
@@ -310,81 +492,35 @@ public class GameLogic {
         float step_x = sign_x * 0.5f;
         float step_y = sign_y * 0.5f;
 
-        // To prevent collisions going unnoticed if the objects are moving too fast,
-        // multisample and check additional points on the trajectory (linear path from source to
-        // destination point). Wall bouncing
+        // Find the tile the puck intersects with first:
+        Intersection intersection = intersection_cache[0].reset();
         float x = start_x, y = start_y;
-        float prev_x = x, prev_y = y;
         while (x != end_x || y != end_y) {
             x = (step_x > 0) ? Math.min(x + step_x, end_x) : Math.max(x + step_x, end_x);
             y = (step_y > 0) ? Math.min(y + step_y, end_y) : Math.max(y + step_y, end_y);
-            puck.set_position(x, y);
-
-            // Binary search vs Vector math benchmark results:
-            // Vector math requires significantly less iterations for the most part and it
-            // is usually 100% faster. Binary search on the other hand requires a constant number
-            // of iterations and the results are predictable. Sometimes binary search is faster
-            // because the vector math might move in very small steps.
-
-            // On a collision, adjust the puck's position to be touching the hit object.
-            CollisionData collision = get_collision(puck);
-            puck.set_collision(collision);
-            int iters = 0;
-            // A puck can collide with multiple tiles, so fix them all
-            while (collision.valid()) {
-                puck.set_collision(collision);  // store the latest collision data for proper collision resolution
-                // If the math vector based approach is taking too long, it's likely faster to finish
-                // the job using binary search.
-                if (iters > 12) {
-                    Vector2 low = vec_cache[1].set(prev_x, prev_y);
-                    Vector2 high = vec_cache[2].set(x, y);
-                    Vector2 mid = vec_cache[3];
-                    while (mid.set(high).sub(low).len2() > PHYSICS_EPSILON * PHYSICS_EPSILON) {
-                        mid.set(low).add(high).scl(0.5f);
-                        puck.set_position(mid.x, mid.y);
-                        collision = get_collision(puck);
-                        if (collision.valid()) {
-                            puck.set_collision(collision);
-                            high.set(mid);
-                        }
-                        else
-                            low.set(mid);
-                    }
-                    break;
-                }
-                // project the intersection vector onto a normalized vector of the puck's velocity
-                // vector: only move the puck on the path that the puck is moving on!
-                Vector2 intersection = collision.intersection;
-                Vector2 displacement = vec_cache[1].set(puck.get_velocity()).nor();
-//                displacement.scl(displacement.dot(intersection));
-                displacement.scl(displacement.dot(intersection)).nor().scl(intersection.len());
-                puck.moveBy(displacement.x, displacement.y);
-                collision = get_collision(puck);
-                ++iters;
-            }
-
-            collision = puck.get_collision();
-            if (collision.valid()) {
-                // Reflect the puck and move it how much it still has to go.
-                // This prevents a noticeable pause in the simulation.
-                if (collision.item == GRID_ITEM.WALL) {
-                    // Reflect the puck's velocity based on the normal vector of the collision.
-                    // The incoming angle is the same as the outgoing angle.
-                    Vector2 velocity_vec = puck.get_velocity();
-                    Vector2 norm = tmp_vec.set(collision.norm);
-                    velocity_vec.sub(norm.scl(norm.dot(velocity_vec)).scl(2));
-
-                    float total_distance = (float) Math.hypot(start_x - end_x, start_y - end_y);
-                    float current_distance = (float) Math.hypot(x - start_x, y - start_y);
-                    float remaining_distance = total_distance - current_distance;
-                    tmp_vec.set(velocity_vec).nor().scl(remaining_distance);
-                    move_puck(puck, tmp_vec.x, tmp_vec.y, false);
-                }
+            intersection = get_nearest_intersection(vec_cache[1].set(x, y), vec_cache[2].set(start_x, start_y), vec_cache[3].set(end_x, end_y));
+            if (intersection.valid())
                 break;
-            }
+        }
 
-            prev_x = x;
-            prev_y = y;
+        puck.set_collision(intersection.item);
+
+        if (intersection.valid()) {
+            // On a collision, adjust the puck's position to be touching the hit object.
+            puck.set_position(intersection.pos.x, intersection.pos.y);
+
+            Vector2 velocity = puck.get_velocity();
+            float remaining_time = 1.0f - intersection.time;
+            float dot = dx * intersection.normal.x + dy * intersection.normal.y;
+            float new_dx = dx - 2 * intersection.normal.x * dot;
+            float new_dy = dy - 2 * intersection.normal.y * dot;
+            // Reflect the velocity and move the puck the remaining distance.
+            // Moving the puck the remaining distance usually causes the puck to gain energy when
+            // bouncing.
+            velocity.sub(intersection.normal.scl(2 * intersection.normal.dot(velocity)));
+            move_puck(puck, new_dx * remaining_time, new_dy * remaining_time, false);
+        } else {
+            puck.set_position(end_x, end_y);
         }
 
         if (trace_path && PuckActor.get_trace_path())
@@ -395,29 +531,32 @@ public class GameLogic {
         // can't use nested iterators: https://github.com/libgdx/libgdx/wiki/Collections
         for (int i = 0; i < puck_actors.size; i++) {
             PuckActor puck = puck_actors.get(i);
-
-            if (puck.get_collision().item == GRID_ITEM.GOAL)
-                continue;
-
-            float weight = puck.get_weight();
-            Vector2 velocity_vec = puck.get_velocity();
-
-            // Semi-implicit euler integration
-
-            calc_net_force(puck);
-            tmp_vec.x = force_vec.x / weight;  // a = F / m
-            tmp_vec.y = force_vec.y / weight;
-            puck.set_acceleration(tmp_vec.x, tmp_vec.y);
-
-            velocity_vec.x += delta * tmp_vec.x;
-            velocity_vec.y += delta * tmp_vec.y;
-
-            float dx = delta * velocity_vec.x;  // x = v * t
-            float dy = delta * velocity_vec.y;
-            move_puck(puck, dx, dy);
-
-            puck.set_velocity(velocity_vec.x, velocity_vec.y);
+            integrate(puck, delta);
         }
+    }
+
+    private void integrate(PuckActor puck, float delta) {
+        if (puck.get_collision() == GRID_ITEM.GOAL)
+            return;
+
+        float weight = puck.get_weight();
+        Vector2 velocity_vec = puck.get_velocity();
+
+        // Semi-implicit euler integration
+
+        calc_net_force(puck);
+        tmp_vec.x = force_vec.x / weight;  // a = F / m
+        tmp_vec.y = force_vec.y / weight;
+        puck.set_acceleration(tmp_vec.x, tmp_vec.y);
+
+        velocity_vec.x += delta * tmp_vec.x;
+        velocity_vec.y += delta * tmp_vec.y;
+
+        float dx = delta * velocity_vec.x;  // x = v * t
+        float dy = delta * velocity_vec.y;
+        move_puck(puck, dx, dy);
+
+        puck.set_velocity(velocity_vec.x, velocity_vec.y);
     }
 
     /** Update the puck's force vectors which depend on 'charge' */

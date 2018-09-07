@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.utils.Array;
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.game.GameLogic;
+import com.mare5x.chargehockey.level.Grid;
 
 
 public class PuckActor extends ForcePuckActor {
@@ -23,7 +23,7 @@ public class PuckActor extends ForcePuckActor {
 
     private Array<Vector2> trace_path_history = new Array<Vector2>(16);  // holds the puck's position history for the past render frame
 
-    private GameLogic.CollisionData collision = new GameLogic.CollisionData();
+    private Grid.GRID_ITEM collision = Grid.GRID_ITEM.NULL;
 
     private RepeatAction blink_collision_action = null;
 
@@ -87,7 +87,7 @@ public class PuckActor extends ForcePuckActor {
         stop_blinking();
         reset_trace_path_history();
         reset_vectors();
-        collision.reset();
+        collision = Grid.GRID_ITEM.NULL;
     }
 
     public Vector2 get_velocity() {
@@ -130,12 +130,12 @@ public class PuckActor extends ForcePuckActor {
         return trace_path;
     }
 
-    public GameLogic.CollisionData get_collision() {
+    public Grid.GRID_ITEM get_collision() {
         return collision;
     }
 
-    public void set_collision(GameLogic.CollisionData collision) {
-        this.collision.set(collision);
+    public void set_collision(Grid.GRID_ITEM item) {
+        collision = item;
     }
 
     public void start_blinking() {
