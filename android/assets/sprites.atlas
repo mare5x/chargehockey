@@ -1,16 +1,9 @@
 
 sprites.png
-size: 256,128
+size: 512,128
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-blank_vector
-  rotate: false
-  xy: 4, 72
-  size: 128, 44
-  orig: 128, 44
-  offset: 0, 0
-  index: -1
 charge_neg
   rotate: false
   xy: 4, 4
@@ -27,7 +20,14 @@ charge_pos
   index: -1
 puck
   rotate: false
-  xy: 140, 52
+  xy: 140, 4
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+vector_head
+  rotate: false
+  xy: 208, 4
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

@@ -1,6 +1,7 @@
 package com.mare5x.chargehockey.settings;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 
 /* Defines shared default values to be used by other parts of the game. */
@@ -37,6 +38,10 @@ public class GameDefaults {
     public static final long SECONDS_TO_NANOS = 1000000000L;
 
     public static final float PHYSICS_EPSILON = 0.001f;
+
+    // force vector colors
+    public static final Color POS_RED = new Color(1, 0, 0, 1);
+    public static final Color NEG_BLUE = new Color(0, 0.58f, 1, 1);
 
     public static void resize(int screen_width, int screen_height) {
         // for now we only care about the top y position

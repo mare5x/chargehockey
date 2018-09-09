@@ -1,35 +1,23 @@
 package com.mare5x.chargehockey.actors;
 
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.level.Grid;
 
-import static com.mare5x.chargehockey.settings.GameDefaults.PHYSICS_EPSILON;
+import static com.mare5x.chargehockey.settings.GameDefaults.NEG_BLUE;
+import static com.mare5x.chargehockey.settings.GameDefaults.POS_RED;
 
 /** Puck sprite that can show (force) vectors. */
 public class ForcePuckActor extends ChargeActor {
-    final TextureAtlas.AtlasRegion vector_region;
+    protected final ChargeHockeyGame game;
 
-    private final ObjectMap<ChargeActor, Sprite> force_sprites = new ObjectMap<ChargeActor, Sprite>();
+    private final ObjectMap<ChargeActor, VectorSprite> force_sprites = new ObjectMap<ChargeActor, VectorSprite>();
 
     private float puck_alpha = 1f;
     private float vector_alpha = 1f;
-
-    // force vector colors
-    public static final Color POS_RED = new Color(1, 0, 0, 1);
-    public static final Color NEG_BLUE = new Color(0, 0.58f, 1, 1);
-
-    // vector sprite settings
-    static final float _MAX_LENGTH = Grid.WORLD_WIDTH * 0.8f;
-    private static final float _MIN_VEC_HEIGHT = 0.6f;
-    private static final float _VEC_HEIGHT_SCL = 1.5f;  // manually check blank_vector.png arrow's tail height
 
     private static boolean DRAW_FORCES = true;
 
@@ -38,8 +26,7 @@ public class ForcePuckActor extends ChargeActor {
 
     ForcePuckActor(ChargeHockeyGame game, CHARGE type, DragCallback callback) {
         super(game, type, callback);
-
-        vector_region = game.sprites.findRegion("blank_vector");
+        this.game = game;
     }
 
     public ForcePuckActor(ChargeHockeyGame game) {
@@ -49,7 +36,7 @@ public class ForcePuckActor extends ChargeActor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if (DRAW_FORCES) {
-            for (Sprite force_sprite : force_sprites.values())
+            for (VectorSprite force_sprite : force_sprites.values())
                 force_sprite.draw(batch, vector_alpha);
         }
 
@@ -70,20 +57,8 @@ public class ForcePuckActor extends ChargeActor {
         vector_alpha = value;
     }
 
-    void prepare_vector_sprite(Sprite sprite, Vector2 vector, float length) {
-        if (MathUtils.isZero(length, PHYSICS_EPSILON)) {
-            sprite.setSize(0, 0);
-            return;
-        }
-        float height = Math.max(length / (_MAX_LENGTH) * 0.8f, _MIN_VEC_HEIGHT);  // sprite width
-        height *= _VEC_HEIGHT_SCL;
-        sprite.setBounds(get_x(), get_y() - height / 2, length, height);
-        sprite.setOrigin(0, height / 2);  // rotate around the center of the puck
-        sprite.setRotation(vector.angle());
-    }
-
     void reset_sprites() {
-        for (Sprite force_sprite : force_sprites.values())
+        for (VectorSprite force_sprite : force_sprites.values())
             force_sprite.setSize(0, 0);
     }
 
@@ -91,17 +66,18 @@ public class ForcePuckActor extends ChargeActor {
         force_sprites.clear();
     }
 
-    private Sprite get_force_sprite(ChargeActor charge, Vector2 force) {
-        Sprite force_sprite = force_sprites.get(charge, null);
-        if (force_sprite == null)
-            force_sprite = new Sprite(vector_region);
-        float len = Math.min(force.scl(4).len(), _MAX_LENGTH);
-        prepare_vector_sprite(force_sprite, force, len);
-        if (charge.get_type() == CHARGE.POSITIVE)
-            force_sprite.setColor(POS_RED);
-        else
-            force_sprite.setColor(NEG_BLUE);
-        force_sprite.setAlpha(MathUtils.clamp(len / _MAX_LENGTH, 0.2f, 0.6f));
+    private VectorSprite get_force_sprite(ChargeActor charge, Vector2 force) {
+        VectorSprite force_sprite = force_sprites.get(charge, null);
+        if (force_sprite == null) {
+            force_sprite = new VectorSprite(game);
+            if (charge.get_type() == CHARGE.POSITIVE)
+                force_sprite.setColor(POS_RED);
+            else
+                force_sprite.setColor(NEG_BLUE);
+        }
+        float len = Math.min(force.len() * 4, VectorSprite.MAX_LENGTH);
+        force_sprite.prepare(get_x(), get_y(), force.angle(), len);
+        force_sprite.setAlpha(MathUtils.clamp(len / VectorSprite.MAX_LENGTH, 0.2f, 0.6f));
         return force_sprite;
     }
 

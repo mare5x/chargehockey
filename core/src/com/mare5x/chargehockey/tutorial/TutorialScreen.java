@@ -15,9 +15,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.actors.ForcePuckActor;
+import com.mare5x.chargehockey.actors.VectorDrawable;
 import com.mare5x.chargehockey.game.PlayMenuScreen;
 import com.mare5x.chargehockey.menus.ScrollableMenuScreen;
+import com.mare5x.chargehockey.settings.GameDefaults;
 
 import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
@@ -135,15 +136,10 @@ public class TutorialScreen extends ScrollableMenuScreen {
         float vector_length = 2 * MIN_BUTTON_HEIGHT;
         float vector_height = 0.5f * MIN_BUTTON_HEIGHT;
 
-        Image pos_vector = new Image(game.sprites.findRegion("blank_vector"));
-        pos_vector.setColor(ForcePuckActor.POS_RED);
-        pos_vector.setScaling(Scaling.fit);
-        Image neg_vector = new Image(game.sprites.findRegion("blank_vector"));
-        neg_vector.setColor(ForcePuckActor.NEG_BLUE);
-        neg_vector.setSize(vector_length, vector_height);
-        neg_vector.setOrigin(Align.center);
-        neg_vector.rotateBy(180);
-        neg_vector.setScaling(Scaling.fit);
+        Image pos_vector = new Image(new VectorDrawable(game, false), Scaling.stretch, Align.center);
+        pos_vector.setColor(GameDefaults.POS_RED);
+        Image neg_vector = new Image(new VectorDrawable(game, true), Scaling.stretch, Align.center);
+        neg_vector.setColor(GameDefaults.NEG_BLUE);
 
         // todo make move_len depend on the actual current size of vector, button ...
         float move_len = vector_length + MIN_BUTTON_HEIGHT + 2 * CELL_PAD;

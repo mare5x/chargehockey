@@ -13,10 +13,10 @@ import com.mare5x.chargehockey.level.Grid;
 
 
 public class PuckActor extends ForcePuckActor {
-    private final Sprite velocity_sprite, acceleration_sprite;
+    private final VectorSprite velocity_sprite, acceleration_sprite;
     private final Sprite path_px;
 
-    private final Vector2 velocity_vec = new Vector2(), acceleration_vec = new Vector2();
+    private final Vector2 velocity_vec = new Vector2();
 
     private static boolean draw_velocity = false, draw_acceleration = false;
     private static boolean trace_path = false;
@@ -34,10 +34,14 @@ public class PuckActor extends ForcePuckActor {
     private PuckActor(ChargeHockeyGame game, CHARGE charge_type, DragCallback drag_callback) {
         super(game, charge_type, drag_callback);
 
-        velocity_sprite = new Sprite(vector_region);
+        velocity_sprite = new VectorSprite(game);
         velocity_sprite.setColor(game.skin.getColor("green"));
-        acceleration_sprite = new Sprite(vector_region);
+        velocity_sprite.prepare(0, 0, 0, 0);
+        velocity_sprite.setAlpha(0.75f);
+        acceleration_sprite = new VectorSprite(game);
         acceleration_sprite.setColor(game.skin.getColor("purple"));
+        acceleration_sprite.prepare(0, 0, 0, 0);
+        acceleration_sprite.setAlpha(0.75f);
 
         path_px = new Sprite(game.skin.getRegion("pixels/px_white"));
         path_px.setSize(getWidth() / 5, getHeight() / 5);
@@ -75,7 +79,6 @@ public class PuckActor extends ForcePuckActor {
 
     private void reset_vectors() {
         velocity_vec.setZero();
-        acceleration_vec.setZero();
 
         velocity_sprite.setSize(0, 0);
         acceleration_sprite.setSize(0, 0);
@@ -94,25 +97,20 @@ public class PuckActor extends ForcePuckActor {
         return velocity_vec;
     }
 
-    public Vector2 get_acceleration() {
-        return acceleration_vec;
-    }
-
-    public void set_velocity(float x, float y) {
-        velocity_vec.set(x, y);
+    public void set_velocity(Vector2 velocity) {
+        velocity_vec.set(velocity);
         if (draw_velocity) {
-            float len = Math.min(velocity_vec.len(), _MAX_LENGTH);
-            prepare_vector_sprite(velocity_sprite, velocity_vec, len);
+            float len = Math.min(velocity_vec.len(), VectorSprite.MAX_LENGTH);
+            velocity_sprite.prepare(get_x(), get_y(), velocity_vec.angle(), len);
         }
     }
 
-    public void set_acceleration(float x, float y) {
-        acceleration_vec.set(x, y);
+    public void set_acceleration(Vector2 acceleration_vec) {
         if (draw_acceleration) {
             // the same length as a force vector sprite, which means it accurately shows the net
             // force vector
-            float len = Math.min(acceleration_vec.len() * get_weight() * 4, _MAX_LENGTH);
-            prepare_vector_sprite(acceleration_sprite, acceleration_vec, len);
+            float len = Math.min(acceleration_vec.len() * get_weight() * 4, VectorSprite.MAX_LENGTH);
+            acceleration_sprite.prepare(get_x(), get_y(), acceleration_vec.angle(), len);
         }
     }
 

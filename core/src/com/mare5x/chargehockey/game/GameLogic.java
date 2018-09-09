@@ -550,7 +550,7 @@ public class GameLogic {
         calc_net_force(puck);
         tmp_vec.x = force_vec.x / weight;  // a = F / m
         tmp_vec.y = force_vec.y / weight;
-        puck.set_acceleration(tmp_vec.x, tmp_vec.y);
+        puck.set_acceleration(tmp_vec);
 
         velocity_vec.x += delta * tmp_vec.x;
         velocity_vec.y += delta * tmp_vec.y;
@@ -559,7 +559,7 @@ public class GameLogic {
         float dy = delta * velocity_vec.y;
         move_puck(puck, dx, dy);
 
-        puck.set_velocity(velocity_vec.x, velocity_vec.y);
+        puck.set_velocity(velocity_vec);
     }
 
     /** Update the puck's force vectors which depend on 'charge' */
