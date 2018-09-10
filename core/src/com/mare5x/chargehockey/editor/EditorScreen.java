@@ -156,8 +156,8 @@ public class EditorScreen implements Screen {
 
         hud_stage = new Stage(new ScreenViewport(), game.batch);
 
-//        hud_stage.setDebugAll(true);
-//        edit_stage.setDebugAll(true);
+        hud_stage.setDebugAll(true);
+        edit_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);

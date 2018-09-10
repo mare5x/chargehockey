@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.mare5x.chargehockey.ChargeHockeyGame;
-import com.mare5x.chargehockey.game.CameraController;
 import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.settings.GameDefaults;
 
@@ -116,22 +116,32 @@ public class ChargeActor extends Actor {
         public void exit_drag_area(ChargeActor charge) {}
     }
 
-    private final CHARGE charge_type;
-    final Sprite sprite;
+    private static int UID_COUNTER = 0;
+    private final int uid = ++UID_COUNTER;  // unique identifier for every charge (used in .save files)
 
-    private ChargeActor partner;  // the symmetrical tool partner of this charge (must have the same drag_callback)
-    private final Vector2 tmp_vec = new Vector2();
+    private static final float WEIGHT = 1;  // kg
+    private static final float ABS_CHARGE = 1;  // Coulombs
 
+    // CAUTION!
+    // Sizes are relative, position is world based, touch event detection is screen based
+    // and drawing combines all of them
+
+    // Base unit for converting relative charge sizes to screen coordinates.
+    private static final float BASE_CHARGE_SIZE = GameDefaults.DENSITY * 63;  // 1 cm
+
+    // These sizes are relative (not in any coordinate system space).
     public static final float MAX_SIZE = 3;
     public static final float MIN_SIZE = 0.5f;
     private static float SIZE = 2;  // the public shared size of all charges set in the settings
     private float radius = SIZE / 2f;  // all 'size' checking, etc uses this
     private float charge_size = 2 * radius;  // this is the effective size of the charge (not necessarily the current size), it's the size the charge gets reset to
-    private static final float WEIGHT = 1;  // kg
-    private static final float ABS_CHARGE = 1;  // Coulombs
 
-    private static int UID_COUNTER = 0;
-    private final int uid = ++UID_COUNTER;  // unique identifier for every charge (used in .save files)
+    private final CHARGE charge_type;
+    final Sprite sprite;
+
+    private ChargeActor partner;  // the symmetrical tool partner of this charge (must have the same drag_callback)
+    private final Vector2 tmp_vec = new Vector2();
+    private final Rectangle tmp_rect = new Rectangle();
 
     ChargeActor(final ChargeHockeyGame game, final CHARGE charge_type, final DragCallback drag_callback) {
         this(game, charge_type, drag_callback, null);
@@ -160,9 +170,6 @@ public class ChargeActor extends Actor {
 
         if (drag_callback != null) {
             DragListener drag_listener = new DragListener() {
-                private final float max_zoom = CameraController.ZoomLevel.MAX_ZOOM;
-                private final float min_zoom = CameraController.ZoomLevel.MIN_ZOOM;
-
                 private boolean in_charge_zone = false;
                 private boolean in_drag_area = false;
 
@@ -173,13 +180,9 @@ public class ChargeActor extends Actor {
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                     // when a charge is touched, increase its size
+                    final float enlarge_factor = 1.2f;
+
                     // adjust is necessary to translate the old x,y into new x,y local coordinates
-                    float zoom = ((OrthographicCamera) (getStage().getCamera())).zoom;
-                    zoom -= max_zoom;
-
-                    // from 1.1 to 1.6 based on the current zoom
-                    float enlarge_factor = 1.1f + (zoom / (min_zoom - max_zoom)) * 0.5f;
-
                     float adjust = radius * enlarge_factor - radius;
                     boolean ret = super.touchDown(event, x + adjust, y + adjust, pointer, button);
 
@@ -331,18 +334,6 @@ public class ChargeActor extends Actor {
     }
 
     @Override
-    public void setPosition(float x, float y, int alignment) {
-        super.setPosition(x, y, alignment);
-        sprite.setPosition(getX(), getY());
-    }
-
-    @Override
-    public void setBounds(float x, float y, float width, float height) {
-        super.setBounds(x, y, width, height);
-        sprite.setBounds(x, y, width, height);
-    }
-
-    @Override
     public void setSize(float width, float height) {
         // save the center position
         float x = get_x();
@@ -354,13 +345,51 @@ public class ChargeActor extends Actor {
         radius = width / 2f;
 
         set_position(x, y);  // re-center
-        sprite.setOriginCenter();
-        setOrigin(radius, radius);
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        // Draw charges in screen coordinates and pucks in world coordinates!
+        if (charge_type != CHARGE.PUCK) {
+            Rectangle bounds = get_screen_rect(true);
+            sprite.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
         sprite.draw(batch, parentAlpha);
+    }
+
+    @Override
+    protected void drawDebugBounds(ShapeRenderer shapes) {
+        if (charge_type == CHARGE.PUCK) {
+            super.drawDebugBounds(shapes);
+            return;
+        }
+        shapes.set(ShapeRenderer.ShapeType.Line);
+        shapes.setColor(getStage().getDebugColor());
+        Rectangle bounds = get_screen_rect(true);
+        shapes.rect(bounds.x, bounds.y, bounds.width, bounds.height);
+    }
+
+    @Override
+    public Actor hit(float x, float y, boolean touchable) {
+        if (charge_type == CHARGE.PUCK)
+            return super.hit(x, y, touchable);
+        // Override to perform hit testing on the size of the charge on screen, not the world size.
+        if (touchable && !isTouchable()) return null;
+        Rectangle bounds = get_screen_rect(false);
+        localToStageCoordinates(tmp_vec.set(x, y));  // to world
+        get_screen_coordinates(tmp_vec.x, tmp_vec.y);
+        return bounds.contains(tmp_vec) ? this : null;
+    }
+
+    private Rectangle get_screen_rect(boolean flip_y) {
+        get_screen_coordinates();
+        float size = to_screen(2 * radius);
+        // x,y = top left corner
+        if (flip_y) {
+            float h = getStage().getViewport().getScreenHeight();
+            return tmp_rect.set(tmp_vec.x - size / 2, h - 1 - tmp_vec.y - size / 2, size, size);
+        }
+        return tmp_rect.set(tmp_vec.x - size / 2, tmp_vec.y - size / 2, size, size);
     }
 
     public float get_charge() {
@@ -418,6 +447,14 @@ public class ChargeActor extends Actor {
 
     public boolean size_changed() {
         return !MathUtils.isEqual(radius * 2, SIZE, PHYSICS_EPSILON);
+    }
+
+    float to_screen(float relative) {
+        return relative * BASE_CHARGE_SIZE;
+    }
+
+    float to_world(float relative) {
+        return relative * Grid.UNIT;
     }
 
     private Vector2 get_screen_coordinates() {

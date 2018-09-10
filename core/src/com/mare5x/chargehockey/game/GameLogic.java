@@ -2,7 +2,6 @@ package com.mare5x.chargehockey.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.ChargeActor;
@@ -78,7 +77,7 @@ public class GameLogic {
 
     private final SymmetryToolActor symmetry_tool;
 
-    private final Stage game_stage;
+    private final GameStage game_stage;
 
     private boolean is_playing = false;
     private boolean charge_state_changed = false;
@@ -111,7 +110,7 @@ public class GameLogic {
     
     private final Array<ForcePuckActor> initial_pucks = new Array<ForcePuckActor>();
 
-    GameLogic(ChargeHockeyGame game, Stage game_stage, Level level, UIInterface ui_interface, SymmetryToolActor symmetry_tool) {
+    GameLogic(ChargeHockeyGame game, GameStage game_stage, Level level, UIInterface ui_interface, SymmetryToolActor symmetry_tool) {
         this.game = game;
         this.game_stage = game_stage;
         this.level = level;
@@ -130,14 +129,14 @@ public class GameLogic {
         puck.set_position(x, y);
 
         puck_actors.add(puck);
-        game_stage.addActor(puck);
+        game_stage.add_puck(puck);
 
         ForcePuckActor initial_puck = new ForcePuckActor(game);
         initial_puck.set_position(x, y);
         initial_puck.set_alpha(1);
         initial_puck.setVisible(false);
         initial_pucks.add(initial_puck);
-        game_stage.addActor(initial_puck);
+        game_stage.add_puck(initial_puck);
     }
 
     /** Place a charge at the center of the screen, keeping the symmetry tool in mind. */
@@ -177,7 +176,7 @@ public class GameLogic {
         charge.set_position(x, y);
 
         charge_actors.add(charge);
-        game_stage.addActor(charge);
+        game_stage.add_charge(charge);
 
         for (PuckActor puck : puck_actors)
             puck.set_force(charge, calc_force(puck, charge));

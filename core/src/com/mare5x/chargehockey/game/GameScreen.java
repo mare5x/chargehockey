@@ -172,7 +172,8 @@ public class GameScreen implements Screen {
 
     private boolean level_finished_changed = false;
 
-    private final Stage game_stage, hud_stage;
+    private final GameStage game_stage;
+    private final Stage hud_stage;
     private final OrthographicCamera camera;
     private final CameraController camera_controller;
 
@@ -201,17 +202,17 @@ public class GameScreen implements Screen {
 
         camera = new OrthographicCamera();
 
+        hud_stage = new Stage(new ScreenViewport(), game.batch);
+
         // the game_stage will span the whole screen (see resize())
         // ExtendViewport fits the world square on the screen and then extends the shorter dimension
         // to fill the whole screen
-        game_stage = new Stage(new ExtendViewport(Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT, camera), game.batch);
+        game_stage = new GameStage(new ExtendViewport(Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT, camera), game.batch, hud_stage);
         camera.position.set(Grid.WORLD_WIDTH / 2, Grid.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
 
-        hud_stage = new Stage(new ScreenViewport(), game.batch);
-
-//        hud_stage.setDebugAll(true);
-//        game_stage.setDebugAll(true);
+        hud_stage.setDebugAll(true);
+        game_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
