@@ -6,35 +6,35 @@ filter: Linear,Linear
 repeat: none
 add_down
   rotate: false
-  xy: 920, 422
+  xy: 920, 404
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 add_up
   rotate: false
-  xy: 400, 162
+  xy: 400, 144
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 back_down
   rotate: false
-  xy: 4, 30
+  xy: 4, 12
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 back_up
   rotate: false
-  xy: 656, 290
+  xy: 136, 12
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 button_down
   rotate: false
-  xy: 4, 4
+  xy: 988, 446
   size: 22, 22
   split: 4, 17, 4, 17
   pad: 5, 5, 5, 5
@@ -43,7 +43,7 @@ button_down
   index: -1
 button_up
   rotate: false
-  xy: 988, 464
+  xy: 920, 242
   size: 22, 22
   split: 4, 17, 4, 17
   pad: 5, 5, 5, 5
@@ -52,189 +52,203 @@ button_up
   index: -1
 cancel_down
   rotate: false
-  xy: 268, 30
+  xy: 400, 76
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 cancel_up
   rotate: false
-  xy: 920, 354
+  xy: 920, 336
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 check_off
   rotate: false
-  xy: 656, 222
+  xy: 600, 140
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 check_on
   rotate: false
-  xy: 724, 222
+  xy: 920, 268
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 confirm_down
   rotate: false
-  xy: 792, 222
+  xy: 668, 140
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 confirm_up
   rotate: false
-  xy: 400, 94
+  xy: 736, 140
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 edit_off
   rotate: false
-  xy: 4, 98
+  xy: 4, 80
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 edit_on
   rotate: false
-  xy: 524, 358
+  xy: 524, 340
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 forward_down
   rotate: false
-  xy: 136, 30
+  xy: 268, 12
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 forward_up
   rotate: false
-  xy: 788, 290
+  xy: 468, 140
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 grid_off
   rotate: false
-  xy: 136, 98
+  xy: 136, 80
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 grid_on
   rotate: false
-  xy: 656, 358
+  xy: 656, 340
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 menu_down
   rotate: false
-  xy: 920, 286
+  xy: 804, 140
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 menu_up
   rotate: false
-  xy: 468, 158
+  xy: 400, 8
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 play_down
   rotate: false
-  xy: 4, 230
+  xy: 4, 212
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
 play_up
   rotate: false
-  xy: 264, 230
+  xy: 264, 212
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
 remove_down
   rotate: false
-  xy: 536, 158
+  xy: 468, 72
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 remove_up
   rotate: false
-  xy: 468, 90
+  xy: 536, 72
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 rotate_knob
   rotate: false
-  xy: 536, 90
+  xy: 604, 72
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 share
   rotate: false
-  xy: 268, 98
+  xy: 268, 80
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 slider_knob
   rotate: false
-  xy: 604, 154
+  xy: 672, 72
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 star
   rotate: false
-  xy: 788, 358
+  xy: 788, 340
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 star_empty
   rotate: false
-  xy: 524, 226
+  xy: 524, 208
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+star_gold
+  rotate: false
+  xy: 656, 208
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+star_half
+  rotate: false
+  xy: 788, 208
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 symmetry_tool_down
   rotate: false
-  xy: 672, 154
+  xy: 740, 72
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 symmetry_tool_up
   rotate: false
-  xy: 740, 154
+  xy: 468, 4
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 undo_green64
   rotate: false
-  xy: 604, 86
+  xy: 536, 4
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 vertical_knob
   rotate: false
-  xy: 672, 86
+  xy: 604, 4
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
