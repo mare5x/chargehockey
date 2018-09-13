@@ -28,7 +28,6 @@ import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 
-// todo add load defaults button confirmation
 public class SettingsScreen extends ScrollableMenuScreen {
     private final Screen parent_screen;
 
@@ -67,8 +66,8 @@ public class SettingsScreen extends ScrollableMenuScreen {
         table.add().expand().row();
 
         table.defaults().pad(CELL_PAD).prefWidth(Value.percentWidth(0.8f, table)).maxWidth(Value.percentWidth(0.8f, table));
-        table.add(game_speed_slider).row();
         table.add(charge_size_slider).row();
+        table.add(game_speed_slider).row();
         table.add(game_grid_lines).row();
         table.add(velocity_checkbox).row();
         table.add(acceleration_checkbox).row();
@@ -89,8 +88,8 @@ public class SettingsScreen extends ScrollableMenuScreen {
     private void load_defaults() {
         SettingsFile.initialize(settings_file.get_preferences(), true);
 
-        game_speed_slider.set_value(settings_file.getFloat(SETTINGS_KEY.GAME_SPEED));
         charge_size_slider.set_value(settings_file.getFloat(SETTINGS_KEY.CHARGE_SIZE));
+        game_speed_slider.set_value(settings_file.getFloat(SETTINGS_KEY.GAME_SPEED));
         game_grid_lines.set_checked(settings_file.getBoolean(SETTINGS_KEY.GAME_GRID_LINES));
         velocity_checkbox.set_checked(settings_file.getBoolean(SETTINGS_KEY.SHOW_VELOCITY_VECTOR));
         acceleration_checkbox.set_checked(settings_file.getBoolean(SETTINGS_KEY.SHOW_ACCELERATION_VECTOR));
@@ -245,15 +244,15 @@ public class SettingsScreen extends ScrollableMenuScreen {
             reset();
             remove();
 
-            add(label).fill().prefWidth(GameDefaults.MIN_DIMENSION * 0.4f);
+            add(label).fillX().minHeight(MIN_BUTTON_HEIGHT).prefWidth(GameDefaults.MIN_DIMENSION * 0.4f);
             add(slider).space(CELL_PAD).expandX().fillX();
-            add(charge).space(CELL_PAD).size(Value.percentHeight(1, slider));
+            add(charge).space(CELL_PAD).size(ChargeActor.BASE_CHARGE_SIZE * ChargeActor.MAX_SIZE);
 
-            set_charge_size_impl(MIN_BUTTON_HEIGHT);
+            set_charge_size_impl(ChargeActor.BASE_CHARGE_SIZE * ChargeActor.MAX_SIZE);
         }
 
         private void scale_charge() {
-            charge.setScale(0.5f + slider.getPercent() * 0.5f);  // scale includes [0.5, 1.0]
+            charge.setScale(slider.getValue() / slider.getMaxValue());
         }
 
         private void set_charge_size_impl(float size) {

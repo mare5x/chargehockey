@@ -130,8 +130,8 @@ public class ChargeActor extends Actor {
     public static final float BASE_CHARGE_SIZE = GameDefaults.IMAGE_BUTTON_SIZE; // GameDefaults.DENSITY * 63 * 0.75f;
 
     // These sizes are relative (not in any coordinate system space).
-    public static final float MAX_SIZE = 3;
-    public static final float MIN_SIZE = 0.5f;
+    public static final float MAX_SIZE = 2;
+    public static final float MIN_SIZE = 0.2f;
     private static float SIZE = 2;  // the public shared size of all charges set in the settings
     private float radius = SIZE / 2f;  // all 'size' checking, etc uses this
     private float charge_size = 2 * radius;  // this is the effective size of the charge (not necessarily the current size), it's the size the charge gets reset to
