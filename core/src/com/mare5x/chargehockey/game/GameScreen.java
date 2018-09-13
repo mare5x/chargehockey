@@ -211,8 +211,8 @@ public class GameScreen implements Screen {
         camera.position.set(Grid.WORLD_WIDTH / 2, Grid.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
 
-        hud_stage.setDebugAll(true);
-        game_stage.setDebugAll(true);
+//        hud_stage.setDebugAll(true);
+//        game_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
@@ -224,9 +224,8 @@ public class GameScreen implements Screen {
         grid_lines.update(camera.zoom);
 
         symmetry_tool = new SymmetryToolActor(game);
-        symmetry_tool.update_size(camera.zoom);
         symmetry_tool.set_enabled(SYMMETRY_TOOL_ENABLED_SETTING);
-        game_stage.addActor(symmetry_tool);
+        game_stage.add_hud_tool(symmetry_tool);
 
         charge_drag_area_helper = new ChargeActor.ChargeDragAreaHelper(symmetry_tool);
 
@@ -272,7 +271,6 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 symmetry_tool.set_enabled(!symmetry_tool.is_enabled());
-                symmetry_tool.update_size(camera.zoom);
             }
         });
         symmetry_tool_button.pad(ACTOR_PAD);
@@ -536,9 +534,6 @@ public class GameScreen implements Screen {
         protected void on_zoom_change(float zoom) {
             if (Math.abs(zoom - prev_zoom) >= 0.1f) {
                 prev_zoom = zoom;
-
-                if (symmetry_tool.is_enabled())
-                    symmetry_tool.update_size(zoom);
 
                 if (SHOW_GRID_LINES_SETTING) {
                     int grid_line_spacing = GridCache.get_grid_line_spacing(zoom);

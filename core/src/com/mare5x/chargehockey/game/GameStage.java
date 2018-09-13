@@ -19,7 +19,7 @@ public class GameStage extends Stage {
     private boolean debug = false;
     private ShapeRenderer debug_renderer;
 
-    GameStage(Viewport viewport, Batch batch, Stage screen_stage) {
+    public GameStage(Viewport viewport, Batch batch, Stage screen_stage) {
         super(viewport, batch);
         this.screen_stage = screen_stage;
 
@@ -35,6 +35,11 @@ public class GameStage extends Stage {
         charge_group.addActor(actor);
     }
 
+    // An actor whose logic is in world coordinates and drawing is in screen coordinates.
+    public void add_hud_tool(Actor actor) {
+        charge_group.addActor(actor);
+    }
+
     @Override
     public void setDebugAll(boolean debugAll) {
         super.setDebugAll(debugAll);
@@ -43,7 +48,6 @@ public class GameStage extends Stage {
 
     @Override
     public void draw() {
-//        super.draw();
         draw_pucks();
         draw_charges();
 

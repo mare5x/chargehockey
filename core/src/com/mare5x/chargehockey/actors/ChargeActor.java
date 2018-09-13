@@ -127,7 +127,7 @@ public class ChargeActor extends Actor {
     // and drawing combines all of them
 
     // Base unit for converting relative charge sizes to screen coordinates.
-    private static final float BASE_CHARGE_SIZE = GameDefaults.DENSITY * 63;  // 1 cm
+    public static final float BASE_CHARGE_SIZE = GameDefaults.IMAGE_BUTTON_SIZE; // GameDefaults.DENSITY * 63 * 0.75f;
 
     // These sizes are relative (not in any coordinate system space).
     public static final float MAX_SIZE = 3;
@@ -451,10 +451,6 @@ public class ChargeActor extends Actor {
 
     float to_screen(float relative) {
         return relative * BASE_CHARGE_SIZE;
-    }
-
-    float to_world(float relative) {
-        return relative * Grid.UNIT;
     }
 
     private Vector2 get_screen_coordinates() {

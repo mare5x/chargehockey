@@ -29,6 +29,7 @@ import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.SymmetryToolActor;
 import com.mare5x.chargehockey.game.CameraController;
+import com.mare5x.chargehockey.game.GameStage;
 import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.GridCache;
@@ -54,7 +55,8 @@ public class EditorScreen implements Screen {
 
     private final InputMultiplexer multiplexer;
 
-    private final Stage edit_stage, hud_stage;
+    private final GameStage edit_stage;
+    private final Stage hud_stage;
     private final OrthographicCamera camera;  // camera of edit_stage
     private final EditCameraController camera_controller;
 
@@ -150,14 +152,14 @@ public class EditorScreen implements Screen {
 
         camera = new OrthographicCamera();
 
-        edit_stage = new Stage(new ExtendViewport(Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT, camera), game.batch);
+        hud_stage = new Stage(new ScreenViewport(), game.batch);
+
+        edit_stage = new GameStage(new ExtendViewport(Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT, camera), game.batch, hud_stage);
         camera.position.set(Grid.WORLD_WIDTH / 2, Grid.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
 
-        hud_stage = new Stage(new ScreenViewport(), game.batch);
-
-        hud_stage.setDebugAll(true);
-        edit_stage.setDebugAll(true);
+//        hud_stage.setDebugAll(true);
+//        edit_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
@@ -169,9 +171,8 @@ public class EditorScreen implements Screen {
         grid_lines.update(camera.zoom);
 
         symmetry_tool = new SymmetryToolActor(game);
-        symmetry_tool.update_size(camera.zoom);
         symmetry_tool.set_enabled(SYMMETRY_TOOL_ENABLED_SETTING);
-        edit_stage.addActor(symmetry_tool);
+        edit_stage.add_hud_tool(symmetry_tool);
 
         charge_drag_area_helper = new ChargeActor.ChargeDragAreaHelper(symmetry_tool);
 
@@ -201,7 +202,6 @@ public class EditorScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 symmetry_tool.set_enabled(!symmetry_tool.is_enabled());
-                symmetry_tool.update_size(camera.zoom);
             }
         });
         symmetry_tool_button.pad(ACTOR_PAD);
@@ -319,7 +319,7 @@ public class EditorScreen implements Screen {
     private ChargeActor add_puck(float x, float y) {
         ChargeActor puck = new ChargeActor(game, CHARGE.PUCK, drag_callback, symmetry_tool);
         puck.set_position(x, y);
-        edit_stage.addActor(puck);
+        edit_stage.add_puck(puck);
         puck_actors.add(puck);
 
         level_changed = true;
@@ -553,9 +553,6 @@ public class EditorScreen implements Screen {
         protected void on_zoom_change(float zoom) {
             if (Math.abs(zoom - prev_zoom) >= 0.1f) {
                 prev_zoom = zoom;
-
-                if (symmetry_tool.is_enabled())
-                    symmetry_tool.update_size(zoom);
 
                 if (show_grid) {
                     int grid_line_spacing = GridCache.get_grid_line_spacing(zoom);

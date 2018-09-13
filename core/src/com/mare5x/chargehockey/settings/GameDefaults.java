@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 
-/* Defines shared default values to be used by other parts of the game. */
+/** Defines shared default values to be used by other parts of the game. */
 public class GameDefaults {
     public static float MIN_DIMENSION = Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 

@@ -1,8 +1,11 @@
 package com.mare5x.chargehockey.actors;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -11,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Grid;
-import com.mare5x.chargehockey.level.GridCache;
 
 
 // todo make it be actually centered
@@ -38,9 +40,14 @@ public class SymmetryToolActor extends Actor {
         }
     }
 
-    private static final float length = (float) Math.hypot(Grid.WORLD_WIDTH, Grid.WORLD_HEIGHT);
-    private static final float knob_size = 1.75f;  // world units
-    private float axis_w;
+    // Actor position is in world coordinates. The sprite sizes and positions are in screen
+    // coordinates. (Like ChargeActor);
+    // Actor getX() and getY() represent the center of the axis in world coordinates.
+
+    private static final float knob_size = 0.75f;  // relative units
+
+    private final float screen_knob_size = to_screen(knob_size);
+    private final float screen_axis_w = to_screen(0.05f);
 
     private final Sprite symmetry_axis;
     private final Sprite move_knob, rotate_knob;
@@ -48,30 +55,29 @@ public class SymmetryToolActor extends Actor {
     private boolean move_knob_active = false;
     private boolean rotate_knob_active = false;
 
-    private final Vector2 tmp_v = new Vector2();
+    private final Vector2 tmp_vec = new Vector2();
 
     public SymmetryToolActor(ChargeHockeyGame game) {
         symmetry_axis = new Sprite(game.skin.getRegion("pixels/px_green"));
         move_knob = new Sprite(game.skin.getRegion("vertical_knob"));
         rotate_knob = new Sprite(game.skin.getRegion("rotate_knob"));
 
-        setBounds((Grid.WORLD_WIDTH - length) / 2f, Grid.WORLD_HEIGHT / 2f - knob_size / 2f, length, knob_size);
-        move_knob.setSize(knob_size, knob_size);
-        rotate_knob.setSize(knob_size, knob_size);
+        symmetry_axis.setSize(2 * (float) Math.hypot(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), screen_axis_w);
+        move_knob.setSize(screen_knob_size, screen_knob_size);
+        rotate_knob.setSize(screen_knob_size, screen_knob_size);
 
-        update_size(1);
-        set_knob_position();
+        set_center_position(Grid.WORLD_WIDTH / 2f, Grid.WORLD_HEIGHT / 2f);
 
         DragListener drag_listener = new DragListener() {
             OrthographicCamera camera;
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                localToStageCoordinates(tmp_v.set(x, y));
-                if (move_knob.getBoundingRectangle().contains(tmp_v)) {
+                get_screen_coordinates(event.getStageX(), event.getStageY());
+                if (move_knob.getBoundingRectangle().contains(tmp_vec)) {
                     move_knob_active = true;
                     return super.touchDown(event, x, y, pointer, button);
-                } else if (rotate_knob.getBoundingRectangle().contains(tmp_v)) {
+                } else if (rotate_knob.getBoundingRectangle().contains(tmp_vec)) {
                     rotate_knob_active = true;
                     return super.touchDown(event, x, y, pointer, button);
                 }
@@ -122,7 +128,7 @@ public class SymmetryToolActor extends Actor {
                 if (!Grid.WORLD_RECT.contains(get_center_x(), get_center_y())) {
                     x = MathUtils.clamp(get_center_x(), 1, Grid.WORLD_WIDTH - 1);
                     y = MathUtils.clamp(get_center_y(), 1, Grid.WORLD_HEIGHT - 1);
-                    setPosition(x - length / 2f, y - knob_size / 2f);
+                    set_center_position(x, y);
                 }
             }
         };
@@ -146,56 +152,38 @@ public class SymmetryToolActor extends Actor {
         float pos_x = pos.x;
         float pos_y = pos.y;
         pos.sub(get_center_x(), get_center_y());
-        tmp_v.x = (float) Math.cos(getRotation() * MathUtils.degreesToRadians);
-        tmp_v.y = (float) Math.sin(getRotation() * MathUtils.degreesToRadians);
-        tmp_v.scl(pos.dot(tmp_v)).sub(pos).scl(2);
-        return pos.set(pos_x, pos_y).add(tmp_v);
+        tmp_vec.x = (float) Math.cos(getRotation() * MathUtils.degreesToRadians);
+        tmp_vec.y = (float) Math.sin(getRotation() * MathUtils.degreesToRadians);
+        tmp_vec.scl(pos.dot(tmp_vec)).sub(pos).scl(2);
+        return pos.set(pos_x, pos_y).add(tmp_vec);
     }
 
     private float get_center_x() {
-        return getX() + length / 2f;
+        return getX();
     }
 
     private float get_center_y() {
-        return getY() + knob_size / 2f;
+        return getY();
     }
 
     private void set_center_position(float x, float y) {
-        setPosition(x - length / 2f, y - knob_size / 2f);
+        setPosition(x, y);
     }
 
-    private void set_knob_position() {
+    private void update_bounds() {
+        Vector2 center_screen_pos = get_screen_coordinates(get_center_x(), get_center_y());
+        symmetry_axis.setPosition(-symmetry_axis.getWidth() / 2, center_screen_pos.y - screen_axis_w / 2);
+        move_knob.setPosition(center_screen_pos.x - screen_knob_size / 2, center_screen_pos.y - screen_knob_size / 2);
+
         float cos = MathUtils.cosDeg(getRotation());
         float sin = MathUtils.sinDeg(getRotation());
-        float center_x = get_center_x();
-        float center_y = get_center_y();
-        move_knob.setPosition(center_x - knob_size / 2f, center_y - knob_size / 2f);
-        rotate_knob.setPosition(center_x + cos * 3 * knob_size - knob_size / 2f, center_y + sin * 3 * knob_size - knob_size / 2f);
-    }
+        rotate_knob.setPosition(center_screen_pos.x - screen_knob_size / 2 + cos * 3 * screen_knob_size,
+                                center_screen_pos.y - screen_knob_size / 2 + sin * 3 * screen_knob_size);
 
-    public void update_size(float zoom) {
-        axis_w = GridCache.calculate_grid_line_size(zoom) * 1.5f;
-        symmetry_axis.setBounds(getX(), get_center_y() - axis_w / 2f, length, axis_w);
-
-        symmetry_axis.setOriginCenter();
+        symmetry_axis.setOrigin(center_screen_pos.x - symmetry_axis.getX(), screen_axis_w / 2);
         move_knob.setOriginCenter();
         rotate_knob.setOriginCenter();
         setOrigin(Align.center);
-    }
-
-    @Override
-    public void setPosition(float x, float y) {
-        super.setPosition(x, y);
-        symmetry_axis.setPosition(x, get_center_y() - axis_w / 2f);
-        set_knob_position();
-    }
-
-    @Override
-    public void moveBy(float x, float y) {
-        super.moveBy(x, y);
-        symmetry_axis.translate(x, y);
-        move_knob.translate(x, y);
-        rotate_knob.translate(x, y);
     }
 
     @Override
@@ -204,21 +192,35 @@ public class SymmetryToolActor extends Actor {
         symmetry_axis.setRotation(degrees);
         rotate_knob.setRotation(degrees);
         move_knob.setRotation(degrees);
-        set_knob_position();
-    }
-
-    @Override
-    public void rotateBy(float amountInDegrees) {
-        super.rotateBy(amountInDegrees);
-        symmetry_axis.rotate(amountInDegrees);
-        set_knob_position();
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        update_bounds();
         symmetry_axis.draw(batch, parentAlpha);
         move_knob.draw(batch, parentAlpha);
         rotate_knob.draw(batch, parentAlpha);
+    }
+
+    @Override
+    protected void drawDebugBounds(ShapeRenderer shapes) {
+        update_bounds();
+        shapes.set(ShapeRenderer.ShapeType.Line);
+        shapes.setColor(Color.ORANGE);
+        shapes.rect(symmetry_axis.getX(), symmetry_axis.getY(), symmetry_axis.getWidth(), symmetry_axis.getHeight());
+        shapes.rect(move_knob.getX(), move_knob.getY(), move_knob.getWidth(), move_knob.getHeight());
+        shapes.rect(rotate_knob.getX(), rotate_knob.getY(), rotate_knob.getWidth(), rotate_knob.getHeight());
+    }
+
+    @Override
+    public Actor hit(float x, float y, boolean touchable) {
+        // hit detection for the move and rotate knobs
+        if (touchable && !isTouchable()) return null;
+        localToStageCoordinates(tmp_vec.set(x, y));  // to world
+        get_screen_coordinates(tmp_vec.x, tmp_vec.y);
+        if (move_knob.getBoundingRectangle().contains(tmp_vec)) return this;
+        if (rotate_knob.getBoundingRectangle().contains(tmp_vec)) return this;
+        return null;
     }
 
     public SymmetryToolState get_state() {
@@ -228,5 +230,16 @@ public class SymmetryToolActor extends Actor {
     public void set_state(SymmetryToolState state) {
         set_center_position(state.center_x, state.center_y);
         setRotation(state.rotation);
+    }
+
+    /** Returns the screen coordinates in tmp_vec. */
+    private Vector2 get_screen_coordinates(float world_x, float world_y) {
+        getStage().stageToScreenCoordinates(tmp_vec.set(world_x, world_y));
+        tmp_vec.y = getStage().getViewport().getScreenHeight() - tmp_vec.y - 1;
+        return tmp_vec;
+    }
+
+    static private float to_screen(float relative) {
+        return relative * ChargeActor.BASE_CHARGE_SIZE;
     }
 }
