@@ -650,7 +650,7 @@ public class GameLogic {
         force_vec.setZero();
     }
 
-    private void reset_charges() {
+    private void clear_charges() {
         for (ChargeActor charge : charge_actors) {
             charge.clear();
             charge.remove();
@@ -661,11 +661,13 @@ public class GameLogic {
     }
 
     /** Resets the state of the loaded level to its initial state (without the charges). */
-    void reset() {
+    void clear() {
         reset_pucks();
+        for (PuckActor puck : puck_actors)
+            puck.clear_sprites();
         for (ForcePuckActor puck : initial_pucks)
             puck.clear_sprites();
-        reset_charges();
+        clear_charges();
 
         charge_state_changed = true;
     }
@@ -705,7 +707,7 @@ public class GameLogic {
         if (charge_states == null)
             return false;
 
-        reset();
+        clear();
         for (ChargeState charge_state : charge_states) {
             ChargeActor charge1 = add_charge(charge_state.type, charge_state.x, charge_state.y);
             if (charge_state.partner != null) {

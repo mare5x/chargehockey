@@ -36,11 +36,9 @@ public class PuckActor extends ForcePuckActor {
 
         velocity_sprite = new VectorSprite(game);
         velocity_sprite.setColor(game.skin.getColor("green"));
-        velocity_sprite.prepare(0, 0, 0, 0);
         velocity_sprite.setAlpha(0.75f);
         acceleration_sprite = new VectorSprite(game);
         acceleration_sprite.setColor(game.skin.getColor("purple"));
-        acceleration_sprite.prepare(0, 0, 0, 0);
         acceleration_sprite.setAlpha(0.75f);
 
         path_px = game.create_sprite("px_white");
@@ -77,13 +75,14 @@ public class PuckActor extends ForcePuckActor {
         trace_path_history.add(new Vector2(get_x(), get_y()));
     }
 
+    /** Zeroes out all vectors, but does NOT remove them. */
     private void reset_vectors() {
         velocity_vec.setZero();
 
-        velocity_sprite.setSize(0, 0);
-        acceleration_sprite.setSize(0, 0);
+        velocity_sprite.zero();
+        acceleration_sprite.zero();
 
-        super.reset_sprites();
+        reset_sprites();
     }
 
     public void reset() {

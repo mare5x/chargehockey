@@ -400,7 +400,7 @@ public class GameScreen implements Screen {
     }
 
     void restart_level() {
-        game_logic.reset();
+        game_logic.clear();
         fbo.update(game.batch);
     }
 

@@ -34,6 +34,10 @@ public class VectorSprite extends Sprite {
         head_sprite.draw(batch);
     }
 
+    void zero() {
+        prepare(0, 0, 0, 0);
+    }
+
     void prepare(float x, float y, float rotation, float length) {
         if (MathUtils.isZero(length, PHYSICS_EPSILON)) {
             setSize(0, 0);

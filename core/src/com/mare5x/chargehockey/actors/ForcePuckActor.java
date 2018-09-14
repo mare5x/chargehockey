@@ -59,7 +59,7 @@ public class ForcePuckActor extends ChargeActor {
 
     void reset_sprites() {
         for (VectorSprite force_sprite : force_sprites.values())
-            force_sprite.setSize(0, 0);
+            force_sprite.zero();
     }
 
     public void clear_sprites() {
