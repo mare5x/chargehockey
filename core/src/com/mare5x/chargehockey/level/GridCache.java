@@ -33,7 +33,7 @@ public class GridCache {
 
         grid_line_sprite = game.grid_sprites.get_grid_line(grid_line_sprite_size);
 
-        init_background(game.skin.getRegion("pixels/px_black"));
+        init_background(game.skin.getRegion("px_black"));
     }
 
     private void init_background(TextureRegion bg) {

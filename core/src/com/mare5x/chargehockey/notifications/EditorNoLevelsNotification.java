@@ -18,7 +18,7 @@ public class EditorNoLevelsNotification extends Notification {
 
         Label add_label = get_label("ADD A NEW LEVEL USING ");
 
-        Image add_img = new Image(game.skin.getRegion("add_up"));
+        Image add_img = new Image(game.skin.getRegion("ui_add_up"));
         add_img.setScaling(Scaling.fit);
 
         columnDefaults(0).width(get_label_width()).space(CELL_PAD);

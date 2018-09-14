@@ -96,7 +96,7 @@ class LevelList extends VerticalGroup {
             });
 
             add(name_button).minHeight(MIN_BUTTON_HEIGHT).prefWidth(MAX_BUTTON_WIDTH).padRight(ACTOR_PAD);
-            add(new Image(game.skin.getDrawable(level_finished ? "star" : "star_empty"))).size(MIN_BUTTON_HEIGHT);
+            add(new Image(game.skin.getDrawable(level_finished ? "ui_star" : "ui_star_empty"))).size(MIN_BUTTON_HEIGHT);
             pad(5);
         }
 

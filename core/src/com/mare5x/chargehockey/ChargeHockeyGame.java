@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
-import com.badlogic.gdx.assets.loaders.TextureAtlasLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.Texture;
@@ -35,7 +34,6 @@ abstract public class ChargeHockeyGame extends Game {
 
 	public SpriteBatch batch;
     public Skin skin;
-    public TextureAtlas sprites;
     public MenuScreen menu_screen;
 
     private AssetManager manager;
@@ -78,23 +76,22 @@ abstract public class ChargeHockeyGame extends Game {
 
         ObjectMap<String, Object> font_map = new ObjectMap<String, Object>();
         font_map.put("font", font);
-        manager.load("skin.json", Skin.class, new SkinLoader.SkinParameter("ui.atlas", font_map));
-
-        manager.load("sprites.atlas", TextureAtlas.class, new TextureAtlasLoader.TextureAtlasParameter());
+        manager.load("skin.json", Skin.class, new SkinLoader.SkinParameter("texturepack_linear.atlas", font_map));
+        manager.load("texturepack_nearest.atlas", TextureAtlas.class);
 
         manager.finishLoading();
 
         skin = manager.get("skin.json", Skin.class);
 
         // manually flip the back button arrow and make a new button out of it
-        Sprite next_up_sprite = new Sprite(skin.getRegion("back_up"));
+        Sprite next_up_sprite = new Sprite(skin.getRegion("ui_back_up"));
         next_up_sprite.flip(true, false);
-        Sprite next_down_sprite = new Sprite(skin.getRegion("back_down"));
+        Sprite next_down_sprite = new Sprite(skin.getRegion("ui_back_down"));
         next_down_sprite.flip(true, false);
         Button.ButtonStyle next_button = new Button.ButtonStyle(new SpriteDrawable(next_up_sprite), new SpriteDrawable(next_down_sprite), null);
         skin.add("next", next_button, Button.ButtonStyle.class);
 
-        sprites = manager.get("sprites.atlas", TextureAtlas.class);
+        skin.addRegions(manager.get("texturepack_nearest.atlas", TextureAtlas.class));
 
         grid_sprites = new GridSprites(this);
 
@@ -103,6 +100,10 @@ abstract public class ChargeHockeyGame extends Game {
         menu_screen = new MenuScreen(this);
         setScreen(menu_screen);
 	}
+
+	public Sprite create_sprite(String path) {
+	    return new Sprite(skin.getRegion(path));
+    }
 
     @Override
     public void render() {

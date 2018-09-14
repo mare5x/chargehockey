@@ -226,7 +226,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
         ChargeSettingSlider(ChargeHockeyGame game, float current) {
             super(game, ChargeActor.MIN_SIZE, ChargeActor.MAX_SIZE, current);
 
-            charge = new Image(game.sprites.findRegion("charge_pos"));
+            charge = new Image(game.skin.getDrawable("sprite_charge_pos"));
 
             set_label_format("CHARGE SIZE: %.1f");
 

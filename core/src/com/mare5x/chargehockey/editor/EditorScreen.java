@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -229,7 +229,7 @@ public class EditorScreen implements Screen {
         show_grid_button.setChecked(show_grid);
         show_grid_button.pad(ACTOR_PAD);
 
-        puck_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("puck")));
+        puck_button = new Button(game.skin.getDrawable("sprite_puck"));
         // Helper DragListener for adding pucks with the puck button (see GameScreen for ChargeDragger)
         // Add a puck by dragging or by clicking on it to add it to the center
         // Propagate the events down to the newly added puck (edit_stage) so it can be dragged
@@ -608,19 +608,19 @@ public class EditorScreen implements Screen {
 
             style_table = new ObjectMap<GRID_ITEM, ButtonStyle>(GRID_ITEM.size());
 
-            TextureRegionDrawable drawable = new TextureRegionDrawable(game.sprites.findRegion("grid/grid_null"));
+            Drawable drawable = game.skin.getDrawable("grid_null");
             ButtonStyle style = new ButtonStyle(drawable, drawable, null);
             style_table.put(GRID_ITEM.NULL, style);
 
-            drawable = new TextureRegionDrawable(game.sprites.findRegion("grid/grid_wall"));
+            drawable = game.skin.getDrawable("grid_wall");
             style = new ButtonStyle(drawable, drawable, null);
             style_table.put(GRID_ITEM.WALL, style);
 
-            drawable = new TextureRegionDrawable(game.sprites.findRegion("grid/grid_goal"));
+            drawable = game.skin.getDrawable("grid_goal");
             style = new ButtonStyle(drawable, drawable, null);
             style_table.put(GRID_ITEM.GOAL, style);
 
-            drawable = new TextureRegionDrawable(game.sprites.findRegion("grid/grid_bouncer"));
+            drawable = game.skin.getDrawable("grid_bouncer");
             style = new ButtonStyle(drawable, drawable, null);
             style_table.put(GRID_ITEM.BOUNCER, style);
 
@@ -645,7 +645,7 @@ public class EditorScreen implements Screen {
 
     private class EditIcon extends Image {
         EditIcon() {
-            super(game.skin, "edit_on");
+            super(game.skin, "ui_edit_on");
             setVisible(false);
         }
 
@@ -661,13 +661,13 @@ public class EditorScreen implements Screen {
         }
 
         void show_on() {
-            setDrawable(game.skin, "edit_on");
+            setDrawable(game.skin, "ui_edit_on");
             clearActions();
             addAction(get_action());
         }
 
         void show_off() {
-            setDrawable(game.skin, "edit_off");
+            setDrawable(game.skin, "ui_edit_off");
             clearActions();
             addAction(get_action());
         }

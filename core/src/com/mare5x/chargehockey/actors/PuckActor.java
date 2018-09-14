@@ -43,7 +43,7 @@ public class PuckActor extends ForcePuckActor {
         acceleration_sprite.prepare(0, 0, 0, 0);
         acceleration_sprite.setAlpha(0.75f);
 
-        path_px = new Sprite(game.skin.getRegion("pixels/px_white"));
+        path_px = game.create_sprite("px_white");
         path_px.setSize(getWidth() / 5, getHeight() / 5);
         path_px.setColor(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1);
 

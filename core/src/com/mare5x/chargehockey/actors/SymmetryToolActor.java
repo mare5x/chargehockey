@@ -58,9 +58,9 @@ public class SymmetryToolActor extends Actor {
     private final Vector2 tmp_vec = new Vector2();
 
     public SymmetryToolActor(ChargeHockeyGame game) {
-        symmetry_axis = new Sprite(game.skin.getRegion("pixels/px_green"));
-        move_knob = new Sprite(game.skin.getRegion("vertical_knob"));
-        rotate_knob = new Sprite(game.skin.getRegion("rotate_knob"));
+        symmetry_axis = game.create_sprite("px_green");
+        move_knob = game.create_sprite("ui_vertical_knob");
+        rotate_knob = game.create_sprite("ui_rotate_knob");
 
         symmetry_axis.setSize(2 * (float) Math.hypot(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), screen_axis_w);
         move_knob.setSize(screen_knob_size, screen_knob_size);

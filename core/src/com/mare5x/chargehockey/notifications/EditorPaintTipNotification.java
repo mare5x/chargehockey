@@ -16,7 +16,7 @@ public class EditorPaintTipNotification extends Notification {
         super(game, stage);
 
         Label message = get_label("TIP: LONG PRESS A TILE TO START PAINTING");
-        Image paint_img = new Image(game.skin.getDrawable("edit_on"));
+        Image paint_img = new Image(game.skin.getDrawable("ui_edit_on"));
 
         add(message).space(CELL_PAD).width(get_label_width());
         add(paint_img).space(CELL_PAD).size(IMAGE_FONT_SIZE);

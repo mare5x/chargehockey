@@ -22,8 +22,8 @@ public class GameDefaults {
     public static float ACTOR_PAD = MIN_DIMENSION * 0.01f;
     public static float CELL_PAD = MIN_DIMENSION * 0.015f;
 
-    public static final String CHARGE_ZONE_BG = "pixels/px_grey_opaque";
-    public static final String CHARGE_ZONE_ACTIVE_BG = "pixels/px_darkgrey_opaque";
+    public static final String CHARGE_ZONE_BG = "px_grey_opaque";
+    public static final String CHARGE_ZONE_ACTIVE_BG = "px_darkgrey_opaque";
     // NOTE: Screen coordinates' origin is at the top left corner of the screen! (x - right, y - down)
     // the height of the rectangle at the bottom of the screen from where charges are added and to
     // where they must be dragged to remove them

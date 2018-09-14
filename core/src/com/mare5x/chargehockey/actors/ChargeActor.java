@@ -155,13 +155,13 @@ public class ChargeActor extends Actor {
         sprite = new Sprite();
         switch (charge_type) {
             case POSITIVE:
-                sprite.setRegion(game.sprites.findRegion("charge_pos"));
+                sprite.setRegion(game.skin.getRegion("sprite_charge_pos"));
                 break;
             case NEGATIVE:
-                sprite.setRegion(game.sprites.findRegion("charge_neg"));
+                sprite.setRegion(game.skin.getRegion("sprite_charge_neg"));
                 break;
             case PUCK:
-                sprite.setRegion(game.sprites.findRegion("puck"));
+                sprite.setRegion(game.skin.getRegion("sprite_puck"));
                 charge_size = PuckActor.SIZE;  // make pucks always have the same size
                 break;
         }

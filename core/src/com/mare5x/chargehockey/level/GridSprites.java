@@ -18,10 +18,10 @@ public class GridSprites {
     private final Sprite grid_line;
 
     public GridSprites(ChargeHockeyGame game) {
-        Sprite null_sprite = game.sprites.createSprite("grid/grid_null");
-        Sprite wall_sprite = game.sprites.createSprite("grid/grid_wall");
-        Sprite goal_sprite = game.sprites.createSprite("grid/grid_goal");
-        Sprite bouncer_sprite = game.sprites.createSprite("grid/grid_bouncer");
+        Sprite null_sprite = game.create_sprite("grid_null");
+        Sprite wall_sprite = game.create_sprite("grid_wall");
+        Sprite goal_sprite = game.create_sprite("grid_goal");
+        Sprite bouncer_sprite = game.create_sprite("grid_bouncer");
 
         grid_sprites = new ObjectMap<GRID_ITEM, Sprite>(GRID_ITEM.values.length);
         grid_sprites.put(GRID_ITEM.NULL, null_sprite);
@@ -30,10 +30,10 @@ public class GridSprites {
         grid_sprites.put(GRID_ITEM.BOUNCER, bouncer_sprite);
 
         // p_ = preview
-        Sprite p_null_sprite = game.sprites.createSprite("grid/p_grid_null");
-        Sprite p_wall_sprite = game.sprites.createSprite("grid/p_grid_wall");
-        Sprite p_goal_sprite = game.sprites.createSprite("grid/p_grid_goal");
-        Sprite p_bouncer_sprite = game.sprites.createSprite("grid/p_grid_bouncer");
+        Sprite p_null_sprite = game.create_sprite("p_grid_null");
+        Sprite p_wall_sprite = game.create_sprite("p_grid_wall");
+        Sprite p_goal_sprite = game.create_sprite("p_grid_goal");
+        Sprite p_bouncer_sprite = game.create_sprite("p_grid_bouncer");
 
         preview_grid_sprites = new ObjectMap<GRID_ITEM, Sprite>(GRID_ITEM.values.length);
         preview_grid_sprites.put(GRID_ITEM.NULL, p_null_sprite);
@@ -43,10 +43,10 @@ public class GridSprites {
 
         set_grid_tile_size(1);
 
-        puck_sprite = game.sprites.createSprite("puck");
+        puck_sprite = game.create_sprite("sprite_puck");
         puck_sprite.setSize(PuckActor.SIZE, PuckActor.SIZE);
 
-        grid_line = new Sprite(game.skin.getRegion("pixels/px_darkgrey"));
+        grid_line = game.create_sprite("px_darkgrey");
     }
 
     void set_preview(boolean value) {

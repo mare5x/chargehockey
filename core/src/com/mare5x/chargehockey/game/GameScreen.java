@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -275,11 +274,11 @@ public class GameScreen implements Screen {
         });
         symmetry_tool_button.pad(ACTOR_PAD);
 
-        Button charge_pos_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("charge_pos")));
+        Button charge_pos_button = new Button(game.skin.getDrawable("sprite_charge_pos"));
         charge_pos_button.addListener(new ChargeDragger(CHARGE.POSITIVE));
         charge_pos_button.pad(ACTOR_PAD);
 
-        Button charge_neg_button = new Button(new TextureRegionDrawable(game.sprites.findRegion("charge_neg")));
+        Button charge_neg_button = new Button(game.skin.getDrawable("sprite_charge_neg"));
         charge_neg_button.addListener(new ChargeDragger(CHARGE.NEGATIVE));
         charge_neg_button.pad(ACTOR_PAD);
 
@@ -578,7 +577,7 @@ public class GameScreen implements Screen {
 
             getTitleTable().clear();  // hide the dumb title
 
-            Image star_image = new Image(game.skin.getDrawable("star"));
+            Image star_image = new Image(game.skin.getDrawable("ui_star"));
             star_image.setScaling(Scaling.fit);
 
             Table content_table = getContentTable();

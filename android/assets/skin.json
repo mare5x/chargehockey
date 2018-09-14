@@ -13,68 +13,68 @@
 
     "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
         "play": {
-            "down": "play_down",
-            "up": "play_up"
+            "down": "ui_play_down",
+            "up": "ui_play_up"
         },
 
         "stop": {
-            "down": "pixels/px_green_down",
-            "up": "pixels/px_green"
+            "down": "px_green_down",
+            "up": "px_green"
         },
 
         "back": {
-            "down": "back_down",
-            "up": "back_up"
+            "down": "ui_back_down",
+            "up": "ui_back_up"
         },
 
         "add": {
-            "down": "add_down",
-            "up": "add_up"
+            "down": "ui_add_down",
+            "up": "ui_add_up"
         },
 
         "remove": {
-            "down": "remove_down",
-            "up": "remove_up"
+            "down": "ui_remove_down",
+            "up": "ui_remove_up"
         },
 
         "cancel": {
-            "down": "cancel_down",
-            "up": "cancel_up"
+            "down": "ui_cancel_down",
+            "up": "ui_cancel_up"
         },
 
         "confirm": {
-             "down": "confirm_down",
-             "up": "confirm_up"
+             "down": "ui_confirm_down",
+             "up": "ui_confirm_up"
         },
 
         "menu": {
-            "down": "menu_down",
-            "up": "menu_up"
+            "down": "ui_menu_down",
+            "up": "ui_menu_up"
         },
 
         "symmetry_tool": {
-            "down": "symmetry_tool_down",
-            "up": "symmetry_tool_up"
+            "down": "ui_symmetry_tool_down",
+            "up": "ui_symmetry_tool_up"
         },
 
         "checkbox": {
-            "up": "check_off",
-            "down": "check_on",
-            "checked": "check_on"
+            "up": "ui_check_off",
+            "down": "ui_check_on",
+            "checked": "ui_check_on"
         },
 
         "grid": {
-            "up": "grid_off",
-            "down": "grid_on",
-            "checked": "grid_on"
+            "up": "ui_grid_off",
+            "down": "ui_grid_on",
+            "checked": "ui_grid_on"
         },
 
         "star": {
-            "up": "star"
+            "up": "ui_star"
         },
 
         "star_empty": {
-            "up": "star_empty"
+            "up": "ui_star_empty"
         }
     },
 
@@ -82,27 +82,27 @@
         "default": {
             "font": "font",
             "fontColor": "white",
-            "background": "button_up"
+            "background": "ui_button_up"
         },
 
         "borderless": {
             "font": "font",
             "fontColor": "white",
-            "background": "pixels/px_black"
+            "background": "px_black"
         }
      },
 
     "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
         "play": {
-            "imageUp": "play_up",
-            "imageDown": "play_down"
+            "imageUp": "ui_play_up",
+            "imageDown": "ui_play_down"
         }
     },
 
     "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
         "default": {
-            "up": "button_up",
-            "down": "button_down",
+            "up": "ui_button_up",
+            "down": "ui_button_down",
             "pressedOffsetY": -2,
             "unpressedOffsetY": 0,
             "font": "font",
@@ -110,9 +110,9 @@
         },
 
         "checked": {
-            "up": "button_up",
-            "down": "button_down",
-            "checked": "button_down",
+            "up": "ui_button_up",
+            "down": "ui_button_down",
+            "checked": "ui_button_down",
             "pressedOffsetY": -2,
             "unpressedOffsetY": 0,
             "font": "font",
@@ -125,7 +125,7 @@
             "font": "font",
             "fontColorSelected": "dark_brown",
             "fontColorUnselected": "white",
-            "selection": "pixels/px_white_opaque"
+            "selection": "px_white_opaque"
         }
     },
 
@@ -133,7 +133,7 @@
         "default": {
             "titleFont": "font",
             "titleFontColor": "red",
-            "background": "button_up",
+            "background": "ui_button_up",
         }
     },
 
@@ -141,29 +141,29 @@
         "default": {
             "font": "font",
             "fontColor": "white",
-            "cursor": "pixels/px_grey",
-            "selection": "pixels/px_white_opaque",
-            "background": "button_up"
+            "cursor": "px_grey",
+            "selection": "px_white_opaque",
+            "background": "ui_button_up"
         }
     },
 
     "com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle": {
         "default": {
-            "hScrollKnob": "pixels/px_white",
-            "vScrollKnob": "pixels/px_white"
+            "hScrollKnob": "px_white",
+            "vScrollKnob": "px_white"
         },
 
         "border": {
-            "hScrollKnob": "pixels/px_white",
-            "vScrollKnob": "pixels/px_white",
-            "background": "button_up"
+            "hScrollKnob": "px_white",
+            "vScrollKnob": "px_white",
+            "background": "ui_button_up"
         }
     },
 
     "com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle": {
         "default": {
-            "checkboxOn": "check_on",
-            "checkboxOff": "check_off",
+            "checkboxOn": "ui_check_on",
+            "checkboxOff": "ui_check_off",
             "font": "font",
             "fontColor": "white"
         }
@@ -171,8 +171,8 @@
 
     "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {
         "default-horizontal": {
-            "background": "pixels/px_white",
-            "knob": "slider_knob"
+            "background": "px_white",
+            "knob": "ui_slider_knob"
         }
     }
 }

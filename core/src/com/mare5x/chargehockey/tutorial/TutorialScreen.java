@@ -1,6 +1,6 @@
 package com.mare5x.chargehockey.tutorial;
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -27,7 +27,7 @@ import static com.mare5x.chargehockey.settings.GameDefaults.MAX_BUTTON_WIDTH;
 import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 public class TutorialScreen extends ScrollableMenuScreen {
-    private final TextureAtlas.AtlasRegion puck_region;
+    private final TextureRegion puck_region;
     private final Image pos_img;
     private final Image neg_img;
 
@@ -40,10 +40,10 @@ public class TutorialScreen extends ScrollableMenuScreen {
     public TutorialScreen(ChargeHockeyGame game) {
         super(game);
 
-        puck_region = game.sprites.findRegion("puck");
-        pos_img = new Image(game.sprites.findRegion("charge_pos"));
+        puck_region = game.skin.getRegion("sprite_puck");
+        pos_img = new Image(game.skin.getDrawable("sprite_charge_pos"));
         pos_img.setScaling(Scaling.fit);
-        neg_img = new Image(game.sprites.findRegion("charge_neg"));
+        neg_img = new Image(game.skin.getDrawable("sprite_charge_neg"));
         neg_img.setScaling(Scaling.fit);
 
         intro();
@@ -71,11 +71,11 @@ public class TutorialScreen extends ScrollableMenuScreen {
 
         Table goal_table = new Table();
         goal_table.pad(ACTOR_PAD);
-        goal_table.setBackground(game.skin.getDrawable("button_up"));
+        goal_table.setBackground(game.skin.getDrawable("ui_button_up"));
 
-        Image goal_img = new Image(game.sprites.findRegion("grid/grid_goal"));
+        Image goal_img = new Image(game.skin.getDrawable("grid_goal"));
         goal_img.setScaling(Scaling.fit);
-        Image wall_img = new Image(game.sprites.findRegion("grid/grid_wall"));
+        Image wall_img = new Image(game.skin.getDrawable("grid_wall"));
         wall_img.setScaling(Scaling.fit);
 
         Label goal_1 = make_label("YOUR GOAL IS TO GET ALL PUCKS");
@@ -239,18 +239,18 @@ public class TutorialScreen extends ScrollableMenuScreen {
             }
         });
 
-        Image play_img = new Image(game.skin.getDrawable("play_up"));
+        Image play_img = new Image(game.skin.getDrawable("ui_play_up"));
         play_img.setScaling(Scaling.fit);
-        Image play_img_2 = new Image(game.skin.getDrawable("play_up"));
+        Image play_img_2 = new Image(game.skin.getDrawable("ui_play_up"));
         play_img_2.setScaling(Scaling.fit);
 
-        Image pos_img_2 = new Image(game.sprites.findRegion("charge_pos"));
+        Image pos_img_2 = new Image(game.skin.getDrawable("sprite_charge_pos"));
         pos_img_2.setScaling(Scaling.fit);
-        Image neg_img_2 = new Image(game.sprites.findRegion("charge_neg"));
+        Image neg_img_2 = new Image(game.skin.getDrawable("sprite_charge_neg"));
         neg_img_2.setScaling(Scaling.fit);
 
         Table button_table = new Table();
-        button_table.setBackground(game.skin.getDrawable("pixels/px_darkbrown"));
+        button_table.setBackground(game.skin.getDrawable("px_darkbrown"));
         button_table.defaults().size(IMAGE_BUTTON_SIZE).minSize(0).space(Value.percentWidth(0.125f, table));
         button_table.pad(CELL_PAD);
         button_table.add(play_img);
@@ -263,7 +263,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
         Label ui_label_4 = make_label("TO REMOVE A CHARGE, DRAG IT TO THE BOTTOM OF THE SCREEN");
 
         Table ui_tutorial_table = new Table();
-        ui_tutorial_table.setBackground(game.skin.getDrawable("button_up"));
+        ui_tutorial_table.setBackground(game.skin.getDrawable("ui_button_up"));
         ui_tutorial_table.pad(CELL_PAD);
         ui_tutorial_table.defaults().minHeight(MIN_BUTTON_HEIGHT).space(CELL_PAD).pad(ACTOR_PAD);
         ui_tutorial_table.add(ui_label_1).expandX().fillX();

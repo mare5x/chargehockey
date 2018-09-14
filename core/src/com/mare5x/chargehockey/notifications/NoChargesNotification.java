@@ -18,9 +18,9 @@ public class NoChargesNotification extends Notification {
 
         Label text_label = get_label("FIRST, ADD SOME: ");
 
-        Image pos_charge = new Image(game.sprites.findRegion("charge_pos"));
+        Image pos_charge = new Image(game.skin.getRegion("sprite_charge_pos"));
         pos_charge.setScaling(Scaling.fit);
-        Image neg_charge = new Image(game.sprites.findRegion("charge_neg"));
+        Image neg_charge = new Image(game.skin.getRegion("sprite_charge_neg"));
         neg_charge.setScaling(Scaling.fit);
 
         add(text_label).width(get_label_width());
