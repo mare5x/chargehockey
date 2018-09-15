@@ -3,6 +3,7 @@ package com.mare5x.chargehockey.actors;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -10,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.utils.Array;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Grid;
+
+import static com.mare5x.chargehockey.level.LevelFrameBuffer.ONE_TX;
 
 
 public class PuckActor extends ForcePuckActor {
@@ -21,7 +24,11 @@ public class PuckActor extends ForcePuckActor {
     private static boolean draw_velocity = false, draw_acceleration = false;
     private static boolean trace_path = false;
 
-    private Array<Vector2> trace_path_history = new Array<Vector2>(16);  // holds the puck's position history for the past render frame
+    private static final float TRACE_DIST = 0.4f;  // world units; the distance between each trace point
+    private final Vector2 tmp_vec = new Vector2();
+    private final Vector2 prev_trace_pos = new Vector2();
+    private final Array<Vector2> trace_path_history = new Array<Vector2>();  // holds the puck's position history for the past render frame
+    private Array<Vector2> full_position_history;  // used only for debugging
 
     private Grid.GRID_ITEM collision = Grid.GRID_ITEM.NULL;
 
@@ -42,7 +49,7 @@ public class PuckActor extends ForcePuckActor {
         acceleration_sprite.setAlpha(0.75f);
 
         path_px = game.create_sprite("px_white");
-        path_px.setSize(getWidth() / 5, getHeight() / 5);
+        path_px.setSize(ONE_TX, ONE_TX);
         path_px.setColor(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1);
 
         reset_vectors();
@@ -60,6 +67,18 @@ public class PuckActor extends ForcePuckActor {
         super.draw(batch, parentAlpha);
     }
 
+    @Override
+    public void drawDebug(ShapeRenderer shapes) {
+        super.drawDebug(shapes);
+
+        if (full_position_history == null)
+            full_position_history = new Array<Vector2>();
+
+        full_position_history.add(new Vector2(get_x(), get_y()));
+        for (int i = 1; i < full_position_history.size; ++i)
+            shapes.line(full_position_history.get(i-1), full_position_history.get(i));
+    }
+
     public void draw_trace_path_history(Batch batch) {
         for (Vector2 point : trace_path_history) {
             path_px.setPosition(point.x - path_px.getWidth() / 2, point.y - path_px.getHeight() / 2);
@@ -72,7 +91,17 @@ public class PuckActor extends ForcePuckActor {
     }
 
     public void save_path_position() {
-        trace_path_history.add(new Vector2(get_x(), get_y()));
+        if (prev_trace_pos.isZero()) {
+            prev_trace_pos.set(get_x(), get_y());
+            trace_path_history.add(prev_trace_pos.cpy());
+            return;
+        }
+        float x = get_x();
+        float y = get_y();
+        while (prev_trace_pos.dst2(x, y) >= TRACE_DIST * TRACE_DIST) {
+            prev_trace_pos.add(tmp_vec.set(x, y).sub(prev_trace_pos).nor().scl(TRACE_DIST));
+            trace_path_history.add(prev_trace_pos.cpy());
+        }
     }
 
     /** Zeroes out all vectors, but does NOT remove them. */
@@ -88,6 +117,8 @@ public class PuckActor extends ForcePuckActor {
     public void reset() {
         stop_blinking();
         reset_trace_path_history();
+        prev_trace_pos.setZero();
+        if (full_position_history != null) full_position_history.clear();
         reset_vectors();
         collision = Grid.GRID_ITEM.NULL;
     }

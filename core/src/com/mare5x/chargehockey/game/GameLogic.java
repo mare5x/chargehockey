@@ -473,12 +473,8 @@ public class GameLogic {
         return intersection;
     }
 
-    private void move_puck(PuckActor puck, float dx, float dy) {
-        move_puck(puck, dx, dy, true);
-    }
-
     /** Move puck by dx,dy, handling any collisions on the way to the destination. */
-    private void move_puck(PuckActor puck, float dx, float dy, boolean trace_path) {
+    private void move_puck(PuckActor puck, float dx, float dy) {
         if (puck.get_collision() == GRID_ITEM.GOAL || puck.get_collision() == GRID_ITEM.WALL) return;
 
         float start_x = puck.get_x();
@@ -518,13 +514,13 @@ public class GameLogic {
                 // Moving the puck the remaining distance usually causes the puck to gain energy when
                 // bouncing.
                 velocity.sub(intersection.normal.scl(2 * intersection.normal.dot(velocity)));
-                move_puck(puck, new_dx * remaining_time, new_dy * remaining_time, false);
+                move_puck(puck, new_dx * remaining_time, new_dy * remaining_time);
             }
         } else {
             puck.set_position(end_x, end_y);
         }
 
-        if (trace_path && PuckActor.get_trace_path())
+        if (PuckActor.get_trace_path())
             puck.save_path_position();
     }
 
