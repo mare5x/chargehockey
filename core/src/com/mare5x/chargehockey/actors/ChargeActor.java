@@ -48,12 +48,18 @@ public class ChargeActor extends Actor {
     public static class ChargeState {
         public CHARGE type;
         public float x, y;
+        public int uid;
         public ChargeState partner;  // manually set the partner
 
         public ChargeState(CHARGE type, float x, float y) {
+            this(type, x, y, -1);
+        }
+
+        ChargeState(CHARGE type, float x, float y, int uid) {
             this.type = type;
             this.x = x;
             this.y = y;
+            this.uid = uid;
             this.partner = null;
         }
     }
@@ -107,17 +113,20 @@ public class ChargeActor extends Actor {
     // TODO fix this mess
     public abstract static class DragCallback {
         // Out of bounds means out of the Grid OR in the charge zone
-        public abstract void out_of_bounds(ChargeActor charge, boolean dragged);  // dragged tells whether charge was dragged physically or by symmetry
+        // dragged tells whether charge was dragged physically or by symmetry
+        // prev_state contains the previous state of the charge but only if dragged is true
+        public abstract void out_of_bounds(ChargeActor charge, boolean dragged, ChargeState prev_state);
         public abstract void drag(ChargeActor charge);
         public void drag_started(ChargeActor charge) {}
         public void enter_charge_zone(ChargeActor charge) {}
         public void exit_charge_zone(ChargeActor charge) {}
         public void enter_drag_area(ChargeActor charge) {}
         public void exit_drag_area(ChargeActor charge) {}
+        public void move_action(ChargeState prev_state) {}
     }
 
     private static int UID_COUNTER = 0;
-    private final int uid = ++UID_COUNTER;  // unique identifier for every charge (used in .save files)
+    private int uid = ++UID_COUNTER;  // unique identifier for every charge (used in .save files)
 
     private static final float WEIGHT = 1;  // kg
     private static final float ABS_CHARGE = 1;  // Coulombs
@@ -142,6 +151,8 @@ public class ChargeActor extends Actor {
     private ChargeActor partner;  // the symmetrical tool partner of this charge (must have the same drag_callback)
     private final Vector2 tmp_vec = new Vector2();
     private final Rectangle tmp_rect = new Rectangle();
+
+    private boolean is_new = false;
 
     ChargeActor(final ChargeHockeyGame game, final CHARGE charge_type, final DragCallback drag_callback) {
         this(game, charge_type, drag_callback, null);
@@ -177,8 +188,25 @@ public class ChargeActor extends Actor {
                 // true as long as the charge is in the charge zone
                 private boolean started_in_charge_zone = false;
 
+                private float start_x, start_y;
+                private float partner_start_x, partner_start_y;
+
+                private ChargeState create_state(int partner_id) {
+                    ChargeState prev_state = new ChargeState(get_type(), start_x, start_y, get_id());
+                    if (partner_id != -1)
+                        prev_state.partner = new ChargeState(get_type(), partner_start_x, partner_start_y, partner_id);
+                    return prev_state;
+                }
+
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    start_x = get_x();
+                    start_y = get_y();
+                    if (partner != null) {
+                        partner_start_x = partner.get_x();
+                        partner_start_y = partner.get_y();
+                    }
+
                     // when a charge is touched, increase its size
                     final float enlarge_factor = 1.2f;
 
@@ -267,6 +295,9 @@ public class ChargeActor extends Actor {
 
                 @Override
                 public void dragStop(InputEvent event, float x, float y, int pointer) {
+                    boolean move_action = true;
+                    int partner_id = partner != null ? partner.get_id() : -1;  // cache it because partner gets set to null in out_of_bounds
+
                     if (check_in_charge_zone(event.getStageX(), event.getStageY())) {
                         in_charge_zone = false;
                         drag_callback.exit_charge_zone(ChargeActor.this);
@@ -276,10 +307,18 @@ public class ChargeActor extends Actor {
                         drag_callback.exit_drag_area(ChargeActor.this);
                     }
 
-                    if (check_out_of_bounds(event.getStageX(), event.getStageY()))
-                        drag_callback.out_of_bounds(ChargeActor.this, true);
+                    if (check_out_of_bounds(event.getStageX(), event.getStageY())) {
+                        drag_callback.out_of_bounds(ChargeActor.this, true, create_state(partner_id));
+                        move_action = false;
+                    }
                     if (partner != null && partner.check_out_of_world())
-                        drag_callback.out_of_bounds(partner, false);
+                        drag_callback.out_of_bounds(partner, false, null);
+
+                    if (move_action) {
+                        if (!is_new)
+                            drag_callback.move_action(create_state(partner_id));
+                        is_new = false;
+                    }
                 }
             };
             drag_listener.setTapSquareSize(-1);
@@ -418,7 +457,7 @@ public class ChargeActor extends Actor {
     }
 
     public ChargeState get_state() {
-        return new ChargeState(charge_type, get_x(), get_y());
+        return new ChargeState(charge_type, get_x(), get_y(), get_id());
     }
 
     /** Circular collision detection with a rectangle. If the circle and rectangle intersect,
@@ -449,7 +488,7 @@ public class ChargeActor extends Actor {
         return !MathUtils.isEqual(radius * 2, SIZE, PHYSICS_EPSILON);
     }
 
-    float to_screen(float relative) {
+    private float to_screen(float relative) {
         return relative * BASE_CHARGE_SIZE;
     }
 
@@ -482,6 +521,12 @@ public class ChargeActor extends Actor {
         return !Grid.WORLD_RECT.contains(get_x(), get_y());
     }
 
+    public void set_is_new(boolean val) {
+        this.is_new = val;
+    }
+
+    public boolean get_is_new() { return this.is_new; }
+
     public void set_partner(ChargeActor charge) {
         partner = charge;
     }
@@ -492,6 +537,11 @@ public class ChargeActor extends Actor {
 
     public int get_id() {
         return uid;
+    }
+
+    /** CAUTION: this should be only used when undoing a ChargeRemoveAction! */
+    public void set_id(int uid) {
+        this.uid = uid;
     }
 
     public static void set_charge_size(float size) {

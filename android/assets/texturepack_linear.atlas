@@ -6,7 +6,7 @@ filter: Linear,Linear
 repeat: none
 px_black
   rotate: false
-  xy: 2, 2
+  xy: 10, 15
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
@@ -20,35 +20,35 @@ px_darkbrown
   index: -1
 px_darkgrey
   rotate: false
-  xy: 10, 15
+  xy: 944, 271
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_darkgrey_opaque
   rotate: false
-  xy: 944, 271
+  xy: 986, 444
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_green
   rotate: false
-  xy: 986, 449
+  xy: 1012, 475
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_green_down
   rotate: false
-  xy: 986, 444
+  xy: 875, 211
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_grey
   rotate: false
-  xy: 875, 211
+  xy: 870, 206
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
@@ -69,14 +69,14 @@ px_purple
   index: -1
 px_white
   rotate: false
-  xy: 870, 206
+  xy: 2, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 px_white_opaque
   rotate: false
-  xy: 1012, 475
+  xy: 986, 449
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
@@ -97,14 +97,14 @@ sprite_charge_pos
   index: -1
 sprite_puck
   rotate: false
-  xy: 738, 80
+  xy: 602, 80
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 sprite_vector_head
   rotate: false
-  xy: 918, 276
+  xy: 918, 344
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -118,7 +118,7 @@ sprite_vector_tail
   index: -1
 ui_add_down
   rotate: false
-  xy: 666, 148
+  xy: 802, 148
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -132,14 +132,14 @@ ui_add_up
   index: -1
 ui_back_down
   rotate: false
-  xy: 2, 20
+  xy: 134, 20
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 ui_back_up
   rotate: false
-  xy: 266, 20
+  xy: 2, 20
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
@@ -164,21 +164,21 @@ ui_button_up
   index: -1
 ui_cancel_down
   rotate: false
-  xy: 670, 80
+  xy: 534, 80
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 ui_cancel_up
   rotate: false
-  xy: 534, 80
+  xy: 398, 16
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 ui_check_off
   rotate: false
-  xy: 734, 148
+  xy: 670, 80
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -192,70 +192,70 @@ ui_check_on
   index: -1
 ui_confirm_down
   rotate: false
-  xy: 598, 148
+  xy: 918, 276
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 ui_confirm_up
   rotate: false
-  xy: 918, 344
+  xy: 466, 12
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 ui_edit_off
   rotate: false
-  xy: 134, 88
+  xy: 654, 348
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 ui_edit_on
   rotate: false
-  xy: 654, 348
+  xy: 266, 88
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 ui_forward_down
   rotate: false
-  xy: 466, 148
+  xy: 266, 20
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 ui_forward_up
   rotate: false
-  xy: 134, 20
+  xy: 466, 148
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 ui_grid_off
   rotate: false
-  xy: 266, 88
+  xy: 522, 348
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 ui_grid_on
   rotate: false
-  xy: 786, 348
+  xy: 522, 216
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 ui_menu_down
   rotate: false
-  xy: 602, 80
+  xy: 466, 80
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 ui_menu_up
   rotate: false
-  xy: 802, 148
+  xy: 666, 148
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -276,84 +276,84 @@ ui_play_up
   index: -1
 ui_remove_down
   rotate: false
-  xy: 466, 80
+  xy: 734, 148
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 ui_remove_up
   rotate: false
-  xy: 738, 12
+  xy: 598, 148
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 ui_rotate_knob
   rotate: false
-  xy: 602, 12
+  xy: 806, 12
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 ui_share
   rotate: false
-  xy: 522, 348
+  xy: 134, 88
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 ui_slider_knob
   rotate: false
-  xy: 466, 12
+  xy: 738, 80
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 ui_star
   rotate: false
-  xy: 654, 216
+  xy: 786, 216
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 ui_star_empty
   rotate: false
-  xy: 522, 216
+  xy: 786, 348
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 ui_star_gold
   rotate: false
-  xy: 786, 216
+  xy: 2, 88
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 ui_star_half
   rotate: false
-  xy: 2, 88
+  xy: 654, 216
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 ui_symmetry_tool_down
   rotate: false
-  xy: 670, 12
+  xy: 602, 12
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 ui_symmetry_tool_up
   rotate: false
-  xy: 398, 16
+  xy: 738, 12
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-ui_undo_green64
+ui_undo_down
   rotate: false
-  xy: 806, 12
+  xy: 670, 12
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

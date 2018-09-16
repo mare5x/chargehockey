@@ -52,6 +52,11 @@
             "up": "ui_menu_up"
         },
 
+        "undo": {
+            "down": "ui_undo_down",
+            "up": "ui_undo_down"
+        },
+
         "symmetry_tool": {
             "down": "ui_symmetry_tool_down",
             "up": "ui_symmetry_tool_up"

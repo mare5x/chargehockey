@@ -140,18 +140,18 @@ public class GameLogic {
     }
 
     /** Place a charge at the center of the screen, keeping the symmetry tool in mind. */
-    void place_charge(CHARGE charge_type) {
-        place_charge(charge_type, game_stage.getCamera().position.x, game_stage.getCamera().position.y, false);
+    ChargeActor place_charge(CHARGE charge_type) {
+        return place_charge(charge_type, game_stage.getCamera().position.x, game_stage.getCamera().position.y, false);
     }
 
     /** Place a charge at the given position, keeping the symmetry tool in mind. */
-    void place_charge(CHARGE charge_type, float x, float y) {
-        place_charge(charge_type, x, y, true);
+    ChargeActor place_charge(CHARGE charge_type, float x, float y) {
+        return place_charge(charge_type, x, y, true);
     }
 
     /** Place a charge at the given position, keeping the symmetry tool and dragging in mind.
      *  Dragging determines whether to perform out of bounds checking now or when dragging is finished. */
-    private void place_charge(CHARGE charge_type, float x, float y, boolean dragged) {
+    private ChargeActor place_charge(CHARGE charge_type, float x, float y, boolean dragged) {
         ChargeActor charge1;
         if (symmetry_tool.is_enabled()) {
             charge1 = add_charge(charge_type, x, y);
@@ -169,9 +169,11 @@ public class GameLogic {
 
         if (!dragged && charge1.check_out_of_world())
             remove_charge(charge1);
+
+        return charge1;
     }
 
-    private ChargeActor add_charge(CHARGE charge_type, float x, float y) {
+    ChargeActor add_charge(CHARGE charge_type, float x, float y) {
         ChargeActor charge = new ChargeActor(game, charge_type, ui_interface.get_charge_drag_callback(), symmetry_tool);
         charge.set_position(x, y);
 

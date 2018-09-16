@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
+import com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
 import com.mare5x.chargehockey.actors.PuckActor;
 import com.mare5x.chargehockey.actors.SymmetryToolActor;
 import com.mare5x.chargehockey.level.Grid;
@@ -77,6 +78,7 @@ public class GameScreen implements Screen {
         private boolean clicked = true;
         private Vector2 tmp_coords = new Vector2();
         private CHARGE charge_type;
+        private ChargeActor charge;
 
         ChargeDragger(CHARGE type) {
             charge_type = type;
@@ -94,7 +96,8 @@ public class GameScreen implements Screen {
                 // x and y are in local button space coordinates
                 hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
                 game_stage.screenToStageCoordinates(tmp_coords);
-                game_logic.place_charge(charge_type, tmp_coords.x, tmp_coords.y);
+                charge = game_logic.place_charge(charge_type, tmp_coords.x, tmp_coords.y);
+                charge.set_is_new(true);
 
                 hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
                 game_stage.touchDown((int)tmp_coords.x, (int)tmp_coords.y, pointer, getButton());
@@ -116,21 +119,29 @@ public class GameScreen implements Screen {
 
             if (clicked) {
                 if (!game_logic.is_playing())
-                    game_logic.place_charge(charge_type);
+                    charge = game_logic.place_charge(charge_type);
             } else {
                 hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
                 game_stage.touchUp((int)tmp_coords.x, (int)tmp_coords.y, pointer, button);
+            }
+
+            if (charge != null && charge.hasParent()) {
+                action_history.save(new ChargeAddAction(charge.get_id()));
             }
         }
     }
 
     private final ChargeActor.DragCallback charge_drag_callback = new ChargeActor.DragCallback() {
         @Override
-        public void out_of_bounds(ChargeActor charge, boolean dragged) {
+        public void out_of_bounds(ChargeActor charge, boolean dragged, final ChargeState prev_state) {
             ChargeActor partner = charge.get_partner();
             game_logic.remove_charge(charge);
             if (partner != null && ((dragged && symmetry_tool.is_enabled()) || partner.check_out_of_world()))
                 game_logic.remove_charge(partner);
+
+            if (!charge.get_is_new() && dragged) {  // prevent recording if the charge was added and removed during the same drag
+                action_history.save(new ChargeRemoveAction(prev_state));
+            }
         }
 
         @Override
@@ -162,12 +173,18 @@ public class GameScreen implements Screen {
         public void exit_drag_area(ChargeActor charge) {
             charge_drag_area_helper.exit_drag_area();
         }
+
+        @Override
+        public void move_action(ChargeState prev_state) {
+            action_history.save(new ChargeMoveAction(prev_state));
+        }
     };
 
     private final ChargeHockeyGame game;
     private final Level level;
 
     private final GameLogic game_logic;
+    private final ActionHistory action_history;
 
     private boolean level_finished_changed = false;
 
@@ -210,7 +227,7 @@ public class GameScreen implements Screen {
         camera.position.set(Grid.WORLD_WIDTH / 2, Grid.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
 
-//        hud_stage.setDebugAll(true);
+        hud_stage.setDebugAll(true);
 //        game_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
@@ -256,6 +273,29 @@ public class GameScreen implements Screen {
         load_charge_state(Level.SAVE_TYPE.AUTO);
         game_logic.charge_state_changed();  // initialize tracking
 
+        action_history = new ActionHistory(new UndoableChargeAction.ChargeActionInterface() {
+            @Override
+            public ChargeActor add_charge(ChargeState state) {
+                ChargeActor charge = game_logic.add_charge(state.type, state.x, state.y);
+                charge.set_id(state.uid);
+                return charge;
+            }
+
+            @Override
+            public void remove_charge(ChargeActor charge) {
+                game_logic.remove_charge(charge);
+            }
+
+            @Override
+            public ChargeActor find(int uid) {
+                for (ChargeActor charge : game_logic.get_charges()) {
+                    if (charge.get_id() == uid)
+                        return charge;
+                }
+                return null;
+            }
+        });
+
         final Button menu_button = new Button(game.skin, "menu");
         menu_button.addListener(new ClickListener() {
             @Override
@@ -264,6 +304,15 @@ public class GameScreen implements Screen {
             }
         });
         menu_button.pad(ACTOR_PAD);
+
+        Button undo_button = new Button(game.skin, "undo");
+        undo_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                action_history.undo();
+            }
+        });
+        undo_button.pad(ACTOR_PAD);
 
         Button symmetry_tool_button = new Button(game.skin, "symmetry_tool");
         symmetry_tool_button.addListener(new ClickListener() {
@@ -303,7 +352,9 @@ public class GameScreen implements Screen {
 
         hud_table.row().size(IMAGE_BUTTON_SIZE).pad(CELL_PAD).expandX();
         hud_table.add(symmetry_tool_button).left();
-        hud_table.add(menu_button).right().row();
+        hud_table.add(menu_button).right();
+        hud_table.row().size(IMAGE_BUTTON_SIZE).pad(CELL_PAD).expandX();
+        hud_table.add(undo_button).colspan(2).right().row();
         hud_table.defaults().colspan(2);
         hud_table.add().expand().fill().row();
         hud_table.add(button_table).height(CHARGE_ZONE_HEIGHT).expandX().fill();
@@ -401,6 +452,7 @@ public class GameScreen implements Screen {
 
     void restart_level() {
         game_logic.clear();
+        action_history.clear();
         fbo.update(game.batch);
     }
 
