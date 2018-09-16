@@ -139,7 +139,9 @@ public class GameScreen implements Screen {
             if (partner != null && ((dragged && symmetry_tool.is_enabled()) || partner.check_out_of_world()))
                 game_logic.remove_charge(partner);
 
-            if (!charge.get_is_new() && dragged) {  // prevent recording if the charge was added and removed during the same drag
+            // prevent recording if the charge was added and removed during the same drag
+            // only save if the charge was dragged (not the partner)
+            if (!charge.get_is_new() && dragged) {
                 action_history.save(new ChargeRemoveAction(prev_state));
             }
         }
@@ -228,7 +230,7 @@ public class GameScreen implements Screen {
         camera.zoom = 0.8f;
 
         hud_stage.setDebugAll(true);
-//        game_stage.setDebugAll(true);
+        game_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);

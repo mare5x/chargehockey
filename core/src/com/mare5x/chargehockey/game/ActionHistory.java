@@ -11,7 +11,7 @@ public class ActionHistory {
 
     private final Array<UndoableChargeAction> charge_history = new Array<UndoableChargeAction>();
 
-    ActionHistory(UndoableChargeAction.ChargeActionInterface charge_interface) {
+    public ActionHistory(UndoableChargeAction.ChargeActionInterface charge_interface) {
         UndoableChargeActionBase.actions_interface = charge_interface;
     }
 

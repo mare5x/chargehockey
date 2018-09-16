@@ -29,7 +29,11 @@ import com.mare5x.chargehockey.actors.ChargeActor;
 import com.mare5x.chargehockey.actors.ChargeActor.CHARGE;
 import com.mare5x.chargehockey.actors.SymmetryToolActor;
 import com.mare5x.chargehockey.game.CameraController;
+import com.mare5x.chargehockey.game.ChargeAddAction;
+import com.mare5x.chargehockey.game.ChargeMoveAction;
+import com.mare5x.chargehockey.game.ChargeRemoveAction;
 import com.mare5x.chargehockey.game.GameStage;
+import com.mare5x.chargehockey.game.UndoableChargeAction;
 import com.mare5x.chargehockey.level.Grid;
 import com.mare5x.chargehockey.level.Grid.GRID_ITEM;
 import com.mare5x.chargehockey.level.GridCache;
@@ -59,6 +63,8 @@ public class EditorScreen implements Screen {
     private final Stage hud_stage;
     private final OrthographicCamera camera;  // camera of edit_stage
     private final EditCameraController camera_controller;
+
+    private final EditorActionHistory action_history;
 
     private Notification notification;
 
@@ -94,6 +100,12 @@ public class EditorScreen implements Screen {
             remove_puck(charge);
             if (partner != null && ((dragged && symmetry_tool.is_enabled()) || partner.check_out_of_world()))
                 remove_puck(partner);
+
+            // prevent recording if the charge was added and removed during the same drag
+            // only save if the charge was dragged (not the partner)
+            if (!charge.get_is_new() && dragged) {
+                action_history.save(new ChargeRemoveAction(prev_state));
+            }
         }
 
         @Override
@@ -144,6 +156,11 @@ public class EditorScreen implements Screen {
         public void exit_drag_area(ChargeActor charge) {
             charge_drag_area_helper.exit_drag_area();
         }
+
+        @Override
+        public void move_action(ChargeActor.ChargeState prev_state) {
+            action_history.save(new ChargeMoveAction(prev_state));
+        }
     };
 
     public EditorScreen(final ChargeHockeyGame game, Level level) {
@@ -158,8 +175,8 @@ public class EditorScreen implements Screen {
         camera.position.set(Grid.WORLD_WIDTH / 2, Grid.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
 
-//        hud_stage.setDebugAll(true);
-//        edit_stage.setDebugAll(true);
+        hud_stage.setDebugAll(true);
+        edit_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
@@ -175,6 +192,29 @@ public class EditorScreen implements Screen {
         edit_stage.add_hud_tool(symmetry_tool);
 
         charge_drag_area_helper = new ChargeActor.ChargeDragAreaHelper(symmetry_tool);
+
+        action_history = new EditorActionHistory(new UndoableChargeAction.ChargeActionInterface() {
+            @Override
+            public ChargeActor add_charge(ChargeActor.ChargeState state) {
+                ChargeActor puck = add_puck(state.x, state.y);
+                puck.set_id(state.uid);
+                return puck;
+            }
+
+            @Override
+            public void remove_charge(ChargeActor puck) {
+                remove_puck(puck);
+            }
+
+            @Override
+            public ChargeActor find(int uid) {
+                for (ChargeActor puck : puck_actors) {
+                    if (puck.get_id() == uid)
+                        return puck;
+                }
+                return null;
+            }
+        });
 
         // add interactive pucks from the stored puck positions
         puck_actors = new Array<ChargeActor>(level.get_puck_states().size * 2);
@@ -229,6 +269,15 @@ public class EditorScreen implements Screen {
         show_grid_button.setChecked(show_grid);
         show_grid_button.pad(ACTOR_PAD);
 
+        Button undo_button = new Button(game.skin, "undo");
+        undo_button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                action_history.undo();
+            }
+        });
+        undo_button.pad(ACTOR_PAD);
+
         puck_button = new Button(game.skin.getDrawable("sprite_puck"));
         // Helper DragListener for adding pucks with the puck button (see GameScreen for ChargeDragger)
         // Add a puck by dragging or by clicking on it to add it to the center
@@ -236,6 +285,7 @@ public class EditorScreen implements Screen {
         puck_button.addListener(new DragListener() {
             private boolean clicked = true;
             private Vector2 tmp_coords = new Vector2();
+            private ChargeActor puck;
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -248,7 +298,8 @@ public class EditorScreen implements Screen {
                 // x and y are in local button space coordinates
                 hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
                 edit_stage.screenToStageCoordinates(tmp_coords);
-                place_puck(tmp_coords.x, tmp_coords.y, true);
+                puck = place_puck(tmp_coords.x, tmp_coords.y, true);
+                puck.set_is_new(true);
 
                 hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
                 edit_stage.touchDown((int)tmp_coords.x, (int)tmp_coords.y, pointer, getButton());
@@ -269,10 +320,14 @@ public class EditorScreen implements Screen {
                 super.touchUp(event, x, y, pointer, button);
 
                 if (clicked) {
-                    place_puck();
+                    puck = place_puck();
                 } else {
                     hud_stage.stageToScreenCoordinates(tmp_coords.set(event.getStageX(), event.getStageY()));
                     edit_stage.touchUp((int)tmp_coords.x, (int)tmp_coords.y, pointer, button);
+                }
+
+                if (puck != null && puck.hasParent()) {
+                    action_history.save(new ChargeAddAction(puck.get_id()));
                 }
             }
         });
@@ -295,7 +350,8 @@ public class EditorScreen implements Screen {
         hud_table.add(menu_button).right().row();
 
         hud_table.row().size(IMAGE_BUTTON_SIZE).pad(CELL_PAD);
-        hud_table.add(show_grid_button).colspan(3).expandX().right().row();
+        hud_table.add(show_grid_button).left();
+        hud_table.add(undo_button).colspan(2).expandX().right().row();
 
         hud_table.defaults().colspan(3);
         hud_table.add().expand().fill().row();
@@ -328,13 +384,13 @@ public class EditorScreen implements Screen {
     }
 
     /* Add a puck to the center of the screen. */
-    private void place_puck() {
-        place_puck(edit_stage.getCamera().position.x, edit_stage.getCamera().position.y, false);
+    private ChargeActor place_puck() {
+        return place_puck(edit_stage.getCamera().position.x, edit_stage.getCamera().position.y, false);
     }
 
     /** Place a puck at the given position, keeping the symmetry tool and dragging in mind.
      *  Dragging determines whether to perform out of bounds checking now or when dragging is finished. */
-    private void place_puck(float x, float y, boolean dragged) {
+    private ChargeActor place_puck(float x, float y, boolean dragged) {
         ChargeActor puck1 = add_puck(x, y);
 
         if (symmetry_tool.is_enabled()) {
@@ -351,6 +407,8 @@ public class EditorScreen implements Screen {
 
         if (!dragged && puck1.check_out_of_world())
             remove_puck(puck1);
+
+        return puck1;
     }
 
     private void remove_puck(ChargeActor puck) {

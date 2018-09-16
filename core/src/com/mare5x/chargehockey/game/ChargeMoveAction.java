@@ -7,7 +7,7 @@ import static com.mare5x.chargehockey.actors.ChargeActor.ChargeState;
 public class ChargeMoveAction extends UndoableChargeActionBase {
     private final ChargeState prev_state;
 
-    ChargeMoveAction(ChargeState prev_state) {
+    public ChargeMoveAction(ChargeState prev_state) {
         this.prev_state = prev_state;
     }
 

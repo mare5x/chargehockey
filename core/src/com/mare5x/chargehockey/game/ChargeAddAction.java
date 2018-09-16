@@ -5,7 +5,7 @@ import com.mare5x.chargehockey.actors.ChargeActor;
 public class ChargeAddAction extends UndoableChargeActionBase {
     private int charge_uid;
 
-    ChargeAddAction(int uid) {
+    public ChargeAddAction(int uid) {
         this.charge_uid = uid;
     }
 
