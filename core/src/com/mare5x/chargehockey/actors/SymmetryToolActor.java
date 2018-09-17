@@ -1,6 +1,5 @@
 package com.mare5x.chargehockey.actors;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -62,7 +61,6 @@ public class SymmetryToolActor extends Actor {
         move_knob = game.create_sprite("ui_vertical_knob");
         rotate_knob = game.create_sprite("ui_rotate_knob");
 
-        symmetry_axis.setSize(2 * (float) Math.hypot(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), screen_axis_w);
         move_knob.setSize(screen_knob_size, screen_knob_size);
         rotate_knob.setSize(screen_knob_size, screen_knob_size);
 
@@ -171,8 +169,12 @@ public class SymmetryToolActor extends Actor {
     }
 
     private void update_bounds() {
+        int screen_height = getStage().getViewport().getScreenHeight();
+        int screen_width = getStage().getViewport().getScreenWidth();
+        float axis_width = screen_width * screen_height;
+
         Vector2 center_screen_pos = get_screen_coordinates(get_center_x(), get_center_y());
-        symmetry_axis.setPosition(-symmetry_axis.getWidth() / 2, center_screen_pos.y - screen_axis_w / 2);
+        symmetry_axis.setBounds(-axis_width / 2, center_screen_pos.y - screen_axis_w / 2, axis_width, screen_axis_w);
         move_knob.setPosition(center_screen_pos.x - screen_knob_size / 2, center_screen_pos.y - screen_knob_size / 2);
 
         float cos = MathUtils.cosDeg(getRotation());
