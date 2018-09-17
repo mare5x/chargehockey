@@ -5,10 +5,6 @@ import com.badlogic.gdx.utils.Array;
 import com.mare5x.chargehockey.actors.ChargeActor;
 
 public class ActionHistory {
-    enum ActionType {
-        CHARGE_ADD, CHARGE_REMOVE, CHARGE_MOVE, TILE_SET, TILE_PAINT
-    }
-
     private final Array<UndoableChargeAction> charge_history = new Array<UndoableChargeAction>();
 
     public ActionHistory(UndoableChargeAction.ChargeActionInterface charge_interface) {

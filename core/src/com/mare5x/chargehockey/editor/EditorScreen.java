@@ -175,8 +175,8 @@ public class EditorScreen implements Screen {
         camera.position.set(Grid.WORLD_WIDTH / 2, Grid.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
 
-        hud_stage.setDebugAll(true);
-        edit_stage.setDebugAll(true);
+//        hud_stage.setDebugAll(true);
+//        edit_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
@@ -213,6 +213,16 @@ public class EditorScreen implements Screen {
                         return puck;
                 }
                 return null;
+            }
+        }, new UndoableTileAction.EditorInterface() {
+            @Override
+            public boolean place_tile(TileState state) {
+                return EditorScreen.this.place_tile(state.row, state.col, state.item, null);
+            }
+
+            @Override
+            public void update_grid() {
+                fbo.update(game.batch);
             }
         });
 
@@ -427,6 +437,17 @@ public class EditorScreen implements Screen {
 
     /** Places a tile at the given position, taking the symmetry tool into account. */
     private void place_tile(float x, float y, GRID_ITEM item) {
+        if (symmetry_tool.is_enabled()) {
+            MultiTileSetAction action = new MultiTileSetAction(2);
+            place_tile(x, y, item, action);
+            action_history.save(action);
+        } else {
+            place_tile(x, y, item, action_history);
+        }
+    }
+
+    /** Places a tile at the given position, taking the symmetry tool into account. */
+    private void place_tile(float x, float y, GRID_ITEM item, TileStateSaver saver) {
         int row1 = (int) y;
         int col1 = (int) x;
 
@@ -439,14 +460,22 @@ public class EditorScreen implements Screen {
         }
 
         // only update the fbo if a new tile was just placed
-        if (level.get_grid_item(row1, col1) != item || level.get_grid_item(row2, col2) != item) {
-            level.set_item(row1, col1, item);
-            level.set_item(row2, col2, item);
-
+        boolean tile1 = place_tile(row1, col1, item, saver);
+        boolean tile2 = place_tile(row2, col2, item, saver);
+        if (tile1 || tile2)
             fbo.update(game.batch);
+    }
 
+    private boolean place_tile(int row, int col, GRID_ITEM item, TileStateSaver saver) {
+        GRID_ITEM prev_item = level.get_grid_item(row, col);
+        if (prev_item != item) {
+            if (saver != null) saver.save_tile(row, col, prev_item);
+
+            level.set_item(row, col, item);
             level_changed = true;
+            return true;
         }
+        return false;
     }
 
     private void save_changes() {
@@ -583,6 +612,7 @@ public class EditorScreen implements Screen {
 
     private class EditCameraController extends CameraController {
         private float prev_zoom;
+        private MultiTileSetAction paint_action;
 
         EditCameraController(OrthographicCamera camera, Stage stage) {
             super(camera, stage);
@@ -624,12 +654,13 @@ public class EditorScreen implements Screen {
         protected void on_long_press_start(float screen_x, float screen_y) {
             super.on_long_press_start(screen_x, screen_y);
             edit_icon.show_on();
+            paint_action = new MultiTileSetAction();
         }
 
         @Override
         protected void on_long_press_held(float screen_x, float screen_y) {
             edit_stage.screenToStageCoordinates(tmp_vec.set(screen_x, screen_y));
-            place_tile(tmp_vec.x, tmp_vec.y, grid_item_button.get_selected_item());
+            place_tile(tmp_vec.x, tmp_vec.y, grid_item_button.get_selected_item(), paint_action);
 
             // If painting on the edge of the screen, move the camera.
             // continuous rendering is enabled and this gets called every frame
@@ -654,6 +685,8 @@ public class EditorScreen implements Screen {
         protected void on_long_press_end() {
             super.on_long_press_end();
             edit_icon.show_off();
+            action_history.save(paint_action);
+            paint_action = null;
         }
     }
 

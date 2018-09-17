@@ -229,8 +229,8 @@ public class GameScreen implements Screen {
         camera.position.set(Grid.WORLD_WIDTH / 2, Grid.WORLD_HEIGHT / 2, 0);  // center camera
         camera.zoom = 0.8f;
 
-        hud_stage.setDebugAll(true);
-        game_stage.setDebugAll(true);
+//        hud_stage.setDebugAll(true);
+//        game_stage.setDebugAll(true);
 
         fbo = new LevelFrameBuffer(game, level);
         fbo.set_draw_pucks(false);
