@@ -116,7 +116,7 @@ public class LevelSelector {
     public void add_level(String level_name) {
         if (!level_name.isEmpty()) {
             if (!list.contains(level_name))
-                list.add_entry(level_name, false);
+                list.add_entry(level_name);
             else
                 list.select(level_name);
             list.scroll_to_selected();

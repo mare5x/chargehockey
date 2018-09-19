@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.SnapshotArray;
@@ -29,41 +30,40 @@ import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 /* A group of LevelListEntry entries. */
 class LevelList extends VerticalGroup {
     private static class LevelData {
-        private final String name;
-        private final boolean level_finished;
+        enum LevelState { EMPTY, IN_PROGRESS, FINISHED }
 
-        LevelData(String name, boolean finished) {
+        final String name;
+        final LevelState state;
+
+        LevelData(String name) {
             this.name = name;
-            level_finished = finished;
+            state = LevelState.EMPTY;
         }
 
         LevelData(String name, LEVEL_TYPE level_type) {
             this.name = name;
-            level_finished = check_if_finished(name, level_type);
+            state = read_level_state(name, level_type);
         }
 
-        private boolean check_if_finished(String name, LEVEL_TYPE level_type) {
+        private LevelState read_level_state(String name, LEVEL_TYPE level_type) {
+
             FileHandle save_file = Level.get_level_save_fhandle(level_type, name);
-            if (!save_file.exists()) return false;
+            if (!save_file.exists()) return LevelState.EMPTY;
 
             BufferedReader reader = save_file.reader(8, "UTF-8");
             try {
                 // the first line contains a flag that determines if the level has been completed
-                String header = reader.readLine();
-                return header != null && header.equals("1");
+                String line = reader.readLine();
+                if (line.equals("1")) return LevelState.FINISHED;
+                line = reader.readLine();
+                int n_charges = Integer.parseInt(line);
+                if (n_charges > 0) return LevelState.IN_PROGRESS;
             } catch (IOException e) {
                 throw new GdxRuntimeException("Error reading file", e);
             } finally {
                 StreamUtils.closeQuietly(reader);
             }
-        }
-
-        String name() {
-            return name;
-        }
-
-        boolean is_finished() {
-            return level_finished;
+            return LevelState.EMPTY;
         }
     }
 
@@ -72,8 +72,8 @@ class LevelList extends VerticalGroup {
         private String name;
         private boolean selected;
 
-        LevelListEntry(String name, boolean level_finished) {
-            this.name = name;
+        LevelListEntry(LevelData level_data) {
+            this.name = level_data.name;
 
             name_button = new TextButton(name, game.skin, "checked");
             name_button.getLabel().setWrap(true);
@@ -96,7 +96,11 @@ class LevelList extends VerticalGroup {
             });
 
             add(name_button).minHeight(MIN_BUTTON_HEIGHT).prefWidth(MAX_BUTTON_WIDTH).padRight(ACTOR_PAD);
-            add(new Image(game.skin.getDrawable(level_finished ? "ui_star" : "ui_star_empty"))).size(MIN_BUTTON_HEIGHT);
+            Drawable star_icon;
+            if (level_data.state == LevelData.LevelState.EMPTY) star_icon = game.skin.getDrawable("ui_star_empty");
+            else if (level_data.state == LevelData.LevelState.IN_PROGRESS) star_icon = game.skin.getDrawable("ui_star_half");
+            else star_icon = game.skin.getDrawable("ui_star");
+            add(new Image(star_icon)).size(MIN_BUTTON_HEIGHT);
             pad(5);
         }
 
@@ -185,13 +189,13 @@ class LevelList extends VerticalGroup {
     }
 
     private LevelListEntry add_entry(LevelData level) {
-        LevelListEntry entry = new LevelListEntry(level.name(), level.is_finished());
+        LevelListEntry entry = new LevelListEntry(level);
         addActor(entry);
         return entry;
     }
 
-    void add_entry(String level_name, boolean level_finished) {
-        LevelListEntry entry = add_entry(new LevelData(level_name, level_finished));
+    void add_entry(String level_name) {
+        LevelListEntry entry = add_entry(new LevelData(level_name));
         invalidateHierarchy();
         select(entry);
     }
