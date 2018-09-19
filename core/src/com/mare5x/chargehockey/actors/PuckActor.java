@@ -42,7 +42,7 @@ public class PuckActor extends ForcePuckActor {
         super(game, charge_type, drag_callback);
 
         velocity_sprite = new VectorSprite(game);
-        velocity_sprite.setColor(game.skin.getColor("green"));
+        velocity_sprite.setColor(game.skin.getColor("ui_green_up"));
         velocity_sprite.setAlpha(0.75f);
         acceleration_sprite = new VectorSprite(game);
         acceleration_sprite.setColor(game.skin.getColor("purple"));

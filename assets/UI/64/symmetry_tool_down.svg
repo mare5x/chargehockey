@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="Layer_1" inkscape:version="0.92.3 (2405546, 2018-03-11)" sodipodi:docname="symmetry_tool_up.svg"   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+	 xmlns="http://www.w3.org/2000/svg"  x="0px" y="0px" viewBox="0 0 64 64"
+	 style="enable-background:new 0 0 64 64;" xml:space="preserve">
+<style type="text/css">
+	.st0{filter:url(#filter826);}
+	.st1{fill:#98E597;}
+	.st2{filter:url(#filter830);}
+	.st3{fill:none;stroke:#98E597;stroke-width:2;stroke-miterlimit:10;}
+	.st4{filter:url(#filter838);}
+</style>
+<filter  id="filter838" inkscape:label="Pixellize" inkscape:menu="Pixel Tools" inkscape:menu-tooltip="Reduce or remove antialiasing around shapes" style="color-interpolation-filters:sRGB;">
+	<feColorMatrix  id="feColorMatrix836" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1000 -500 "></feColorMatrix>
+</filter>
+<filter  id="filter830" inkscape:label="Pixellize" inkscape:menu="Pixel Tools" inkscape:menu-tooltip="Reduce or remove antialiasing around shapes" style="color-interpolation-filters:sRGB;">
+	<feColorMatrix  id="feColorMatrix828" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1000 -500 "></feColorMatrix>
+</filter>
+<filter  id="filter826" inkscape:label="Pixellize" inkscape:menu="Pixel Tools" inkscape:menu-tooltip="Reduce or remove antialiasing around shapes" style="color-interpolation-filters:sRGB;">
+	<feColorMatrix  id="feColorMatrix824" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1000 -500 "></feColorMatrix>
+</filter>
+<sodipodi:namedview  bordercolor="#666666" borderopacity="1" gridtolerance="10" guidetolerance="10" id="namedview13" inkscape:current-layer="Layer_1" inkscape:cx="8.9320676" inkscape:cy="21.829298" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-height="1017" inkscape:window-maximized="1" inkscape:window-width="1920" inkscape:window-x="-8" inkscape:window-y="-8" inkscape:zoom="13.906433" objecttolerance="10" pagecolor="#ffffff" showgrid="false">
+	</sodipodi:namedview>
+<g id="rect4" class="st0">
+	<rect x="1" y="30" class="st1" width="62" height="6"/>
+</g>
+<g id="rect6" class="st2">
+	<rect x="26" y="26" class="st3" width="13" height="14"/>
+</g>
+<g id="circle10" class="st4">
+	<circle class="st1" cx="32.4" cy="49.7" r="5.4"/>
+</g>
+<g id="circle10_1_" class="st4">
+	<ellipse transform="matrix(0.7071 -0.7071 0.7071 0.7071 -1.9986 27.8017)" class="st1" cx="32.6" cy="16.3" rx="5.4" ry="5.4"/>
+</g>
+</svg>

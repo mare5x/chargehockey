@@ -1,7 +1,8 @@
 {
     "com.badlogic.gdx.graphics.Color": {
-    	"green": { "a": 1, "r": 0.568, "g": 0.86, "b": 0.35 },
-    	"blue": { "a": 1, "r": 0, "g": 0.58, "b": 1 },
+    	"ui_green_up": { "a": 1, "r": 0.568, "g": 0.86, "b": 0.35 },
+    	"ui_green_down": { "a": 1, "r": 0.596, "g": 0.898, "b": 0.596 },
+        "ui_tint": { "a": 1, "r": 1.048, "g": 1.041, "b": 1.678 },
     	"dark_brown": { "a": 1, "r": 0.26, "g": 0.14, "b": 0.13 },
     	"purple": { "a": 1, "r": 0.698, "g": 0, "b": 1 },
     	"orange": {"a": 1, "r": 1, "g": 0.5, "b": 0 },
@@ -32,11 +33,6 @@
             "up": "ui_add_up"
         },
 
-        "remove": {
-            "down": "ui_remove_down",
-            "up": "ui_remove_up"
-        },
-
         "cancel": {
             "down": "ui_cancel_down",
             "up": "ui_cancel_up"
@@ -54,7 +50,7 @@
 
         "undo": {
             "down": "ui_undo_down",
-            "up": "ui_undo_down"
+            "up": "ui_undo_up"
         },
 
         "symmetry_tool": {
@@ -68,10 +64,14 @@
             "checked": "ui_check_on"
         },
 
-        "grid": {
-            "up": "ui_grid_off",
-            "down": "ui_grid_on",
-            "checked": "ui_grid_on"
+        "grid_on": {
+            "up": "ui_grid_on_up",
+            "down": "ui_grid_on_down",
+        },
+
+        "grid_off": {
+            "up": "ui_grid_off_up",
+            "down": "ui_grid_off_down"
         },
 
         "star": {

@@ -266,16 +266,22 @@ public class EditorScreen implements Screen {
         });
         grid_item_button.pad(ACTOR_PAD);
 
-        final Button show_grid_button = new Button(game.skin, "grid");
+        show_grid = SHOW_GRID_LINES_SETTING;
+        final Button.ButtonStyle grid_on_style = game.skin.get("grid_on", Button.ButtonStyle.class);
+        final Button.ButtonStyle grid_off_style = game.skin.get("grid_off", Button.ButtonStyle.class);
+        final Button show_grid_button = new Button(show_grid ? grid_on_style : grid_off_style);
         show_grid_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 show_grid = show_grid_button.isChecked();
                 grid_lines.set_show_grid_lines(show_grid);
                 grid_lines.update(camera.zoom);
+                if (show_grid_button.isChecked())
+                    show_grid_button.setStyle(grid_on_style);
+                else
+                    show_grid_button.setStyle(grid_off_style);
             }
         });
-        show_grid = SHOW_GRID_LINES_SETTING;
         show_grid_button.setChecked(show_grid);
         show_grid_button.pad(ACTOR_PAD);
 

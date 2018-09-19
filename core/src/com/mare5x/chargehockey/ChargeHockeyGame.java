@@ -84,9 +84,9 @@ abstract public class ChargeHockeyGame extends Game {
         skin = manager.get("skin.json", Skin.class);
 
         // manually flip the back button arrow and make a new button out of it
-        Sprite next_up_sprite = new Sprite(skin.getRegion("ui_back_up"));
+        Sprite next_up_sprite = create_sprite("ui_back_up");
         next_up_sprite.flip(true, false);
-        Sprite next_down_sprite = new Sprite(skin.getRegion("ui_back_down"));
+        Sprite next_down_sprite = create_sprite("ui_back_down");
         next_down_sprite.flip(true, false);
         Button.ButtonStyle next_button = new Button.ButtonStyle(new SpriteDrawable(next_up_sprite), new SpriteDrawable(next_down_sprite), null);
         skin.add("next", next_button, Button.ButtonStyle.class);
