@@ -666,7 +666,7 @@ public class GameScreen implements Screen {
             if (object == WinDialogBUTTON.NEXT) {
                 GameScreen.this.hide();
                 dispose();
-                game.setScreen(new LevelSelectorScreen(game, level));
+                game.setScreen(LevelSelectorScreen.create(game, level));
             }
         }
 

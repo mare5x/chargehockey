@@ -20,6 +20,10 @@ public class LevelSelector {
 
     private Level selected_level = null;
 
+    // Java is a very good programming language :^).
+    public interface LongPressCallback { void run(String level_name); }
+    private LongPressCallback long_press_callback = null;
+
     public LevelSelector(final ChargeHockeyGame game, LEVEL_TYPE level_type) {
         this.level_type = level_type;
 
@@ -49,8 +53,13 @@ public class LevelSelector {
     }
 
     /** Override this method to handle long pressing. The entry will be selected
-     *  if LevelList.select_on_long_press is true. */
-    public void on_long_press(String level_name) { }
+     *  if LevelList.select_on_long_press is true.
+     *  If you can't override because ((( java :-) )), set the long press callback. */
+    public void on_long_press(String level_name) { if (long_press_callback != null) long_press_callback.run(level_name); }
+
+    public void set_long_press_callback(LongPressCallback callback) {
+        this.long_press_callback = callback;
+    }
 
     public void set_select_on_long_press(boolean select_on_long_press) {
         list.set_select_on_long_press(select_on_long_press);

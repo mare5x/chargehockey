@@ -72,7 +72,7 @@ class GameMenuScreen extends ScrollableMenuScreen {
         selector_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                set_screen(new LevelSelectorScreen(game, level));
+                set_screen(LevelSelectorScreen.create(game, level));
                 parent_screen.dispose();
             }
         });

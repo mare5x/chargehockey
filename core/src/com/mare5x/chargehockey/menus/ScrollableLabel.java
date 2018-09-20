@@ -1,4 +1,4 @@
-package com.mare5x.chargehockey.actors;
+package com.mare5x.chargehockey.menus;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;

@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mare5x.chargehockey.ChargeHockeyGame;
+import com.mare5x.chargehockey.game.CustomLevelSelectorScreen;
 import com.mare5x.chargehockey.game.GameScreen;
 import com.mare5x.chargehockey.game.PlayMenuScreen;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
@@ -16,7 +17,9 @@ import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 
 public class LevelSelectorScreen extends BaseMenuScreen {
-    public LevelSelectorScreen(final ChargeHockeyGame game, Level selected_level) {
+    protected final LevelSelector level_selector;
+
+    private LevelSelectorScreen(final ChargeHockeyGame game, Level selected_level) {
         this(game, selected_level.get_type(), selected_level.get_name());
     }
 
@@ -24,10 +27,10 @@ public class LevelSelectorScreen extends BaseMenuScreen {
         this(game, level_type, null);
     }
 
-    private LevelSelectorScreen(final ChargeHockeyGame game, Level.LEVEL_TYPE level_type, String selected_level_name) {
+    public LevelSelectorScreen(final ChargeHockeyGame game, Level.LEVEL_TYPE level_type, String selected_level_name) {
         super(game);
 
-        final LevelSelector level_selector = new LevelSelector(game, level_type);
+        this.level_selector = new LevelSelector(game, level_type);
 
         Button play_button = new Button(game.skin, "play");
         play_button.addListener(new ClickListener() {
@@ -68,5 +71,11 @@ public class LevelSelectorScreen extends BaseMenuScreen {
     @Override
     public void hide() {
         dispose();
+    }
+
+    public static LevelSelectorScreen create(ChargeHockeyGame game, Level level) {
+        if (level.get_type() == Level.LEVEL_TYPE.CUSTOM)
+            return new CustomLevelSelectorScreen(game, level);
+        return new LevelSelectorScreen(game, level);
     }
 }

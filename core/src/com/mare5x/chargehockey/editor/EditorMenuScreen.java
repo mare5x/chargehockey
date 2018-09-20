@@ -1,25 +1,20 @@
 package com.mare5x.chargehockey.editor;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.level.LevelSelector;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
+import com.mare5x.chargehockey.menus.NameInputDialog;
 import com.mare5x.chargehockey.menus.TableLayout;
 import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
 import com.mare5x.chargehockey.notifications.Notification;
@@ -28,8 +23,6 @@ import java.util.Locale;
 
 import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
-import static com.mare5x.chargehockey.settings.GameDefaults.IMAGE_FONT_SIZE;
-import static com.mare5x.chargehockey.settings.GameDefaults.MAX_BUTTON_WIDTH;
 import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 
@@ -37,10 +30,6 @@ class EditorMenuScreen extends BaseMenuScreen {
     private final AddInputDialog add_input_dialog;
     private final EditInputDialog edit_input_dialog;
     private final LevelSelector level_selector;
-
-    private enum DIALOG_BUTTON {
-        CANCEL, CONFIRM
-    }
 
     EditorMenuScreen(final ChargeHockeyGame game) {
         this(game, null);
@@ -124,107 +113,16 @@ class EditorMenuScreen extends BaseMenuScreen {
     @Override
     public void hide() { }  // DISPOSE IN SET_SCREEN
 
-    private class AddInputDialog extends Dialog {
-        final TextField name_input;
-        final Stage stage;
-
+    private class AddInputDialog extends NameInputDialog {
         AddInputDialog(Stage stage, String title, Skin skin) {
-            super(title, skin);
-
-            this.stage = stage;
-
-            setModal(true);
-            setResizable(false);
-            setMovable(false);
-
-            pad(IMAGE_FONT_SIZE);
-
-            getTitleTable().clear();
-
-            name_input = new TextField("LEVEL NAME", game.skin);
-            name_input.setAlignment(Align.center);
-
-            Table content_table = getContentTable();
-            content_table.defaults().pad(CELL_PAD).minHeight(MIN_BUTTON_HEIGHT).prefWidth(get_input_width()).minWidth(0);
-            content_table.add(name_input).row();
-
-            Button cancel_button = new Button(game.skin, "cancel");
-            cancel_button.pad(ACTOR_PAD);
-            Button confirm_button = new Button(game.skin, "confirm");
-            confirm_button.pad(ACTOR_PAD);
-
-            getButtonTable().defaults().size(MIN_BUTTON_HEIGHT).padTop(CELL_PAD).space(CELL_PAD).expandX();
-            button(cancel_button, DIALOG_BUTTON.CANCEL);
-            button(confirm_button, DIALOG_BUTTON.CONFIRM);
-
-            addListener(new InputListener() {
-                @Override
-                public boolean keyUp(InputEvent event, int keycode) {
-                    if (keycode == Input.Keys.BACK)
-                        result(DIALOG_BUTTON.CANCEL);
-                    return true;
-                }
-            });
+            super(stage, title, skin);
         }
 
         @Override
-        public float getPrefWidth() {
-            return Math.min(stage.getWidth() * 0.8f, MAX_BUTTON_WIDTH * 1.25f);
-        }
-
-        Value get_input_width() {
-            return new Value() {
-                @Override
-                public float get(Actor context) {
-                    return getPrefWidth() - getPadLeft() - getPadRight();
-                }
-            };
-        }
-
-        public Dialog show() {
-            return show("LEVEL NAME");
-        }
-
-        public Dialog show(String level_name) {
-            super.show(stage);
-
-            setPosition(Math.round((stage.getWidth() - getWidth()) / 2), Math.round(stage.getHeight() * 0.9f - getHeight()));
-
-            name_input.setText(level_name);
-
-            name_input.selectAll();  // select everything, so it's ready to be overwritten
-            stage.setKeyboardFocus(name_input);
-            set_keyboard_visible(true);
-
-            return this;
-        }
-
-        void set_keyboard_visible(boolean visible) {
-            name_input.getOnscreenKeyboard().show(visible);
-        }
-
-        void resize() {
-            pack();
-            setPosition(Math.round((stage.getWidth() - getWidth()) / 2), Math.round(stage.getHeight() * 0.9f - getHeight()));
-        }
-
-        @Override
-        protected void result(Object object) {
-            hide();
-            if (object.equals(DIALOG_BUTTON.CONFIRM))
-                on_confirm();
-        }
-
-        @Override
-        public void hide() {
-            set_keyboard_visible(false);
-            super.hide();
-        }
-
-        protected void on_confirm() {
+        public void on_confirm() {
             if (level_selector.is_empty())
                 show_notification("LONG PRESS TO DELETE OR RENAME A LEVEL", 2 * Notification.DEFAULT_SHOW_TIME);
-            level_selector.add_level(name_input.getText());
+            level_selector.add_level(get_name());
         }
     }
 
@@ -274,8 +172,8 @@ class EditorMenuScreen extends BaseMenuScreen {
         }
 
         @Override
-        protected void on_confirm() {
-            if (!level_selector.rename_selected_level(name_input.getText())) {
+        public void on_confirm() {
+            if (!level_selector.rename_selected_level(get_name())) {
                 show_notification("ERROR RENAMING LEVEL");
             }
         }

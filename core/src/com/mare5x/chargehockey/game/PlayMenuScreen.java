@@ -50,7 +50,7 @@ public class PlayMenuScreen extends BaseMenuScreen {
         custom_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                set_screen(new LevelSelectorScreen(game, LEVEL_TYPE.CUSTOM));
+                set_screen(new CustomLevelSelectorScreen(game));
             }
         });
 
