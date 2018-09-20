@@ -486,6 +486,8 @@ public class GameScreen implements Screen {
             grid_lines.set_show_grid_lines(SHOW_GRID_LINES_SETTING);
             grid_lines.update(camera.zoom);
         }
+        // in case DRAW_FORCES was just turned on
+        game_logic.update_puck_vectors();
 
         render(Gdx.graphics.getDeltaTime());
     }

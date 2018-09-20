@@ -559,6 +559,12 @@ public class GameLogic {
         puck.set_velocity(velocity_vec);
     }
 
+    /** Update all puck-charge vectors. */
+    void update_puck_vectors() {
+        for (int i = 0; i < charge_actors.size; ++i)
+            update_puck_vectors(charge_actors.get(i));
+    }
+
     /** Update the puck's force vectors which depend on 'charge' */
     void update_puck_vectors(ChargeActor charge) {
         if (PuckActor.get_draw_forces()) {
