@@ -1,0 +1,40 @@
+[2.0] - [2018-09-22]
+- Drag to add charges.
+- New game background and button layout.
+- Visual indicator when charges in the charge zone.
+- Move the camera by dragging charges on the edge of the screen.
+- Move the camera when painting tiles in the editor on the edge of the screen.
+- New menu pops up when long pressing a custom level.
+- Export multiple selected levels.
+- FIX storage permission check bug on Android.
+- Support for portrait and horizontal orientation.
+- Support resizing window.
+- Better camera feel.
+- FIX physics calculations.
+- New collision detection algorithm.
+- Puck bouncing on new bouncer tiles.
+- Random puck trace color.
+- Charge size is screen based.
+- Fixed charge force vector arrows.
+- NEW undo button.
+- SVGs of all sprites.
+- NEW half star icon.
+- LEVEL CHANGES:
+ - CHANGES:
+ - e4 -> new design
+ - e11 -> added bouncers
+ - swap e4, e12
+ - swap e11, e12
+ - m10 -> slight design change
+ - h6 -> design change to make more difficult
+ - h9 -> design change to make more difficult
+ - h10 -> design change to make more difficult
+ - NEW LEVELS
+ - e13
+ - e14
+ - e15
+ - m25
+ - m26
+ - m27
+ - h14
+ - h15
