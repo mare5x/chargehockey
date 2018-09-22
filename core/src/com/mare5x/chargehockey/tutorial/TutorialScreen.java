@@ -77,11 +77,14 @@ public class TutorialScreen extends ScrollableMenuScreen {
         goal_img.setScaling(Scaling.fit);
         Image wall_img = new Image(game.skin.getDrawable("grid_wall"));
         wall_img.setScaling(Scaling.fit);
+        Image bouncer_img = new Image(game.skin.getDrawable("grid_bouncer"));
+        bouncer_img.setScaling(Scaling.fit);
 
         Label goal_1 = make_label("YOUR GOAL IS TO GET ALL PUCKS");
         Label goal_2 = make_label("INTO THE GOAL");
         Label goal_3 = make_label("WITHOUT HITTING THE WALLS");
         Label goal_4 = make_label("PUCKS ARE MOVED USING CHARGES");
+        Label goal_5 = make_label("AND BOUNCE OFF");
 
         goal_table.defaults().minHeight(MIN_BUTTON_HEIGHT).space(CELL_PAD).pad(ACTOR_PAD);
         goal_table.add(goal_1).expandX().fillX().colspan(2);
@@ -92,7 +95,9 @@ public class TutorialScreen extends ScrollableMenuScreen {
         goal_table.add(wall_img).colspan(1).size(MIN_BUTTON_HEIGHT).minSize(0).center().row();
         goal_table.add(goal_4).fillX().expandX();
         goal_table.add(pos_img).size(MIN_BUTTON_HEIGHT).minSize(0);
-        goal_table.add(neg_img).size(MIN_BUTTON_HEIGHT).minSize(0);
+        goal_table.add(neg_img).size(MIN_BUTTON_HEIGHT).minSize(0).row();
+        goal_table.add(goal_5).fillX().colspan(2);
+        goal_table.add(bouncer_img).colspan(1).size(MIN_BUTTON_HEIGHT).minSize(0).center();
 
         table.clear();
 
@@ -275,7 +280,7 @@ public class TutorialScreen extends ScrollableMenuScreen {
         ui_tutorial_table.add(ui_label_4).fillX().colspan(3);
 
         Label zoom_tip = make_label("TIP: ZOOM BY PINCHING OR BY DOUBLE TAPPING");
-        Label charge_add_tip = make_label("TIP: CLICK ON A CHARGE TO ADD IT TO THE CENTER OF THE SCREEN");
+        Label charge_add_tip = make_label("TIP: TAP ON A CHARGE TO ADD IT TO THE CENTER OF THE SCREEN");
         Label settings_tip = make_label("TIP: EXPLORE THE SETTINGS MENU");
         Label editor_tip = make_label("TIP: CREATE YOUR OWN LEVELS USING THE BUILT-IN CUSTOM EDITOR");
         Label symmetry_tip = make_label("TIP: USE THE GRID AND THE SYMMETRY TOOL FOR PRECISE ACTIONS");
