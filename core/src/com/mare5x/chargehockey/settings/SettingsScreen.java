@@ -123,7 +123,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
         dispose();
     }
 
-    /** Encapsulates a unified checkbox. Use with add_to_table(). */
+    /** Encapsulates a unified checkbox. */
     private static class SettingCheckBox extends Table {
         private final Button checkbox;
         private final TextButton text_button;
@@ -156,7 +156,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
         }
     }
 
-    /** A unified horizontal slider. Do NOT use it as a Table, but use the add_to_table method. */
+    /** A unified horizontal slider. */
     private static class SettingSlider extends Table {
         final Label label;
         final Slider slider;
@@ -178,7 +178,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
                 }
             });
 
-            add(label).fill().prefWidth(GameDefaults.MIN_DIMENSION * 0.4f);
+            add(label).fill().prefWidth(GameDefaults.MIN_DIMENSION * 0.4f).minWidth(50);
             add(slider).space(CELL_PAD).expandX().fillX();
 
             set_knob_size_impl(MIN_BUTTON_HEIGHT);
@@ -230,6 +230,10 @@ public class SettingsScreen extends ScrollableMenuScreen {
 
             set_label_format("CHARGE SIZE: %.1f");
 
+            Label size_label = new Label("CHARGE SIZE:", game.skin);
+            size_label.setWrap(true);
+            size_label.setAlignment(Align.center);
+
             scale_charge();
 
             slider.addListener(new ChangeListener() {
@@ -244,9 +248,10 @@ public class SettingsScreen extends ScrollableMenuScreen {
             reset();
             remove();
 
-            add(label).fillX().minHeight(MIN_BUTTON_HEIGHT).prefWidth(GameDefaults.MIN_DIMENSION * 0.4f);
+            add(size_label).fillX().minHeight(MIN_BUTTON_HEIGHT).prefWidth(GameDefaults.MIN_DIMENSION * 0.4f).minWidth(50);
+            add(charge).space(CELL_PAD).size(ChargeActor.BASE_CHARGE_SIZE * ChargeActor.MAX_SIZE).row();
+            add(label).fillX().minHeight(MIN_BUTTON_HEIGHT).prefWidth(GameDefaults.MIN_DIMENSION * 0.4f).minWidth(50);
             add(slider).space(CELL_PAD).expandX().fillX();
-            add(charge).space(CELL_PAD).size(ChargeActor.BASE_CHARGE_SIZE * ChargeActor.MAX_SIZE);
 
             set_charge_size_impl(ChargeActor.BASE_CHARGE_SIZE * ChargeActor.MAX_SIZE);
         }
