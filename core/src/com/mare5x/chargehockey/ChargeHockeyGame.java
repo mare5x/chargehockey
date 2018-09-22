@@ -6,7 +6,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -29,9 +28,6 @@ import com.mare5x.chargehockey.settings.SettingsFile;
 import java.util.Locale;
 
 abstract public class ChargeHockeyGame extends Game {
-    private static final boolean LOG_FPS = true;
-    private static final FPSLogger fps_logger = new FPSLogger();
-
 	public SpriteBatch batch;
     public Skin skin;
     public MenuScreen menu_screen;
@@ -50,6 +46,8 @@ abstract public class ChargeHockeyGame extends Game {
 
 	@Override
 	public void create () {
+        Gdx.app.setLogLevel(0);
+
         Gdx.input.setCatchBackKey(true);
 
         Gdx.graphics.setContinuousRendering(false);
@@ -103,14 +101,6 @@ abstract public class ChargeHockeyGame extends Game {
 
 	public Sprite create_sprite(String path) {
 	    return new Sprite(skin.getRegion(path));
-    }
-
-    @Override
-    public void render() {
-	    if (LOG_FPS)
-	        fps_logger.log();
-
-        super.render();
     }
 
     @Override
