@@ -50,7 +50,6 @@ import static com.mare5x.chargehockey.settings.GameDefaults.IMAGE_FONT_SIZE;
 import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 
-// todo add undo button
 public class GameScreen implements Screen {
     private enum WinDialogBUTTON {
         BACK, NEXT
@@ -446,8 +445,12 @@ public class GameScreen implements Screen {
         if (symmetry_tool_state != null)
             symmetry_tool.set_state(symmetry_tool_state);
 
-        if (success)  // the level was reset so reset the fbo
+        if (success) { // the level was reset so reset the fbo
             fbo.update(game.batch);
+
+            if (save_type == Level.SAVE_TYPE.QUICKSAVE)
+                action_history.clear();
+        }
 
         return success;
     }
