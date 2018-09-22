@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 
 public class VectorDrawable extends TextureRegionDrawable {
-    private static TextureRegion tail_region;
-    private static TextureRegion head_region;
+    private TextureRegion tail_region;
+    private TextureRegion head_region;
 
     private boolean flipped;
 
@@ -16,8 +16,8 @@ public class VectorDrawable extends TextureRegionDrawable {
 
         this.flipped = flipped;
 
-        if (tail_region == null) tail_region = game.skin.getRegion("sprite_vector_tail");
-        if (head_region == null) head_region = game.skin.getRegion("sprite_vector_head");
+        tail_region = game.skin.getRegion("sprite_vector_tail");
+        head_region = game.skin.getRegion("sprite_vector_head");
 
         setRegion(tail_region);
     }

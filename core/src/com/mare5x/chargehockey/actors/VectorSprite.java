@@ -3,7 +3,6 @@ package com.mare5x.chargehockey.actors;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Grid;
@@ -11,9 +10,6 @@ import com.mare5x.chargehockey.level.Grid;
 import static com.mare5x.chargehockey.settings.GameDefaults.PHYSICS_EPSILON;
 
 public class VectorSprite extends Sprite {
-    private static TextureRegion tail_region;
-    private static TextureRegion head_region;
-
     private final Sprite head_sprite;
 
     public static final float MAX_LENGTH = Grid.WORLD_WIDTH;
@@ -21,11 +17,9 @@ public class VectorSprite extends Sprite {
 
     VectorSprite(ChargeHockeyGame game) {
         super();
-        if (tail_region == null) tail_region = game.skin.getRegion("sprite_vector_tail");
-        if (head_region == null) head_region = game.skin.getRegion("sprite_vector_head");
-        setRegion(tail_region);
+        setRegion(game.skin.getRegion("sprite_vector_tail"));
         head_sprite = new Sprite();
-        head_sprite.setRegion(head_region);
+        head_sprite.setRegion(game.skin.getRegion("sprite_vector_head"));
     }
 
     @Override
