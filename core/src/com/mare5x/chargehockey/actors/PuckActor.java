@@ -66,8 +66,8 @@ public class PuckActor extends ForcePuckActor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         // draw the vectors
-        if (draw_velocity) velocity_sprite.draw(batch);
-        if (draw_acceleration) acceleration_sprite.draw(batch);
+        if (draw_velocity) velocity_sprite.draw(batch, vector_alpha);
+        if (draw_acceleration) acceleration_sprite.draw(batch, vector_alpha);
 
         // draw the sprite after the vectors, so it's on top
         if (blink_collision_action != null)

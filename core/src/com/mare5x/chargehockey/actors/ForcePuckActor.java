@@ -17,7 +17,7 @@ public class ForcePuckActor extends ChargeActor {
     private final ObjectMap<ChargeActor, VectorSprite> force_sprites = new ObjectMap<ChargeActor, VectorSprite>();
 
     private float puck_alpha = 1f;
-    private float vector_alpha = 1f;
+    float vector_alpha = 1f;
 
     private static boolean DRAW_FORCES = true;
 
