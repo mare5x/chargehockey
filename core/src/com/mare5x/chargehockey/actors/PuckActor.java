@@ -50,9 +50,17 @@ public class PuckActor extends ForcePuckActor {
 
         path_px = game.create_sprite("px_white");
         path_px.setSize(ONE_TX, ONE_TX);
-        path_px.setColor(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1);
+        path_px.setColor(get_random_color());
 
         reset_vectors();
+    }
+
+    /** Returns a random color that works well with the black backgound. */
+    private static Color get_random_color() {
+        // Added with libgdx 1.9.7
+        Color color = new Color(1, 1, 1, 1);
+        color.fromHsv(MathUtils.random() * 360, MathUtils.random(), MathUtils.random() * 0.4f + 0.6f);
+        return color;
     }
 
     @Override
