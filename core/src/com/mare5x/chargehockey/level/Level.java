@@ -331,10 +331,7 @@ public class Level {
         }
 
         FileHandle old_dir = get_level_dir_fhandle(level_type, name);
-        if (old_dir.exists()) {
-            FileHandle new_dir = get_level_dir_fhandle(level_type, new_name);
-            old_dir.moveTo(new_dir);
-        }
+        old_dir.delete();
 
         name = new_name;
     }
