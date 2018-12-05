@@ -1,3 +1,6 @@
+[2.1] - [2018-12-05]
+Undo button bug fix.
+
 [2.0] - [2018-09-22]
 - Drag to add charges.
 - New game background and button layout.
