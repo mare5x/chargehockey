@@ -86,6 +86,7 @@ public class GameScreen implements Screen {
         @Override
         public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
             clicked = true;
+            charge = null;  // We have to reset variables because they persist across touch events.
             return super.touchDown(event, x, y, pointer, button);
         }
 
@@ -277,6 +278,7 @@ public class GameScreen implements Screen {
         action_history = new ActionHistory(new UndoableChargeAction.ChargeActionInterface() {
             @Override
             public ChargeActor add_charge(ChargeState state) {
+                // This function is called when !undoing! certain ChargeActions.
                 ChargeActor charge = game_logic.add_charge(state.type, state.x, state.y);
                 charge.set_id(state.uid);
                 return charge;
@@ -310,7 +312,8 @@ public class GameScreen implements Screen {
         undo_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                action_history.undo();
+                if (!game_logic.is_playing())
+                    action_history.undo();
             }
         });
         undo_button.pad(ACTOR_PAD);

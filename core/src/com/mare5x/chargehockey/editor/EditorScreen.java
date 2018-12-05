@@ -306,6 +306,7 @@ public class EditorScreen implements Screen {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 clicked = true;
+                puck = null;
                 return super.touchDown(event, x, y, pointer, button);
             }
 
