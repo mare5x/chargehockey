@@ -1,3 +1,6 @@
+[2.1.2] - [2020-01-14]
+Added 64-bit support (Google Play policy).
+
 [2.1] - [2018-12-05]
 Undo button bug fix.
 
