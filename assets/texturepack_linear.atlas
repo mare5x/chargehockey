@@ -1,0 +1,388 @@
+
+texturepack_linear.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+px_black
+  rotate: false
+  xy: 978, 373
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_darkbrown
+  rotate: false
+  xy: 466, 129
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_darkgrey
+  rotate: false
+  xy: 1012, 509
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_darkgrey_opaque
+  rotate: false
+  xy: 670, 173
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_green
+  rotate: false
+  xy: 730, 325
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_green_down
+  rotate: false
+  xy: 983, 373
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_grey
+  rotate: false
+  xy: 334, 91
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_grey_opaque
+  rotate: false
+  xy: 978, 368
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_purple
+  rotate: false
+  xy: 986, 483
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_white
+  rotate: false
+  xy: 360, 117
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+px_white_opaque
+  rotate: false
+  xy: 722, 317
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+sprite_charge_neg
+  rotate: false
+  xy: 134, 122
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+sprite_charge_pos
+  rotate: false
+  xy: 2, 122
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+sprite_puck
+  rotate: false
+  xy: 654, 382
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+sprite_vector_head
+  rotate: false
+  xy: 266, 122
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+sprite_vector_tail
+  rotate: false
+  xy: 722, 322
+  size: 4, 4
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+ui_add_down
+  rotate: false
+  xy: 842, 310
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_add_up
+  rotate: false
+  xy: 398, 186
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_back_down
+  rotate: false
+  xy: 522, 314
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
+ui_back_up
+  rotate: false
+  xy: 134, 54
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
+ui_button_down
+  rotate: false
+  xy: 334, 96
+  size: 22, 22
+  split: 4, 17, 4, 17
+  pad: 5, 5, 5, 5
+  orig: 22, 22
+  offset: 0, 0
+  index: -1
+ui_button_up
+  rotate: false
+  xy: 986, 488
+  size: 22, 22
+  split: 4, 17, 4, 17
+  pad: 5, 5, 5, 5
+  orig: 22, 22
+  offset: 0, 0
+  index: -1
+ui_cancel_down
+  rotate: false
+  xy: 854, 378
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_cancel_up
+  rotate: false
+  xy: 534, 110
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_check_off
+  rotate: false
+  xy: 910, 310
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_check_on
+  rotate: false
+  xy: 466, 134
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_confirm_down
+  rotate: false
+  xy: 918, 446
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_confirm_up
+  rotate: false
+  xy: 654, 314
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_edit_off
+  rotate: false
+  xy: 466, 202
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+ui_edit_on
+  rotate: false
+  xy: 262, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+ui_forward_down
+  rotate: false
+  xy: 786, 446
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
+ui_forward_up
+  rotate: false
+  xy: 2, 54
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
+ui_grid_off_down
+  rotate: false
+  xy: 314, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+ui_grid_off_up
+  rotate: false
+  xy: 210, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+ui_grid_on_down
+  rotate: false
+  xy: 158, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+ui_grid_on_up
+  rotate: false
+  xy: 106, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+ui_menu_down
+  rotate: false
+  xy: 786, 378
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_menu_up
+  rotate: false
+  xy: 602, 110
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_play_down
+  rotate: false
+  xy: 262, 254
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+ui_play_up
+  rotate: false
+  xy: 2, 254
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+ui_remove_down
+  rotate: false
+  xy: 54, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+ui_remove_up
+  rotate: false
+  xy: 2, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+ui_rotate_knob
+  rotate: false
+  xy: 922, 378
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_share
+  rotate: false
+  xy: 722, 330
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+ui_slider_knob
+  rotate: false
+  xy: 602, 178
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_star
+  rotate: false
+  xy: 522, 382
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+ui_star_empty
+  rotate: false
+  xy: 534, 178
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_star_gold
+  rotate: false
+  xy: 774, 310
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_star_half
+  rotate: false
+  xy: 266, 54
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_symmetry_tool_down
+  rotate: false
+  xy: 522, 246
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_symmetry_tool_up
+  rotate: false
+  xy: 670, 178
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_undo_down
+  rotate: false
+  xy: 590, 246
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_undo_up
+  rotate: false
+  xy: 398, 118
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui_vertical_knob
+  rotate: false
+  xy: 658, 246
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1

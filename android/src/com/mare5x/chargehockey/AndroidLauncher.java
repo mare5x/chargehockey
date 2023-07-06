@@ -17,6 +17,7 @@ public class AndroidLauncher extends AndroidApplication {
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config.useAccelerometer = false;
         config.useCompass = false;
+        config.useImmersiveMode = false;  // Don't hide the navigation bar
 
         game = new AndroidChargeHockeyGame(this);
 		initialize(game, config);

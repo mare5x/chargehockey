@@ -51,6 +51,7 @@ public class SettingsScreen extends ScrollableMenuScreen {
             }
         });
 
+        // TODO increase game speed
         game_speed_slider = new SettingSlider(game, 0.1f, 1.5f, settings_file.getFloat(SETTINGS_KEY.GAME_SPEED));
         game_speed_slider.set_label_format("GAME SPEED: %.1f");
 

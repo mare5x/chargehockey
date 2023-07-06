@@ -92,8 +92,8 @@ public class CameraController {
             }
 
             @Override
-            public boolean scrolled(int amount) {
-                controller.zoom_to(controller.camera.zoom + amount * 0.1f, Interpolation.pow3Out);
+            public boolean scrolled(float amountX, float amountY) {
+                controller.zoom_to(controller.camera.zoom + amountY * 0.1f, Interpolation.pow3Out);
                 return true;
             }
         };
