@@ -2,14 +2,17 @@ package com.mare5x.chargehockey;
 
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
+import com.mare5x.chargehockey.editor.Exporter;
 import com.mare5x.chargehockey.editor.FilePicker;
 import com.mare5x.chargehockey.editor.PermissionTools;
 
 class AndroidChargeHockeyGame extends ChargeHockeyGame {
     private final AndroidPermissionTools permission_tools;
+    private final AndroidExporter exporter;
 
     AndroidChargeHockeyGame(AndroidApplication activity) {
         permission_tools = new AndroidPermissionTools(activity);
+        exporter = new AndroidExporter(activity, this);
     }
 
     @Override
@@ -26,5 +29,10 @@ class AndroidChargeHockeyGame extends ChargeHockeyGame {
     @Override
     public FilePicker get_file_picker(FilePicker.FileFilter filter) {
         return new AndroidFilePicker(this, filter);
+    }
+
+    @Override
+    public Exporter get_exporter() {
+        return exporter;
     }
 }

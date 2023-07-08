@@ -144,7 +144,8 @@ class EditorMenuScreen extends BaseMenuScreen {
             export_button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Exporter exporter = new Exporter(game, EditorMenuScreen.this, new Exporter.ExporterCallback() {
+                    Exporter exporter = game.get_exporter();
+                    exporter.export(level_name, EditorMenuScreen.this, new Exporter.ExporterCallback() {
                         @Override
                         public void on_success(FileHandle path) {
                             show_notification(String.format(Locale.US, "EXPORTED TO: %s", path.file().getAbsolutePath()));
@@ -155,7 +156,6 @@ class EditorMenuScreen extends BaseMenuScreen {
                             show_notification("FAILED TO EXPORT");
                         }
                     });
-                    exporter.export(level_name);
                     set_keyboard_visible(false);
                 }
             });

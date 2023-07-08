@@ -35,7 +35,7 @@ class AndroidPermissionTools implements PermissionTools {
         request_callback = callback;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            activity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+            activity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, AndroidLauncher.STORAGE_PERMISSION_CODE);
         }
     }
 

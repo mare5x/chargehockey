@@ -24,7 +24,8 @@ class ExportScreen extends BaseMenuScreen {
         selector = new LevelSelector(game, LEVEL_TYPE.CUSTOM);
         selector.set_multiple_select(true);
 
-        final Exporter exporter = new Exporter(game, this, new Exporter.ExporterCallback() {
+        final Exporter exporter = game.get_exporter();
+        final Exporter.ExporterCallback exporter_callback = new Exporter.ExporterCallback() {
             @Override
             public void on_success(FileHandle path) {
                 show_notification(String.format(Locale.US, "EXPORTED TO: %s", path.file().getAbsolutePath()));
@@ -34,7 +35,7 @@ class ExportScreen extends BaseMenuScreen {
             public void on_failure(FileHandle path) {
                 show_notification("FAILED TO EXPORT");
             }
-        });
+        };
 
         TextButton export_button = make_text_button("EXPORT SELECTED");
         export_button.addListener(new ClickListener() {
@@ -43,7 +44,7 @@ class ExportScreen extends BaseMenuScreen {
                 if (custom_levels_check()) {
                     // something has to be selected
                     if (selector.is_selected())
-                        exporter.export(selector.get_selected_names());
+                        exporter.export(selector.get_selected_names(), ExportScreen.this, exporter_callback);
                     else
                         show_notification("FIRST, SELECT A LEVEL");
                 }
@@ -55,7 +56,7 @@ class ExportScreen extends BaseMenuScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (custom_levels_check())
-                    exporter.export_all();
+                    exporter.export_all(ExportScreen.this, exporter_callback);
             }
         });
 

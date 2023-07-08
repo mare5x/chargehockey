@@ -1,15 +1,20 @@
 package com.mare5x.chargehockey;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.mare5x.chargehockey.editor.PermissionTools;
 
 // This is the entry point of the game.
 public class AndroidLauncher extends AndroidApplication {
     private AndroidChargeHockeyGame game;
+
+    public static final int STORAGE_PERMISSION_CODE = 1;
+    public static final int EXPORT_PICKER_CODE = 2;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -24,9 +29,22 @@ public class AndroidLauncher extends AndroidApplication {
 	}
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == EXPORT_PICKER_CODE && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                Uri uri = data.getData();
+                AndroidExporter exporter = (AndroidExporter) game.get_exporter();
+                exporter.file_picker_result_callback(uri);
+            }
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case PermissionTools.STORAGE_PERMISSION_CODE: {
+            case STORAGE_PERMISSION_CODE: {
                 AndroidPermissionTools permission_tools = (AndroidPermissionTools) game.get_permission_tools();
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permission_tools.get_last_request_callback().granted();

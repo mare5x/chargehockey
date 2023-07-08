@@ -11,12 +11,18 @@ import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.menus.ScrollableLabel;
 
+import java.io.OutputStream;
+
 import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
-class FilePickerScreen extends BaseMenuScreen {
-    interface FilePickerCallback {
-        void on_result(FileHandle path);
+public class FilePickerScreen extends BaseMenuScreen {
+    public static class FilePickerCallback {
+        public void on_result(FileHandle path) {}
+
+        // On Android, the intent returns an URI which we can open as a stream, but not a path.
+        // Close the stream when done!
+        public void write_result(OutputStream stream, String path) {}
     }
 
     private final Screen parent_screen;
@@ -31,7 +37,7 @@ class FilePickerScreen extends BaseMenuScreen {
     }
 
     // MUST HAVE STORAGE PERMISSIONS! (set screen with set_screen_permission_check())
-    FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback, FilePicker.FileFilter filter) {
+    public FilePickerScreen(ChargeHockeyGame game, Screen parent_screen, final FilePickerCallback callback, FilePicker.FileFilter filter) {
         super(game);
 
         this.parent_screen = parent_screen;
