@@ -18,6 +18,7 @@ import static com.mare5x.chargehockey.settings.GameDefaults.MIN_BUTTON_HEIGHT;
 
 public class FilePickerScreen extends BaseMenuScreen {
     public static class FilePickerCallback {
+        // Called by the FilePickerScreen when the user selects some valid path.
         public void on_result(FileHandle path) {}
 
         // On Android, the intent returns an URI which we can open as a stream, but not a path.

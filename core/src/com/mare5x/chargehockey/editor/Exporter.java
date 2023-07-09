@@ -153,6 +153,7 @@ public abstract class Exporter {
         byte[] buffer = new byte[1024];
         int bytesRead;
 
+        // N.B. we don't create explicit entries for directories
         for (FileHandle child : dir.list()) {
             if (child.isDirectory()) {
                 zip_dir(child, zos, path + child.name() + "/");

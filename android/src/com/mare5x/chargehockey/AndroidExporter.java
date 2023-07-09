@@ -24,9 +24,9 @@ public class AndroidExporter extends Exporter {
 
     @Override
     protected void show_file_picker(BaseMenuScreen parent_screen, String name, FilePickerScreen.FilePickerCallback on_result) {
-        file_picker_callback = on_result;
         // Intent.ACTION_CREATE_DOCUMENT was added in API 19; it doesn't require permissions.
         if (Build.VERSION.SDK_INT >= 19) {
+            file_picker_callback = on_result;
             Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
             intent.setType("application/zip");
             intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -39,12 +39,14 @@ public class AndroidExporter extends Exporter {
         }
     }
 
-    public void file_picker_result_callback(Uri uri) {
+    // Called on intent activity result.
+    void file_picker_result_callback(Uri uri) {
         try {
             OutputStream stream = activity.getContentResolver().openOutputStream(uri, "w");
             file_picker_callback.write_result(stream, uri.getPath());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        file_picker_callback = null;
     }
 }

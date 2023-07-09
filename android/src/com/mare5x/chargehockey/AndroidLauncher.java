@@ -15,6 +15,7 @@ public class AndroidLauncher extends AndroidApplication {
 
     public static final int STORAGE_PERMISSION_CODE = 1;
     public static final int EXPORT_PICKER_CODE = 2;
+    public static final int IMPORT_PICKER_CODE = 3;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -37,6 +38,12 @@ public class AndroidLauncher extends AndroidApplication {
                 Uri uri = data.getData();
                 AndroidExporter exporter = (AndroidExporter) game.get_exporter();
                 exporter.file_picker_result_callback(uri);
+            }
+        } else if (requestCode == IMPORT_PICKER_CODE && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                Uri uri = data.getData();
+                AndroidImporter importer = (AndroidImporter) game.get_importer();
+                importer.file_picker_result_callback(uri);
             }
         }
     }

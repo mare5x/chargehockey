@@ -4,66 +4,104 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StreamUtils;
-import com.mare5x.chargehockey.ChargeHockeyGame;
 import com.mare5x.chargehockey.level.Level;
 import com.mare5x.chargehockey.level.Level.LEVEL_TYPE;
 import com.mare5x.chargehockey.menus.BaseMenuScreen;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 
 /* Class that handles importing custom levels. */
-abstract class Importer {
-    private static final FilePicker.FileFilter import_filter = new FilePicker.FileFilter() {
+public abstract class Importer {
+    protected static final FilePicker.FileFilter import_filter = new FilePicker.FileFilter() {
         @Override
         public boolean is_valid(FileHandle path) {
+            // On desktop we allow importing not only zip files.
             String ext = path.extension();
-            return path.isDirectory() || ext.equals("grid") || ext.equals("save") || ext.equals("csave");
+            return path.isDirectory() || ext.equals("grid") || ext.equals("save") || ext.equals("csave") || ext.equals("zip");
         }
     };
 
-    private final ChargeHockeyGame game;
-    private final BaseMenuScreen parent_screen;
+    protected abstract void run(BaseMenuScreen parent_screen);
 
-    Importer(final ChargeHockeyGame game, BaseMenuScreen parent_screen) {
-        this.game = game;
-        this.parent_screen = parent_screen;
+    protected void handle_result(BaseMenuScreen parent_screen, String msg) {
+        parent_screen.show_notification(msg);
     }
 
-    void run() {
-        parent_screen.set_screen_permission_check(new FilePickerScreen(game, parent_screen, new FilePickerScreen.FilePickerCallback() {
-            @Override
-            public void on_result(FileHandle path) {
-                handle_result(handle_import(path));
+    // Import a previously exported zip file containing custom levels.
+    protected String import_zip(InputStream stream) {
+        Array<String> import_list = new Array<>();
+        try (ZipInputStream zip_stream = new ZipInputStream(stream)) {
+            ZipEntry entry = zip_stream.getNextEntry();
+            while (entry != null) {
+                Gdx.app.log("Importer", entry.getName());
+                FileHandle dst = Level.get_levels_dir_fhandle(Level.LEVEL_TYPE.CUSTOM)
+                        .child(entry.getName());
+                OutputStream output = null;
+
+                // Copy zip entries creating folders as necessary.
+                // The assumption is that we are importing only valid (exported) files.
+                String ext = dst.extension();
+                if (!dst.exists() && (ext.equals("grid") || ext.equals("save") || ext.equals("csave"))) {
+                    try {
+                        output = dst.write(false);
+                        StreamUtils.copyStream(zip_stream, output);
+                        if (ext.equals("grid")) {
+                            import_list.add(dst.nameWithoutExtension());
+                        }
+                    } catch (Exception ex) {
+                        Gdx.app.error("IMPORTER", "ERROR IMPORTING SAVE FILE!", ex);
+                    } finally {
+                        StreamUtils.closeQuietly(output);
+                    }
+                }
+
+                entry = zip_stream.getNextEntry();
             }
-        }, import_filter));
+            zip_stream.close();
+            stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return import_list_message(import_list);
     }
 
-    abstract void handle_result(String msg);
+    private String import_list_message(Array<String> import_list) {
+        if (import_list.size > 0) {
+            if (import_list.size < 10)
+                if (import_list.size == 1)
+                    return String.format(Locale.US, "IMPORTED LEVEL: %s", import_list.toString(", "));
+                else
+                    return String.format(Locale.US, "IMPORTED %d LEVELS: %s", import_list.size, import_list.toString(", "));
+            else
+                return String.format(Locale.US, "IMPORTED %d LEVELS", import_list.size);
+        } else {
+            return "NOTHING IMPORTED";
+        }
+    }
 
     /* Returns a message string suitable for display. */
-    private String handle_import(FileHandle path) {
+    protected String handle_import(FileHandle path) {
+        if (path.extension().equals("zip")) {
+            return import_zip(path.read());
+        }
+
         if (path.isDirectory()) {
-            Array<String> import_list = new Array<String>();
+            Array<String> import_list = new Array<>();
             for (FileHandle child : path.list()) {
                 if (import_level(child) || import_dir(child)) {
                     import_list.add(child.nameWithoutExtension());
                 }
             }
-            if (import_list.size > 0) {
-                if (import_list.size < 10)
-                    if (import_list.size == 1)
-                        return String.format(Locale.US, "IMPORTED LEVEL: %s", import_list.toString(", "));
-                    else
-                        return String.format(Locale.US, "IMPORTED %d LEVELS: %s", import_list.size, import_list.toString(", "));
-                else
-                    return String.format(Locale.US, "IMPORTED %d LEVELS", import_list.size);
-            } else {
-                return "YOU MUST PICK A VALID IMPORT LOCATION";
-            }
+            return import_list_message(import_list);
         } else {
             String extension = path.extension();
             if (extension.equals("grid")) {

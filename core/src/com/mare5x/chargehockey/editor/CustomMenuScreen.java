@@ -24,13 +24,8 @@ public class CustomMenuScreen extends BaseMenuScreen {
         import_button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Importer importer = new Importer(game, CustomMenuScreen.this) {
-                    @Override
-                    void handle_result(String msg) {
-                        show_notification(msg);
-                    }
-                };
-                importer.run();
+                Importer importer = game.get_importer();
+                importer.run(CustomMenuScreen.this);
             }
         });
 

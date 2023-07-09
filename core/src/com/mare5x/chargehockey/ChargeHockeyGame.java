@@ -1,5 +1,6 @@
 package com.mare5x.chargehockey;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -21,9 +22,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.mare5x.chargehockey.editor.Exporter;
 import com.mare5x.chargehockey.editor.FilePicker;
+import com.mare5x.chargehockey.editor.Importer;
 import com.mare5x.chargehockey.editor.PermissionTools;
 import com.mare5x.chargehockey.level.GridSprites;
-import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import com.mare5x.chargehockey.menus.MenuScreen;
 import com.mare5x.chargehockey.settings.GameDefaults;
 import com.mare5x.chargehockey.settings.SettingsFile;
@@ -48,10 +49,12 @@ abstract public class ChargeHockeyGame extends Game {
     public abstract FilePicker get_file_picker(FilePicker.FileFilter filter);
 
     public abstract Exporter get_exporter();
+    public abstract Importer get_importer();
 
 	@Override
 	public void create () {
-        Gdx.app.setLogLevel(0);
+        // Gdx.app.setLogLevel(0);  // Mute all
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
         Gdx.input.setCatchKey(Input.Keys.BACK, true);
 

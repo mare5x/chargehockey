@@ -151,7 +151,7 @@ public abstract class BaseMenuScreen implements Screen {
     }
 
     /** Displays a TextNotification, making sure only one is displayed. */
-    protected void show_notification(String message) {
+    public void show_notification(String message) {
         show_notification(message, -1);
     }
 
