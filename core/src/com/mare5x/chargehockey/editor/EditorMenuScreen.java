@@ -1,6 +1,5 @@
 package com.mare5x.chargehockey.editor;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -18,8 +17,6 @@ import com.mare5x.chargehockey.menus.NameInputDialog;
 import com.mare5x.chargehockey.menus.TableLayout;
 import com.mare5x.chargehockey.notifications.EditorNoLevelsNotification;
 import com.mare5x.chargehockey.notifications.Notification;
-
-import java.util.Locale;
 
 import static com.mare5x.chargehockey.settings.GameDefaults.ACTOR_PAD;
 import static com.mare5x.chargehockey.settings.GameDefaults.CELL_PAD;
@@ -147,12 +144,12 @@ class EditorMenuScreen extends BaseMenuScreen {
                     Exporter exporter = game.get_exporter();
                     exporter.export(level_name, EditorMenuScreen.this, new Exporter.ExporterCallback() {
                         @Override
-                        public void on_success(FileHandle path) {
-                            show_notification(String.format(Locale.US, "EXPORTED TO: %s", path.file().getAbsolutePath()));
+                        public void on_success(String message) {
+                            show_notification(message);
                         }
 
                         @Override
-                        public void on_failure(FileHandle path) {
+                        public void on_failure() {
                             show_notification("FAILED TO EXPORT");
                         }
                     });

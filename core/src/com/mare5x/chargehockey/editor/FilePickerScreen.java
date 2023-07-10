@@ -23,7 +23,7 @@ public class FilePickerScreen extends BaseMenuScreen {
 
         // On Android, the intent returns an URI which we can open as a stream, but not a path.
         // Close the stream when done!
-        public void write_result(OutputStream stream, String path) {}
+        public void write_result(OutputStream stream) {}
     }
 
     private final Screen parent_screen;

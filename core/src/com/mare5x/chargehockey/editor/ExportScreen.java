@@ -27,12 +27,12 @@ class ExportScreen extends BaseMenuScreen {
         final Exporter exporter = game.get_exporter();
         final Exporter.ExporterCallback exporter_callback = new Exporter.ExporterCallback() {
             @Override
-            public void on_success(FileHandle path) {
-                show_notification(String.format(Locale.US, "EXPORTED TO: %s", path.file().getAbsolutePath()));
+            public void on_success(String message) {
+                show_notification(message);
             }
 
             @Override
-            public void on_failure(FileHandle path) {
+            public void on_failure() {
                 show_notification("FAILED TO EXPORT");
             }
         };

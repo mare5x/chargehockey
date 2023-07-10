@@ -43,7 +43,7 @@ public class AndroidExporter extends Exporter {
     void file_picker_result_callback(Uri uri) {
         try {
             OutputStream stream = activity.getContentResolver().openOutputStream(uri, "w");
-            file_picker_callback.write_result(stream, uri.getPath());
+            file_picker_callback.write_result(stream);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

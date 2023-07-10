@@ -10,6 +10,7 @@ import com.mare5x.chargehockey.menus.BaseMenuScreen;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -26,9 +27,22 @@ public abstract class Exporter {
     };
 
     public interface ExporterCallback {
-        // path is the level directory if exporting a single level and the parent directory otherwise
-        void on_success(FileHandle path);
-        void on_failure(FileHandle path);
+        void on_success(String message);
+        void on_failure();
+    }
+
+    static String export_list_message(Array<String> export_list) {
+        if (export_list.size > 0) {
+            if (export_list.size < 10)
+                if (export_list.size == 1)
+                    return String.format(Locale.US, "EXPORTED: %s", export_list.toString(", "));
+                else
+                    return String.format(Locale.US, "EXPORTED %d LEVELS: %s", export_list.size, export_list.toString(", "));
+            else
+                return String.format(Locale.US, "EXPORTED %d LEVELS", export_list.size);
+        } else {
+            return "NOTHING EXPORTED";
+        }
     }
 
     protected abstract void show_file_picker(BaseMenuScreen parent_screen, String name, FilePickerCallback on_result);
@@ -41,17 +55,17 @@ public abstract class Exporter {
                     path = path.child("chargehockey_export_" + level_name + ".zip");
                 }
                 if (export(level_name, path.write(false)))
-                    callback.on_success(path);
+                    callback.on_success(export_list_message(Array.with(path.file().getAbsolutePath())));
                 else
-                    callback.on_failure(path);
+                    callback.on_failure();
             }
 
             @Override
-            public void write_result(OutputStream stream, String path) {
+            public void write_result(OutputStream stream) {
                 if (export(level_name, stream))
-                    callback.on_success(new FileHandle(path));
+                    callback.on_success(export_list_message(Array.with(level_name)));
                 else
-                    callback.on_failure(new FileHandle(path));
+                    callback.on_failure();
             }
         });
     }
@@ -79,17 +93,17 @@ public abstract class Exporter {
                     path = path.child("chargehockey_export_" + levels.size + ".zip");
                 }
                 if (export(levels, path.write(false)))
-                    callback.on_success(path);
+                    callback.on_success(export_list_message(Array.with(path.file().getAbsolutePath())));
                 else
-                    callback.on_failure(path);
+                    callback.on_failure();
             }
 
             @Override
-            public void write_result(OutputStream stream, String path) {
+            public void write_result(OutputStream stream) {
                 if (export(levels, stream))
-                    callback.on_success(new FileHandle(path));
+                    callback.on_success(export_list_message(levels));
                 else
-                    callback.on_failure(new FileHandle(path));
+                    callback.on_failure();
             }
         });
     }
@@ -119,17 +133,22 @@ public abstract class Exporter {
                     path = path.child("chargehockey_export.zip");
                 }
                 if (export_all(path.write(false)))
-                    callback.on_success(path);
+                    callback.on_success(export_list_message(Array.with(path.file().getAbsolutePath())));
                 else
-                    callback.on_failure(path);
+                    callback.on_failure();
             }
 
             @Override
-            public void write_result(OutputStream stream, String path) {
-                if (export_all(stream))
-                    callback.on_success(new FileHandle(path));
+            public void write_result(OutputStream stream) {
+                if (export_all(stream)) {
+                    FileHandle path = Level.get_levels_dir_fhandle(Level.LEVEL_TYPE.CUSTOM);
+                    Array<String> exported = new Array<>();
+                    for (FileHandle p : path.list())
+                        exported.add(p.nameWithoutExtension());
+                    callback.on_success(export_list_message(exported));
+                }
                 else
-                    callback.on_failure(new FileHandle(path));
+                    callback.on_failure();
             }
         });
     }
