@@ -61,9 +61,9 @@ abstract public class ChargeHockeyGame extends Game {
         Gdx.graphics.setContinuousRendering(false);
         Gdx.graphics.requestRendering();
 
-		batch = new SpriteBatch();
+        batch = new SpriteBatch();
 
-		// DO NOT USE STATIC VARIABLES IN ANDROID! https://github.com/libgdx/libgdx/wiki/Managing-your-assets http://bitiotic.com/blog/2013/05/23/libgdx-and-android-application-lifecycle/
+        // DO NOT USE STATIC VARIABLES IN ANDROID! https://github.com/libgdx/libgdx/wiki/Managing-your-assets http://bitiotic.com/blog/2013/05/23/libgdx-and-android-application-lifecycle/
         manager = new AssetManager();
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));

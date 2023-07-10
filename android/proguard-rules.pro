@@ -36,3 +36,10 @@
    boolean reportFixture(long);
    float   reportRayFixture(long, float, float, float, float, float);
 }
+
+
+# If I manually fiddled with this I could decrease the file size ...
+-keep class com.badlogic.gdx.graphics.** { *; }
+-keep class com.badlogic.gdx.scenes.** { *; }
+# -keep class com.badlogic.** { *; }
+# -keep enum com.badlogic.** { *; }
